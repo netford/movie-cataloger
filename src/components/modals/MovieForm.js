@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faTimes, faPlus, faUpload, faFilm } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faTimes, faPlus, faUpload, faFilm, faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import Modal from './Modal';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,6 +10,13 @@ const MovieForm = ({ movieId = null }) => {
   const { state, dispatch } = useMovies();
   const isEditMode = Boolean(movieId);
   
+  // Генерация списка годов от текущего до 1925
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: currentYear - 1924 }, (_, i) => currentYear - i);
+  
+  // Форматируем текущую дату в формат YYYY-MM-DD для полей input type="date"
+  const today = new Date().toISOString().slice(0, 10);
+
   // Находим фильм для редактирования или используем шаблон для нового
   const initialMovie = isEditMode
     ? state.movies.find(m => m.id === movieId)
@@ -22,8 +29,7 @@ const MovieForm = ({ movieId = null }) => {
         status: 'toWatch',
         rating: 50,
         dateAdded: new Date().toISOString(),
-        dateWatched: null,
-        director: '',
+        dateWatched: today, // Устанавливаем текущую дату по умолчанию
         year: new Date().getFullYear(),
         isSeries: false,
         seasons: 1,
@@ -56,15 +62,36 @@ const MovieForm = ({ movieId = null }) => {
     
     // Если статус изменился на "просмотрено", устанавливаем дату просмотра
     if (status === 'watched' && !movie.dateWatched) {
-      updates.dateWatched = new Date().toISOString();
+      updates.dateWatched = today;
     }
     
     setMovie(prev => ({ ...prev, ...updates }));
   };
   
+  // Новая функция для увеличения или уменьшения рейтинга с шагом 5
+  const handleRatingStep = (step) => {
+    const newRating = Math.max(0, Math.min(100, (movie.rating || 0) + step));
+    setMovie(prev => ({ ...prev, rating: newRating }));
+  };
+  
+  // Функция для валидации рейтинга при ручном вводе
   const handleRatingChange = (e) => {
-    const rating = Number(e.target.value);
-    setMovie(prev => ({ ...prev, rating }));
+    let value = e.target.value;
+    
+    // Если поле пустое, не обновляем состояние (оставляем пустым для дальнейшего ввода)
+    if (value === '') {
+      setMovie(prev => ({ ...prev, rating: '' }));
+      return;
+    }
+    
+    // Преобразуем в число
+    value = parseInt(value, 10);
+    
+    // Валидация: число должно быть от 0 до 100
+    if (!isNaN(value)) {
+      value = Math.max(0, Math.min(100, value));
+      setMovie(prev => ({ ...prev, rating: value }));
+    }
   };
   
   const handleTagAdd = () => {
@@ -151,8 +178,8 @@ const MovieForm = ({ movieId = null }) => {
   return (
     <Modal title={isEditMode ? 'Редактирование фильма' : 'Добавление фильма'}>
       <form className="movie-form" onSubmit={handleSubmit}>
-        <div className="form-layout">
-          <div className="form-column form-column-left">
+        <div className="compact-form-layout">
+          <div className="form-left-panel">
             <div className="form-poster-container">
               {movie.poster ? (
                 <div className="form-poster">
@@ -178,258 +205,295 @@ const MovieForm = ({ movieId = null }) => {
               />
             </div>
             
-            <div className="form-group">
-              <label>Рейтинг: {movie.rating}/100</label>
-              <input
-                type="range"
-                name="rating"
-                min="0"
-                max="100"
-                value={movie.rating}
-                onChange={handleRatingChange}
-                className="rating-slider"
-              />
-            </div>
-            
-            <div className="form-group">
-              <label>Статус:</label>
-              <select
-                name="status"
-                value={movie.status}
-                onChange={handleStatusChange}
-              >
-                <option value="watched">Просмотрено</option>
-                <option value="toWatch">Планирую посмотреть</option>
-                <option value="cancelled">Отменён</option>
-              </select>
-            </div>
-            
-            {movie.status === 'watched' && (
-              <div className="form-group">
-                <label>Дата просмотра:</label>
-                <input
-                  type="date"
-                  name="dateWatched"
-                  value={movie.dateWatched ? movie.dateWatched.slice(0, 10) : ''}
-                  onChange={handleInputChange}
-                />
+            <div className="form-fields-group">
+              <div className="form-row">
+                <div className="form-control">
+                  <label>Рейтинг:</label>
+                  <div className="rating-number-input">
+                    <input
+                      type="number"
+                      name="rating"
+                      min="0"
+                      max="100"
+                      value={movie.rating}
+                      onChange={handleRatingChange}
+                      className="rating-input"
+                    />
+                    <div className="rating-controls">
+                      <button 
+                        type="button" 
+                        className="rating-btn" 
+                        onClick={() => handleRatingStep(5)}
+                      >
+                        <FontAwesomeIcon icon={faChevronUp} />
+                      </button>
+                      <button 
+                        type="button" 
+                        className="rating-btn" 
+                        onClick={() => handleRatingStep(-5)}
+                      >
+                        <FontAwesomeIcon icon={faChevronDown} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="form-control">
+                  <label>Статус:</label>
+                  <select
+                    name="status"
+                    value={movie.status}
+                    onChange={handleStatusChange}
+                  >
+                    <option value="toWatch">Запланировано</option>
+                    <option value="watched">Просмотрено</option>
+                    <option value="cancelled">Отменено</option>
+                  </select>
+                </div>
               </div>
-            )}
-            
-            <div className="form-group">
-              <label>Дата добавления:</label>
-              <input
-                type="date"
-                name="dateAdded"
-                value={movie.dateAdded.slice(0, 10)}
-                disabled
-              />
-            </div>
-            
-            <div className="form-group">
-              <label>Тип контента:</label>
-              <div className="type-selector">
-                <label>
+              
+              <div className="form-row">
+                <div className="form-control">
+                  <label>Добавлено:</label>
                   <input
-                    type="radio"
-                    name="contentType"
-                    value="movie"
-                    checked={!movie.isSeries}
-                    onChange={handleTypeChange}
-                  />
-                  Фильм
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="contentType"
-                    value="series"
-                    checked={movie.isSeries}
-                    onChange={handleTypeChange}
-                  />
-                  Сериал
-                </label>
-              </div>
-            </div>
-            
-            {movie.isSeries ? (
-              // Поля для сериала
-              <>
-                <div className="form-group">
-                  <label>Количество сезонов:</label>
-                  <input
-                    type="number"
-                    name="seasons"
-                    min="1"
-                    value={movie.seasons || ''}
+                    type="date"
+                    name="dateAdded"
+                    value={movie.dateAdded.slice(0, 10)}
                     onChange={handleInputChange}
+                    className="date-input"
                   />
                 </div>
                 
-                <div className="form-group">
-                  <label>Количество серий:</label>
+                <div className="form-control">
+                  <label>Просмотрено:</label>
                   <input
-                    type="number"
-                    name="episodes"
-                    min="1"
-                    value={movie.episodes || ''}
+                    type="date"
+                    name="dateWatched"
+                    value={movie.dateWatched ? movie.dateWatched.slice(0, 10) : ''}
                     onChange={handleInputChange}
-                    required={movie.isSeries}
+                    className="date-input"
                   />
                 </div>
-                
-                <div className="form-group">
-                  <label>Длительность серии (мин.):</label>
-                  <input
-                    type="number"
-                    name="episodeDuration"
-                    min="1"
-                    value={movie.episodeDuration || ''}
-                    onChange={handleInputChange}
-                    required={movie.isSeries}
-                  />
-                </div>
-              </>
-            ) : (
-              // Поле для фильма
-              <div className="form-group">
-                <label>Продолжительность (мин.):</label>
-                <input
-                  type="number"
-                  name="duration"
-                  min="1"
-                  value={movie.duration || ''}
-                  onChange={handleInputChange}
-                  required={!movie.isSeries}
-                />
               </div>
-            )}
-            
-            <div className="form-group">
-              <label>Год выпуска:</label>
-              <input
-                type="number"
-                name="year"
-                value={movie.year || ''}
-                onChange={handleInputChange}
-              />
-            </div>
-            
-            <div className="form-group">
-              <label>Режиссёр:</label>
-              <input
-                type="text"
-                name="director"
-                value={movie.director}
-                onChange={handleInputChange}
-              />
+              
+              <div className="form-row">
+                <div className="form-control type-selector">
+                  <label className="radio-label">
+                    <input
+                      type="radio"
+                      name="contentType"
+                      value="movie"
+                      checked={!movie.isSeries}
+                      onChange={handleTypeChange}
+                    />
+                    Фильм
+                  </label>
+                  <label className="radio-label">
+                    <input
+                      type="radio"
+                      name="contentType"
+                      value="series"
+                      checked={movie.isSeries}
+                      onChange={handleTypeChange}
+                    />
+                    Сериал
+                  </label>
+                </div>
+              </div>
+              
+              <div className="left-panel-bottom">
+                {movie.isSeries ? (
+                  <div className="series-details">
+                    <div className="form-row">
+                      <div className="form-control">
+                        <label>Сезонов:</label>
+                        <input
+                          type="number"
+                          name="seasons"
+                          min="1"
+                          value={movie.seasons || ''}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      
+                      <div className="form-control">
+                        <label>Серий:</label>
+                        <input
+                          type="number"
+                          name="episodes"
+                          min="1"
+                          value={movie.episodes || ''}
+                          onChange={handleInputChange}
+                          required={movie.isSeries}
+                        />
+                      </div>
+                      
+                      <div className="form-control">
+                        <label>Длит. серии:</label>
+                        <input
+                          type="number"
+                          name="episodeDuration"
+                          min="1"
+                          value={movie.episodeDuration || ''}
+                          onChange={handleInputChange}
+                          required={movie.isSeries}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="form-row">
+                    <div className="form-control">
+                      <label>Продолжительность (мин):</label>
+                      <input
+                        type="number"
+                        name="duration"
+                        min="1"
+                        value={movie.duration || ''}
+                        onChange={handleInputChange}
+                        required={!movie.isSeries}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           
-          <div className="form-column form-column-right">
-            <div className="form-group">
-              <label>Название:</label>
-              <input
-                type="text"
-                name="title"
-                value={movie.title}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            
-            <div className="form-group">
-              <label>Теги/жанры:</label>
-              <div className="tags-container">
-                {movie.tags.map((tag, index) => (
-                  <div key={index} className="tag">
-                    <span>{tag}</span>
+          <div className="form-right-panel">
+            <div className="form-row tags-year-row">
+              <div className="form-control tags-control">
+                <label>Теги/жанры:</label>
+                <div className="tags-container">
+                  {movie.tags.map((tag, index) => (
+                    <div key={index} className="tag">
+                      <span>{tag}</span>
+                      <button
+                        type="button"
+                        className="tag-remove"
+                        onClick={() => handleTagRemove(tag)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  <div className="add-tag">
+                    <input
+                      type="text"
+                      value={newTag}
+                      onChange={(e) => setNewTag(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      placeholder="+ Добавить тег"
+                    />
                     <button
                       type="button"
-                      className="tag-remove"
-                      onClick={() => handleTagRemove(tag)}
+                      className="add-tag-btn"
+                      onClick={handleTagAdd}
                     >
-                      ×
+                      <FontAwesomeIcon icon={faPlus} />
                     </button>
                   </div>
-                ))}
-                <div className="add-tag">
-                  <input
-                    type="text"
-                    value={newTag}
-                    onChange={(e) => setNewTag(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="+ Добавить тег"
-                  />
-                  <button
-                    type="button"
-                    className="add-tag-btn"
-                    onClick={handleTagAdd}
-                  >
-                    <FontAwesomeIcon icon={faPlus} />
-                  </button>
                 </div>
+              </div>
+              
+              <div className="form-control year-control">
+                <label>Год выпуска:</label>
+                <select 
+                  name="year"
+                  value={movie.year || currentYear}
+                  onChange={handleInputChange}
+                >
+                  {yearOptions.map(year => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
               </div>
             </div>
             
-            <div className="form-group">
-              <label>Описание:</label>
-              <textarea
-                name="description"
-                value={movie.description}
-                onChange={handleInputChange}
-                rows="5"
-              ></textarea>
-            </div>
-            
-            <div className="form-group">
-              <label>URL трейлера:</label>
-              <input
-                type="text"
-                name="trailerUrl"
-                value={movie.trailerUrl}
-                onChange={handleInputChange}
-                placeholder="https://youtube.com/watch?v=..."
-              />
-            </div>
-            
-            <div className="form-group">
-              <label>Кадры из фильма:</label>
-              <div className="images-container">
-                {movie.images.map((img, index) => (
-                  <div key={index} className="movie-image">
-                    <img src={img} alt={`Кадр ${index + 1}`} />
-                    <button
-                      type="button"
-                      className="image-remove"
-                      onClick={() => handleRemoveImage(index)}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-                <label className="add-image" htmlFor="image-upload">
-                  <FontAwesomeIcon icon={faPlus} />
-                </label>
+            <div className="form-row">
+              <div className="form-control">
+                <label>Название:</label>
                 <input
-                  type="file"
-                  id="image-upload"
-                  accept="image/*"
-                  multiple
-                  onChange={handleAddImage}
-                  style={{ display: 'none' }}
+                  type="text"
+                  name="title"
+                  value={movie.title}
+                  onChange={handleInputChange}
+                  required
                 />
               </div>
             </div>
             
-            <div className="form-group">
-              <label>Мои заметки:</label>
-              <textarea
-                name="notes"
-                value={movie.notes}
-                onChange={handleInputChange}
-                rows="3"
-              ></textarea>
+            <div className="form-row">
+              <div className="form-control">
+                <label>Описание:</label>
+                <textarea
+                  name="description"
+                  value={movie.description}
+                  onChange={handleInputChange}
+                  className="description-textarea"
+                ></textarea>
+              </div>
+            </div>
+            
+            <div className="form-row">
+              <div className="form-control">
+                <label>URL трейлера:</label>
+                <input
+                  type="text"
+                  name="trailerUrl"
+                  value={movie.trailerUrl}
+                  onChange={handleInputChange}
+                  placeholder="https://youtube.com/watch?v=..."
+                />
+              </div>
+            </div>
+            
+            <div className="form-row">
+              <div className="form-control">
+                <div className="images-label-row">
+                  <label>Кадры из фильма:</label>
+                  <label className="add-image-btn" htmlFor="image-upload">
+                    <FontAwesomeIcon icon={faPlus} /> Добавить
+                  </label>
+                  <input
+                    type="file"
+                    id="image-upload"
+                    accept="image/*"
+                    multiple
+                    onChange={handleAddImage}
+                    style={{ display: 'none' }}
+                  />
+                </div>
+                <div className="images-container">
+                  {movie.images.map((img, index) => (
+                    <div key={index} className="movie-image">
+                      <img src={img} alt={`Кадр ${index + 1}`} />
+                      <button
+                        type="button"
+                        className="image-remove"
+                        onClick={() => handleRemoveImage(index)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  <div className="add-image-placeholder">
+                    <FontAwesomeIcon icon={faPlus} />
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="form-row">
+              <div className="form-control">
+                <label>Мои заметки:</label>
+                <textarea
+                  name="notes"
+                  value={movie.notes}
+                  onChange={handleInputChange}
+                  className="notes-textarea"
+                ></textarea>
+              </div>
             </div>
           </div>
         </div>
