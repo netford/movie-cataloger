@@ -1,0 +1,166 @@
+.movie-view {
+    display: flex;
+    padding: 20px;
+  }
+  
+  .movie-view-left {
+    width: 35%;
+    padding-right: 20px;
+  }
+  
+  .movie-view-right {
+    width: 65%;
+    padding-left: 20px;
+    border-left: 1px solid var(--light-color);
+  }
+  
+  .movie-poster-large {
+    width: 100%;
+    height: 320px;
+    position: relative;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: var(--gray-color);
+  }
+  
+  .movie-poster-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .poster-placeholder-large {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark-gray);
+    font-size: 48px;
+  }
+  
+  .movie-rating-large {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: var(--danger-color);
+    color: white;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+  }
+  
+  .movie-metadata {
+    margin-bottom: 15px;
+  }
+  
+  .metadata-item {
+    margin-bottom: 10px;
+  }
+  
+  .metadata-label {
+    color: var(--dark-gray);
+    font-size: 12px;
+    display: block;
+    margin-bottom: 3px;
+  }
+  
+  .metadata-value {
+    font-size: 14px;
+    color: var(--text-color);
+  }
+  
+  .movie-view-header {
+    margin-bottom: 20px;
+  }
+  
+  .movie-title-large {
+    margin: 0 0 10px 0;
+    font-size: 24px;
+    color: var(--text-color);
+  }
+  
+  .movie-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .movie-tag {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+  }
+  
+  .movie-section {
+    margin-bottom: 20px;
+  }
+  
+  .section-title {
+    font-size: 16px;
+    color: var(--text-color);
+    margin: 0 0 10px 0;
+  }
+  
+  .movie-description {
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-line;
+  }
+  
+  .trailer-container {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  .trailer-container iframe {
+    width: 100%;
+    height: 190px;
+    border: none;
+    border-radius: 4px;
+  }
+  
+  .trailer-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+  
+  .movie-notes {
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    border-left: 3px solid var(--primary-color);
+  }
+  
+  .series-info {
+    margin-bottom: 15px;
+  }
+  
+  @media (max-width: 768px) {
+    .movie-view {
+      flex-direction: column;
+    }
+    
+    .movie-view-left,
+    .movie-view-right {
+      width: 100%;
+      padding: 0;
+    }
+    
+    .movie-view-right {
+      border-left: none;
+      border-top: 1px solid var(--light-color);
+      padding-top: 15px;
+      margin-top: 15px;
+    }
+  }

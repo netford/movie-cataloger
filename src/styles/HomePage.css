@@ -1,0 +1,23 @@
+.home-page {
+    padding: 20px 0;
+  }
+  
+  .content-container {
+    width: 100%;
+    min-height: 300px;
+  }
+  
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    font-size: 18px;
+    color: var(--dark-gray);
+  }
+  
+  @media (max-width: 768px) {
+    .home-page {
+      padding: 10px 0;
+    }
+  }

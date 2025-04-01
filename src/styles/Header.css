@@ -1,0 +1,26 @@
+.header {
+    background-color: var(--secondary-dark);
+    color: white;
+    padding: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 15px 20px;
+  }
+  
+  .header-title {
+    font-size: 26px;
+    margin: 0;
+    font-weight: bold;
+  }
+  
+  .header-buttons {
+    display: flex;
+    gap: 10px;
+  }
