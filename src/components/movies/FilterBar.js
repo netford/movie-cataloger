@@ -44,19 +44,19 @@ const FilterBar = () => {
           className={`category-btn ${state.filter === 'watched' ? 'active' : ''}`}
           onClick={() => handleFilterChange('watched')}
         >
-          Просмотренные
+          Просмотрено
         </button>
         <button 
           className={`category-btn ${state.filter === 'toWatch' ? 'active' : ''}`}
           onClick={() => handleFilterChange('toWatch')}
         >
-          Планирую посмотреть
+          Запланировано
         </button>
         <button 
           className={`category-btn ${state.filter === 'cancelled' ? 'active' : ''}`}
           onClick={() => handleFilterChange('cancelled')}
         >
-          Отменённые
+          Отменено
         </button>
       </div>
       

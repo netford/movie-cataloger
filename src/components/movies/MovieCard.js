@@ -22,8 +22,8 @@ const MovieCard = ({ movie }) => {
   const getStatusLabel = (status) => {
     switch (status) {
       case 'watched': return 'Просмотрено';
-      case 'toWatch': return 'Планирую посмотреть';
-      case 'cancelled': return 'Отменён';
+      case 'toWatch': return 'Запланировано';
+      case 'cancelled': return 'Отменено';
       default: return '';
     }
   };
