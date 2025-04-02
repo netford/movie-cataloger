@@ -1,166 +1,254 @@
 .movie-view {
-    display: flex;
-    padding: 20px;
+  padding: 10px;
+}
+
+/* Используем такую же структуру формы, как в MovieForm */
+.compact-form-layout {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.form-left-panel {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.form-right-panel {
+  width: 65%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Стили для строк формы */
+.form-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+/* Стили для группы полей в левой панели */
+.form-fields-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-grow: 1;
+}
+
+/* Растягиваем нижнюю секцию до конца левой панели */
+.left-panel-bottom {
+  margin-top: auto;
+}
+
+/* Стили для постера */
+.form-poster-container {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.form-poster {
+  width: 100%;
+  height: 350px;
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: var(--gray-color);
+}
+
+.form-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.poster-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--gray-color);
+  border-radius: 4px;
+  color: white;
+}
+
+.movie-rating {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: var(--danger-color);
+  color: white;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 14px;
+}
+
+/* Стили для метаданных */
+.metadata-item {
+  flex: 1;
+  margin-bottom: 10px;
+}
+
+.metadata-label {
+  color: var(--dark-gray);
+  font-size: 13px;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.metadata-value {
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+/* Стили для тегов */
+.tags-display {
+  width: 100%;
+}
+
+.movie-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.movie-tag {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 15px;
+  font-size: 12px;
+}
+
+/* Стили для названия */
+.movie-title-display {
+  margin: 0 0 10px 0;
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+/* Стили для описания и заметок */
+.description-display, .notes-display {
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 8px 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  min-height: 40px;
+  white-space: pre-line;
+}
+
+.description-display {
+  height: 200px;
+  overflow-y: auto;
+}
+
+.notes-display {
+  height: 60px;
+  overflow-y: auto;
+  border-left: 3px solid var(--primary-color);
+}
+
+/* Стили для трейлера */
+.trailer-container {
+  margin-top: 5px;
+  width: 100%;
+}
+
+.trailer-container iframe {
+  width: 100%;
+  height: 200px;
+  border: none;
+  border-radius: 4px;
+}
+
+.trailer-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary-color);
+  text-decoration: none;
+  margin-top: 5px;
+}
+
+.trailer-link a {
+  color: var(--primary-color);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+/* Стили для изображений */
+.images-container {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+  margin-top: 5px;
+  height: 60px;
+}
+
+.movie-image {
+  min-width: 80px;
+  height: 60px;
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.movie-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Стили для общей продолжительности */
+.total-duration-info {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--light-color);
+}
+
+/* Стили для кнопок действий */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 0 0;
+  gap: 10px;
+  border-top: 1px solid var(--light-color);
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+  .compact-form-layout {
+    flex-direction: column;
   }
   
-  .movie-view-left {
-    width: 35%;
-    padding-right: 20px;
-  }
-  
-  .movie-view-right {
-    width: 65%;
-    padding-left: 20px;
-    border-left: 1px solid var(--light-color);
-  }
-  
-  .movie-poster-large {
+  .form-left-panel,
+  .form-right-panel {
     width: 100%;
-    height: 320px;
-    position: relative;
-    margin-bottom: 15px;
-    border-radius: 4px;
-    overflow: hidden;
-    background-color: var(--gray-color);
   }
   
-  .movie-poster-large img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .poster-placeholder-large {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--dark-gray);
-    font-size: 48px;
-  }
-  
-  .movie-rating-large {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: var(--danger-color);
-    color: white;
-    font-weight: bold;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 14px;
-  }
-  
-  .movie-metadata {
-    margin-bottom: 15px;
-  }
-  
-  .metadata-item {
-    margin-bottom: 10px;
-  }
-  
-  .metadata-label {
-    color: var(--dark-gray);
-    font-size: 12px;
-    display: block;
-    margin-bottom: 3px;
-  }
-  
-  .metadata-value {
-    font-size: 14px;
-    color: var(--text-color);
-  }
-  
-  .movie-view-header {
-    margin-bottom: 20px;
-  }
-  
-  .movie-title-large {
-    margin: 0 0 10px 0;
-    font-size: 24px;
-    color: var(--text-color);
-  }
-  
-  .movie-tags-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-bottom: 10px;
-  }
-  
-  .movie-tag {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 12px;
-  }
-  
-  .movie-section {
-    margin-bottom: 20px;
-  }
-  
-  .section-title {
-    font-size: 16px;
-    color: var(--text-color);
-    margin: 0 0 10px 0;
-  }
-  
-  .movie-description {
-    font-size: 14px;
-    line-height: 1.5;
-    white-space: pre-line;
-  }
-  
-  .trailer-container {
-    width: 100%;
-    margin-bottom: 15px;
-  }
-  
-  .trailer-container iframe {
-    width: 100%;
-    height: 190px;
-    border: none;
-    border-radius: 4px;
-  }
-  
-  .trailer-link {
-    display: flex;
-    align-items: center;
+  .tags-year-row,
+  .form-row {
+    flex-direction: column;
     gap: 8px;
-    color: var(--primary-color);
-    text-decoration: none;
   }
   
-  .movie-notes {
-    font-size: 14px;
-    line-height: 1.5;
-    padding: 10px;
-    background-color: #f9f9f9;
-    border-radius: 4px;
-    border-left: 3px solid var(--primary-color);
+  .form-poster {
+    height: 200px;
   }
   
-  .series-info {
-    margin-bottom: 15px;
+  .year-display {
+    width: 100%;
   }
   
-  @media (max-width: 768px) {
-    .movie-view {
-      flex-direction: column;
-    }
-    
-    .movie-view-left,
-    .movie-view-right {
-      width: 100%;
-      padding: 0;
-    }
-    
-    .movie-view-right {
-      border-left: none;
-      border-top: 1px solid var(--light-color);
-      padding-top: 15px;
-      margin-top: 15px;
-    }
+  .description-display {
+    height: 150px;
   }
+}

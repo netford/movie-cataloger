@@ -31,10 +31,16 @@ const HomePage = () => {
       <FilterBar />
       
       <div className="content-container">
-        {state.viewMode === 'cards' ? (
-          <MovieGrid />
+        {state.isLoading ? (
+          <div className="loading">Загрузка фильмов...</div>
+        ) : state.error ? (
+          <div className="error-message">{state.error}</div>
         ) : (
-          <MovieList />
+          state.viewMode === 'cards' ? (
+            <MovieGrid />
+          ) : (
+            <MovieList />
+          )
         )}
       </div>
       

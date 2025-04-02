@@ -3,11 +3,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faTimes, faPlus, faUpload, faFilm, faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import Modal from './Modal';
-import { v4 as uuidv4 } from 'uuid';
 import '../../styles/MovieForm.css';
 
 const MovieForm = ({ movieId = null }) => {
-  const { state, dispatch } = useMovies();
+  const { state, dispatch, addMovieToFirestore, updateMovieInFirestore } = useMovies();
   const isEditMode = Boolean(movieId);
   
   // Генерация списка годов от текущего до 1925
@@ -111,32 +110,72 @@ const MovieForm = ({ movieId = null }) => {
     }));
   };
   
-  const handlePosterChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
+// Функция для сжатия изображения
+const compressImage = (dataUrl, maxWidth = 800, maxHeight = 800, quality = 0.7) => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = dataUrl;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let width = img.width;
+      let height = img.height;
+      
+      // Вычисляем размеры с сохранением пропорций
+      if (width > height) {
+        if (width > maxWidth) {
+          height = Math.round(height * maxWidth / width);
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width = Math.round(width * maxHeight / height);
+          height = maxHeight;
+        }
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      // Получаем сжатое изображение в формате base64
+      const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+      resolve(compressedDataUrl);
+    };
+  });
+};
+
+const handlePosterChange = async (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      // Сжимаем изображение перед сохранением
+      const compressedImage = await compressImage(reader.result, 600, 800);
+      setMovie(prev => ({ ...prev, poster: compressedImage }));
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const handleAddImage = (e) => {
+  const files = e.target.files;
+  if (files.length > 0) {
+    Array.from(files).forEach(file => {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setMovie(prev => ({ ...prev, poster: reader.result }));
+      reader.onloadend = async () => {
+        // Сжимаем изображение кадра перед сохранением
+        const compressedImage = await compressImage(reader.result, 400, 300);
+        setMovie(prev => ({ 
+          ...prev, 
+          images: [...prev.images, compressedImage] 
+        }));
       };
       reader.readAsDataURL(file);
-    }
-  };
-  
-  const handleAddImage = (e) => {
-    const files = e.target.files;
-    if (files.length > 0) {
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setMovie(prev => ({ 
-            ...prev, 
-            images: [...prev.images, reader.result] 
-          }));
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-  };
+    });
+  }
+};
   
   const handleRemoveImage = (indexToRemove) => {
     setMovie(prev => ({ 
@@ -158,21 +197,26 @@ const MovieForm = ({ movieId = null }) => {
     }
   };
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const movieData = {
-      ...movie,
-      id: isEditMode ? movie.id : uuidv4()
-    };
-    
-    if (isEditMode) {
-      dispatch({ type: 'UPDATE_MOVIE', payload: movieData });
-    } else {
-      dispatch({ type: 'ADD_MOVIE', payload: movieData });
+    try {
+      const movieData = {
+        ...movie,
+        id: isEditMode ? movie.id : '' // id будет сгенерирован Firestore при добавлении
+      };
+      
+      if (isEditMode) {
+        await updateMovieInFirestore(movieData);
+      } else {
+        await addMovieToFirestore(movieData);
+      }
+      
+      dispatch({ type: 'CLOSE_MODAL' });
+    } catch (error) {
+      console.error("Ошибка при сохранении фильма:", error);
+      // Можно добавить отображение ошибки для пользователя
     }
-    
-    dispatch({ type: 'CLOSE_MODAL' });
   };
   
   return (

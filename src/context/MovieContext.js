@@ -1,4 +1,5 @@
-import React, { createContext, useReducer, useContext, useEffect } from 'react';
+import React, { createContext, useReducer, useContext, useEffect, useState } from 'react';
+import { getAllMovies, addMovie, updateMovie, deleteMovie } from '../firebase/movieService';
 
 // Создаем контекст для фильмов
 const MovieContext = createContext();
@@ -7,7 +8,9 @@ const MovieContext = createContext();
 const movieReducer = (state, action) => {
   switch (action.type) {
     case 'LOAD_MOVIES':
-      return { ...state, movies: action.payload };
+      return { ...state, movies: action.payload, isLoading: false };
+    case 'SET_LOADING':
+      return { ...state, isLoading: action.payload };
     case 'ADD_MOVIE':
       return { ...state, movies: [...state.movies, action.payload] };
     case 'UPDATE_MOVIE':
@@ -34,6 +37,8 @@ const movieReducer = (state, action) => {
       return { ...state, modal: null };
     case 'SET_SORT':
       return { ...state, sortBy: action.payload };
+    case 'SET_ERROR':
+      return { ...state, error: action.payload };
     default:
       return state;
   }
@@ -48,35 +53,103 @@ export const MovieProvider = ({ children }) => {
     search: '',
     viewMode: 'cards', // cards, list
     sortBy: { field: 'dateAdded', direction: 'desc' },
-    modal: null
+    modal: null,
+    isLoading: true,
+    error: null
   };
   
   const [state, dispatch] = useReducer(movieReducer, initialState);
   
-  // Загружаем данные из localStorage при монтировании
+  // Загружаем данные из Firestore при монтировании
   useEffect(() => {
-    const storedMovies = localStorage.getItem('movies');
-    if (storedMovies) {
-      dispatch({ type: 'LOAD_MOVIES', payload: JSON.parse(storedMovies) });
-    }
+    const fetchMovies = async () => {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      
+      try {
+        const movies = await getAllMovies();
+        dispatch({ type: 'LOAD_MOVIES', payload: movies });
+      } catch (error) {
+        console.error("Ошибка при загрузке фильмов:", error);
+        dispatch({ 
+          type: 'SET_ERROR', 
+          payload: 'Не удалось загрузить фильмы. Пожалуйста, попробуйте позже.' 
+        });
+        dispatch({ type: 'SET_LOADING', payload: false });
+      }
+    };
     
+    fetchMovies();
+    
+    // Загружаем настройки из localStorage
     const viewMode = localStorage.getItem('viewMode');
     if (viewMode) {
       dispatch({ type: 'SET_VIEW_MODE', payload: viewMode });
     }
   }, []);
   
-  // Сохраняем данные в localStorage при изменении
-  useEffect(() => {
-    localStorage.setItem('movies', JSON.stringify(state.movies));
-  }, [state.movies]);
-  
+  // Сохраняем настройки интерфейса в localStorage
   useEffect(() => {
     localStorage.setItem('viewMode', state.viewMode);
   }, [state.viewMode]);
   
+  // Методы для работы с Firestore
+  const addMovieToFirestore = async (movieData) => {
+    try {
+      // Удаляем id из данных перед отправкой в Firestore (он генерируется автоматически)
+      const { id, ...movieWithoutId } = movieData;
+      const newMovie = await addMovie(movieWithoutId);
+      dispatch({ type: 'ADD_MOVIE', payload: newMovie });
+      return newMovie;
+    } catch (error) {
+      dispatch({ 
+        type: 'SET_ERROR', 
+        payload: 'Не удалось добавить фильм. Пожалуйста, попробуйте позже.' 
+      });
+      throw error;
+    }
+  };
+  
+  const updateMovieInFirestore = async (movieData) => {
+    try {
+      // Извлекаем id и отправляем остальные данные
+      const { id, ...updates } = movieData;
+      await updateMovie(id, updates);
+      dispatch({ type: 'UPDATE_MOVIE', payload: movieData });
+      return movieData;
+    } catch (error) {
+      dispatch({ 
+        type: 'SET_ERROR', 
+        payload: 'Не удалось обновить фильм. Пожалуйста, попробуйте позже.' 
+      });
+      throw error;
+    }
+  };
+  
+  const deleteMovieFromFirestore = async (id) => {
+    try {
+      await deleteMovie(id);
+      dispatch({ type: 'DELETE_MOVIE', payload: id });
+      return id;
+    } catch (error) {
+      dispatch({ 
+        type: 'SET_ERROR', 
+        payload: 'Не удалось удалить фильм. Пожалуйста, попробуйте позже.' 
+      });
+      throw error;
+    }
+  };
+  
+  // Расширенное значение контекста с методами Firestore
+  const contextValue = {
+    state,
+    dispatch,
+    addMovieToFirestore,
+    updateMovieInFirestore,
+    deleteMovieFromFirestore
+  };
+  
   return (
-    <MovieContext.Provider value={{ state, dispatch }}>
+    <MovieContext.Provider value={contextValue}>
       {children}
     </MovieContext.Provider>
   );
