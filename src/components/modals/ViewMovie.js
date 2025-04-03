@@ -27,7 +27,6 @@ const ViewMovie = ({ movieId }) => {
         dispatch({ type: 'CLOSE_MODAL' });
       } catch (error) {
         console.error("Ошибка при удалении фильма:", error);
-        // Можно добавить отображение ошибки для пользователя
       }
     }
   };
@@ -41,7 +40,6 @@ const ViewMovie = ({ movieId }) => {
         });
       } catch (error) {
         console.error("Ошибка при отмене фильма:", error);
-        // Можно добавить отображение ошибки для пользователя
       }
     }
   };
@@ -55,6 +53,15 @@ const ViewMovie = ({ movieId }) => {
     }
   };
   
+  const getStatusClass = (status) => {
+    switch (status) {
+      case 'watched': return 'status-watched';
+      case 'toWatch': return 'status-to-watch';
+      case 'cancelled': return 'status-cancelled';
+      default: return '';
+    }
+  };
+  
   const formatDate = (dateString) => {
     if (!dateString) return null;
     return new Date(dateString).toLocaleDateString('ru-RU');
@@ -63,7 +70,6 @@ const ViewMovie = ({ movieId }) => {
   const getYoutubeEmbedUrl = (url) => {
     if (!url) return null;
     
-    // Извлекаем ID видео из различных форматов URL YouTube
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
     
@@ -80,11 +86,10 @@ const ViewMovie = ({ movieId }) => {
     return movie.title;
   };
   
+  // Вычисляем информацию о продолжительности
   const renderDurationInfo = () => {
     if (movie.isSeries) {
-      // Показываем только если есть все необходимые данные
       if (movie.episodes && movie.episodeDuration) {
-        // Рассчитываем общую продолжительность
         const totalMinutes = movie.episodes * movie.episodeDuration;
         const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
@@ -92,42 +97,41 @@ const ViewMovie = ({ movieId }) => {
         return (
           <>
             {movie.seasons && (
-              <div className="metadata-item">
-                <span className="metadata-label">Количество сезонов:</span>
-                <span className="metadata-value">{movie.seasons}</span>
+              <div className="form-control">
+                <label>Сезонов:</label>
+                <div className="metadata-value">{movie.seasons}</div>
               </div>
             )}
-            <div className="metadata-item">
-              <span className="metadata-label">Количество серий:</span>
-              <span className="metadata-value">{movie.episodes}</span>
+            <div className="form-control">
+              <label>Серий:</label>
+              <div className="metadata-value">{movie.episodes}</div>
             </div>
-            <div className="metadata-item">
-              <span className="metadata-label">Длительность серии:</span>
-              <span className="metadata-value">{movie.episodeDuration} мин.</span>
+            <div className="form-control">
+              <label>Длит. серии:</label>
+              <div className="metadata-value">{movie.episodeDuration} мин.</div>
             </div>
-            <div className="metadata-item total-duration-info">
-              <span className="metadata-label">Общая продолжительность:</span>
-              <span className="metadata-value">
+            <div className="form-control total-duration-info">
+              <label>Общая продолжительность:</label>
+              <div className="metadata-value">
                 приблизительно {totalMinutes} мин. 
                 ({hours > 0 ? `${hours} ч. ` : ''}{minutes > 0 ? `${minutes} мин.` : ''})
-              </span>
+              </div>
             </div>
           </>
         );
       }
       return null;
     } else if (movie.duration) {
-      // Обычный фильм с указанной продолжительностью
       const hours = Math.floor(movie.duration / 60);
       const minutes = movie.duration % 60;
       
       return (
-        <div className="metadata-item">
-          <span className="metadata-label">Продолжительность:</span>
-          <span className="metadata-value">
+        <div className="form-control">
+          <label>Продолжительность (мин):</label>
+          <div className="metadata-value">
             {movie.duration} мин.
             ({hours > 0 ? `${hours} ч. ` : ''}{minutes > 0 ? `${minutes} мин.` : ''})
-          </span>
+          </div>
         </div>
       );
     }
@@ -135,29 +139,48 @@ const ViewMovie = ({ movieId }) => {
     return null;
   };
   
+  // Рендерим кадры из фильма
   const renderMovieImages = () => {
     if (!movie.images || movie.images.length === 0) return null;
     
     return (
-      <>
-        <span className="metadata-label">Кадры из фильма:</span>
-        <div className="images-container">
-          {movie.images.map((img, index) => (
-            <div key={index} className="movie-image">
-              <img src={img} alt={`Кадр ${index + 1}`} />
-            </div>
-          ))}
-        </div>
-      </>
+      <div className="images-container">
+        {movie.images.map((img, index) => (
+          <div key={index} className="movie-image">
+            <img src={img} alt={`Кадр ${index + 1}`} />
+          </div>
+        ))}
+      </div>
     );
   };
   
+  // Рендерим теги
+  const renderTags = () => {
+    if (!movie.tags || movie.tags.length === 0) return null;
+    
+    return (
+      <div className="form-control tags-control">
+        <label>Теги/жанры:</label>
+        <div className="tags-container">
+          {movie.tags.map((tag, index) => (
+            <div key={index} className="tag">
+              <span>{tag}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+  
+  // Проверяем, есть ли рейтинг у фильма
+  const hasRating = movie.rating !== null && movie.rating !== undefined;
+  
   return (
     <Modal title="Детальная информация о фильме">
-      <div className="movie-view">
+      <div className="movie-form">
         <div className="compact-form-layout">
           <div className="form-left-panel">
-            {/* Обязательное поле: Постер */}
+            {/* Блок с постером */}
             <div className="form-poster-container">
               <div className="form-poster">
                 {movie.poster ? (
@@ -168,94 +191,110 @@ const ViewMovie = ({ movieId }) => {
                   </div>
                 )}
                 
-                {movie.status === 'watched' && movie.rating && (
-                  <div className="movie-rating">{movie.rating}/100</div>
+                {/* Рейтинг вверху слева - отображаем всегда при наличии рейтинга */}
+                {hasRating && (
+                  <div style={{ 
+                    position: 'absolute', 
+                    top: '0', 
+                    left: '0',
+                    backgroundColor: 'var(--danger-color)',
+                    color: 'white',
+                    fontWeight: 'bold',
+                    padding: '3px 8px',
+                    borderRadius: '3px',
+                    fontSize: '14px',
+                    zIndex: 10 // Добавляем z-index, чтобы рейтинг был над другими элементами
+                  }}>
+                    {movie.rating}
+                  </div>
                 )}
+                
+                {/* Статус вверху справа */}
+                <div style={{ 
+                  position: 'absolute', 
+                  top: '0',
+                  right: '0', 
+                  padding: '5px 15px',
+                  backgroundColor: movie.status === 'watched' ? 'var(--primary-color)' : 
+                                  movie.status === 'toWatch' ? 'var(--success-color)' : 
+                                  'var(--warning-color)',
+                  color: 'white',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  zIndex: 10 // Добавляем z-index
+                }}>
+                  {getStatusLabel(movie.status)}
+                </div>
               </div>
             </div>
             
+            {/* Для отладки - выводим информацию о рейтинге */}
+            <div style={{display: 'none'}}>
+              Статус: {movie.status}, Рейтинг: {movie.rating !== null ? movie.rating : 'нет рейтинга'}
+            </div>
+            
+            {/* Теги под постером */}
+            {renderTags()}
+            
             <div className="form-fields-group">
-              {/* Обязательное поле: Статус */}
-              <div className="metadata-item">
-                <span className="metadata-label">Статус:</span>
-                <span className={`metadata-value status-${movie.status}`}>
-                  {getStatusLabel(movie.status)}
-                </span>
+              {/* Даты */}
+              <div className="form-row">
+                {movie.dateAdded && (
+                  <div className="form-control">
+                    <label>Добавлено:</label>
+                    <div className="metadata-value">{formatDate(movie.dateAdded)}</div>
+                  </div>
+                )}
+                
+                {movie.dateWatched && (
+                  <div className="form-control">
+                    <label>Просмотрено:</label>
+                    <div className="metadata-value">{formatDate(movie.dateWatched)}</div>
+                  </div>
+                )}
               </div>
               
-              {/* Необязательное поле: Рейтинг (только для просмотренных) */}
-              {movie.status === 'watched' && movie.rating && (
-                <div className="metadata-item">
-                  <span className="metadata-label">Рейтинг:</span>
-                  <span className="metadata-value">{movie.rating}/100</span>
-                </div>
-              )}
-              
-              {/* Необязательное поле: Дата добавления */}
-              {movie.dateAdded && (
-                <div className="metadata-item">
-                  <span className="metadata-label">Дата добавления:</span>
-                  <span className="metadata-value">{formatDate(movie.dateAdded)}</span>
-                </div>
-              )}
-              
-              {/* Необязательное поле: Дата просмотра (только если заполнена) */}
-              {movie.dateWatched && (
-                <div className="metadata-item">
-                  <span className="metadata-label">Дата просмотра:</span>
-                  <span className="metadata-value">{formatDate(movie.dateWatched)}</span>
-                </div>
-              )}
-              
-              {/* Необязательное поле: Тип контента */}
-              <div className="metadata-item">
-                <span className="metadata-label">Тип:</span>
-                <span className="metadata-value">{movie.isSeries ? 'Сериал' : 'Фильм'}</span>
-              </div>
-              
-              {/* Необязательное поле: Информация о продолжительности */}
+              {/* Информация о продолжительности */}
               <div className="left-panel-bottom">
-                {renderDurationInfo()}
+                {movie.isSeries ? (
+                  <div className="series-details">
+                    <div className="form-row">
+                      {renderDurationInfo()}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="form-row">
+                    {renderDurationInfo()}
+                  </div>
+                )}
               </div>
             </div>
           </div>
           
           <div className="form-right-panel">
-            <div className="form-row tags-year-row">
-              {/* Необязательное поле: Теги (без заголовка) */}
-              {movie.tags && movie.tags.length > 0 && (
-                <div className="metadata-item tags-display">
-                  <div className="movie-tags-container">
-                    {movie.tags.map(tag => (
-                      <span key={tag} className="movie-tag">{tag}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            {/* Обязательное поле: Название с годом выпуска */}
+            {/* Название с годом */}
             <div className="form-row">
-              <div className="metadata-item">
-                <h2 className="movie-title-display">{getMovieTitle()}</h2>
+              <div className="form-control">
+                <label>Название:</label>
+                <h3 className="movie-title">{getMovieTitle()}</h3>
               </div>
             </div>
             
-            {/* Обязательное поле: Описание */}
+            {/* Описание */}
             <div className="form-row">
-              <div className="metadata-item">
-                <span className="metadata-label">Описание:</span>
+              <div className="form-control">
+                <label>Описание:</label>
                 <div className="description-display">
                   {movie.description || 'Описание отсутствует'}
                 </div>
               </div>
             </div>
             
-            {/* Необязательное поле: Трейлер */}
+            {/* Трейлер */}
             {movie.trailerUrl && (
               <div className="form-row">
-                <div className="metadata-item">
-                  <span className="metadata-label">Трейлер:</span>
+                <div className="form-control">
+                  <label>URL трейлера:</label>
                   <div className="trailer-container">
                     {getYoutubeEmbedUrl(movie.trailerUrl) ? (
                       <iframe
@@ -277,20 +316,23 @@ const ViewMovie = ({ movieId }) => {
               </div>
             )}
             
-            {/* Необязательное поле: Кадры из фильма */}
+            {/* Кадры из фильма */}
             {movie.images && movie.images.length > 0 && (
               <div className="form-row">
-                <div className="metadata-item">
+                <div className="form-control">
+                  <div className="images-label-row">
+                    <label>Кадры из фильма:</label>
+                  </div>
                   {renderMovieImages()}
                 </div>
               </div>
             )}
             
-            {/* Необязательное поле: Заметки */}
+            {/* Заметки */}
             {movie.notes && (
               <div className="form-row">
-                <div className="metadata-item">
-                  <span className="metadata-label">Мои заметки:</span>
+                <div className="form-control">
+                  <label>Мои заметки:</label>
                   <div className="notes-display">
                     {movie.notes}
                   </div>
@@ -299,22 +341,34 @@ const ViewMovie = ({ movieId }) => {
             )}
           </div>
         </div>
-      </div>
-      
-      <div className="modal-actions">
-        <button className="btn btn-danger" onClick={handleDelete}>
-          <FontAwesomeIcon icon={faTrash} /> Удалить
-        </button>
         
-        {movie.status !== 'cancelled' && (
-          <button className="btn btn-warning" onClick={handleCancel}>
-            <FontAwesomeIcon icon={faBan} /> Отменить
+        <div className="modal-actions">
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={handleDelete}
+          >
+            <FontAwesomeIcon icon={faTrash} /> Удалить
           </button>
-        )}
-        
-        <button className="btn btn-primary btn-right" onClick={handleEdit}>
-          <FontAwesomeIcon icon={faEdit} /> Изменить
-        </button>
+          
+          {movie.status !== 'cancelled' && (
+            <button 
+              type="button" 
+              className="btn btn-warning"
+              onClick={handleCancel}
+            >
+              <FontAwesomeIcon icon={faBan} /> Отменить
+            </button>
+          )}
+          
+          <button 
+            type="button" 
+            className="btn btn-primary"
+            onClick={handleEdit}
+          >
+            <FontAwesomeIcon icon={faEdit} /> Изменить
+          </button>
+        </div>
       </div>
     </Modal>
   );

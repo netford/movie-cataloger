@@ -14,7 +14,7 @@
   
   .movie-poster {
     position: relative;
-    height: 150px;
+    height: 350px;
     background-color: var(--gray-color);
     overflow: hidden;
   }
