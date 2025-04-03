@@ -86,29 +86,16 @@ const ViewMovie = ({ movieId }) => {
         const minutes = totalMinutes % 60;
         
         return (
-          <>
-            {movie.seasons && (
-              <div className="form-control">
-                <label>Сезонов:</label>
-                <div className="metadata-value">{movie.seasons}</div>
-              </div>
-            )}
-            <div className="form-control">
-              <label>Серий:</label>
-              <div className="metadata-value">{movie.episodes}</div>
+          <div className="series-duration-info">
+            <div className="duration-header">Продолжительность:</div>
+            <div className="duration-row">
+              <span>Серия: </span>{movie.episodeDuration} мин.
             </div>
-            <div className="form-control">
-              <label>Длит. серии:</label>
-              <div className="metadata-value">{movie.episodeDuration} мин.</div>
+            <div className="duration-row total-duration" style={{fontStyle: 'normal'}}>
+              <span>Общая: </span>{totalMinutes} мин. 
+              ({hours > 0 ? `${hours} ч. ` : ''}{minutes > 0 ? `${minutes} мин.` : ''})
             </div>
-            <div className="form-control total-duration-info">
-              <label>Общая продолжительность:</label>
-              <div className="metadata-value">
-                приблизительно {totalMinutes} мин. 
-                ({hours > 0 ? `${hours} ч. ` : ''}{minutes > 0 ? `${minutes} мин.` : ''})
-              </div>
-            </div>
-          </>
+          </div>
         );
       }
       return null;
@@ -194,7 +181,7 @@ const ViewMovie = ({ movieId }) => {
                     padding: '3px 8px',
                     borderRadius: '3px',
                     fontSize: '14px',
-                    zIndex: 10 // Добавляем z-index, чтобы рейтинг был над другими элементами
+                    zIndex: 10
                   }}>
                     {movie.rating}
                   </div>
@@ -212,16 +199,11 @@ const ViewMovie = ({ movieId }) => {
                   color: 'white',
                   fontSize: '14px',
                   fontWeight: 'bold',
-                  zIndex: 10 // Добавляем z-index
+                  zIndex: 10
                 }}>
                   {getStatusLabel(movie.status)}
                 </div>
               </div>
-            </div>
-            
-            {/* Для отладки - выводим информацию о рейтинге */}
-            <div style={{display: 'none'}}>
-              Статус: {movie.status}, Рейтинг: {movie.rating !== null ? movie.rating : 'нет рейтинга'}
             </div>
             
             {/* Теги под постером */}
@@ -269,6 +251,12 @@ const ViewMovie = ({ movieId }) => {
                 <h3 className="movie-title">{getMovieTitle()}</h3>
               </div>
             </div>
+
+            {movie.isSeries && (
+              <div className="metadata-value series-info">
+                Сезон {movie.seasons}, Серий {movie.episodes}
+              </div>
+            )}
             
             {/* Описание */}
             <div className="form-row">

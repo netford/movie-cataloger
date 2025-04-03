@@ -207,11 +207,54 @@
   object-fit: cover;
 }
 
-/* Стили для общей продолжительности */
-.total-duration-info {
-  margin-top: 8px;
-  padding-top: 8px;
+/* Стили для сериальной информации */
+.series-info {
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: var(--secondary-color);
+}
+
+/* Стили для информации о продолжительности */
+.series-duration-info {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-left: 3px solid var(--primary-color);
+  padding-left: 10px;
+  margin-bottom: 10px;
+}
+
+.duration-header {
+  font-weight: bold;
+  color: var(--secondary-color);
+  font-size: 14px;
+  margin-bottom: 3px;
+}
+
+.duration-row {
+  font-size: 14px;
+  color: var(--text-color);
+  margin-bottom: 2px;
+}
+
+.duration-row span {
+  display: inline;
+  margin-right: 5px;
+}
+
+/* Сброс всех курсивных стилей для элементов продолжительности */
+.series-duration-info .total-duration,
+.total-duration,
+.duration-row,
+.duration-row span {
+  font-style: normal !important;
+}
+
+.total-duration {
+  margin-top: 5px;
   border-top: 1px solid var(--light-color);
+  padding-top: 5px;
 }
 
 /* Стили для кнопок действий */
