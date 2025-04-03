@@ -206,13 +206,18 @@ const handleAddImage = (e) => {
         id: isEditMode ? movie.id : '' // id будет сгенерирован Firestore при добавлении
       };
       
+      let savedMovie;
       if (isEditMode) {
-        await updateMovieInFirestore(movieData);
+        savedMovie = await updateMovieInFirestore(movieData);
       } else {
-        await addMovieToFirestore(movieData);
+        savedMovie = await addMovieToFirestore(movieData);
       }
       
-      dispatch({ type: 'CLOSE_MODAL' });
+      // Вместо простого закрытия модального окна, открываем окно просмотра фильма
+      dispatch({ 
+        type: 'OPEN_MODAL', 
+        payload: { type: 'view', movieId: savedMovie.id } 
+      });
     } catch (error) {
       console.error("Ошибка при сохранении фильма:", error);
       // Можно добавить отображение ошибки для пользователя
