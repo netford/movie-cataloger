@@ -131,25 +131,7 @@ const ViewMovie = ({ movieId }) => {
       </div>
     );
   };
-  
-  // Рендерим теги
-  const renderTags = () => {
-    if (!movie.tags || movie.tags.length === 0) return null;
-    
-    return (
-      <div className="form-control tags-control">
-        <label>Теги:</label>
-        <div className="tags-container">
-          {movie.tags.map((tag, index) => (
-            <div key={index} className="tag">
-              <span>{tag}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
-  
+   
   // Проверяем, есть ли рейтинг у фильма
   const hasRating = movie.rating !== null && movie.rating !== undefined;
   
@@ -205,10 +187,7 @@ const ViewMovie = ({ movieId }) => {
                 </div>
               </div>
             </div>
-            
-            {/* Теги под постером */}
-            {renderTags()}
-            
+                      
             <div className="form-fields-group">
               {/* Даты */}
               <div className="form-row" style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -252,11 +231,23 @@ const ViewMovie = ({ movieId }) => {
               </div>
             </div>
 
-            {movie.isSeries && (
-              <div className="metadata-value series-info">
-                Сезон {movie.seasons}, Серий {movie.episodes}
-              </div>
-            )}
+            <div className="metadata-value series-info" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+              {movie.isSeries && (
+                <span>Сезон {movie.seasons}, Серий {movie.episodes}</span>
+              )}
+              
+              {/* Теги в той же строке */}
+              {movie.tags && movie.tags.length > 0 && (
+                <>
+                  {movie.isSeries && <span style={{ margin: '0 8px' }}></span>}
+                  {movie.tags.map((tag, index) => (
+                    <div key={index} className="movie-tag">
+                      <span>{tag}</span>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
             
             {/* Описание */}
             <div className="form-row">
