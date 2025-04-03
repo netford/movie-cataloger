@@ -412,7 +412,7 @@ const handleAddImage = (e) => {
           <div className="form-right-panel">
             <div className="form-row tags-year-row">
               <div className="form-control tags-control">
-                <label>Теги/жанры:</label>
+                <label>Теги:</label>
                 <div className="tags-container">
                   {movie.tags.map((tag, index) => (
                     <div key={index} className="tag">

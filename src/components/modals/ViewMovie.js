@@ -138,7 +138,7 @@ const ViewMovie = ({ movieId }) => {
     
     return (
       <div className="form-control tags-control">
-        <label>Теги/жанры:</label>
+        <label>Теги:</label>
         <div className="tags-container">
           {movie.tags.map((tag, index) => (
             <div key={index} className="tag">
