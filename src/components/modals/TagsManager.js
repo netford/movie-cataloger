@@ -27,15 +27,17 @@ const TagsManager = () => {
         
         // Создаем новый тег на основе модели
         const newTag = {
-          ...tagModel,
           name: newTagName.trim(),
           count: 0
         };
         
+        console.log('Добавляем тег:', newTag);
         await addTagToFirestore(newTag);
+        console.log('Тег успешно добавлен');
         setNewTagName(''); // Очищаем поле ввода
       } catch (error) {
         console.error('Ошибка при добавлении тега:', error);
+        alert(`Ошибка при добавлении тега: ${error.message}`);
       }
     }
   };
@@ -74,6 +76,7 @@ const TagsManager = () => {
         setEditingTag(null); // Завершаем редактирование
       } catch (error) {
         console.error('Ошибка при обновлении тега:', error);
+        alert(`Ошибка при обновлении тега: ${error.message}`);
       }
     }
   };
@@ -102,6 +105,7 @@ const TagsManager = () => {
       await deleteTagFromFirestore(tagId);
     } catch (error) {
       console.error('Ошибка при удалении тега:', error);
+      alert(`Ошибка при удалении тега: ${error.message}`);
     }
   };
   
@@ -127,8 +131,12 @@ const TagsManager = () => {
               className="tag-input"
             />
             <button 
+              type="button"
               className="btn btn-primary" 
-              onClick={handleAddTag}
+              onClick={(e) => {
+                e.preventDefault();
+                handleAddTag();
+              }}
               disabled={!newTagName.trim()}
             >
               <FontAwesomeIcon icon={faPlus} /> Добавить
@@ -158,6 +166,7 @@ const TagsManager = () => {
                       />
                       <div className="tag-edit-actions">
                         <button
+                          type="button"
                           className="btn-icon btn-save"
                           onClick={handleEditSave}
                           disabled={!editingTag.name.trim()}
@@ -165,6 +174,7 @@ const TagsManager = () => {
                           <FontAwesomeIcon icon={faSave} />
                         </button>
                         <button
+                          type="button"
                           className="btn-icon btn-cancel"
                           onClick={handleEditCancel}
                         >
@@ -182,12 +192,14 @@ const TagsManager = () => {
                       </span>
                       <div className="tag-actions">
                         <button
+                          type="button"
                           className="btn-icon btn-edit"
                           onClick={() => handleEditStart(tag)}
                         >
                           <FontAwesomeIcon icon={faEdit} />
                         </button>
                         <button
+                          type="button"
                           className="btn-icon btn-delete"
                           onClick={() => handleDeleteTag(tag.id)}
                         >
@@ -204,6 +216,7 @@ const TagsManager = () => {
         
         <div className="modal-actions">
           <button
+            type="button"
             className="btn btn-secondary"
             onClick={() => dispatch({ type: 'CLOSE_MODAL' })}
           >

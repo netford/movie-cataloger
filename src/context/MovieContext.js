@@ -179,12 +179,22 @@ export const MovieProvider = ({ children }) => {
   // Методы для работы с Firestore - ТЕГИ
   const addTagToFirestore = async (tagData) => {
     try {
-      // Удаляем id из данных перед отправкой в Firestore (он генерируется автоматически)
-      const { id, ...tagWithoutId } = tagData;
-      const newTag = await addTag(tagWithoutId);
-      dispatch({ type: 'ADD_TAG', payload: newTag });
-      return newTag;
+      // Подготавливаем данные для отправки в Firestore
+      const tagToAdd = { ...tagData };
+      // Удаляем id только если он существует
+      if ('id' in tagToAdd) {
+        const { id, ...tagWithoutId } = tagToAdd;
+        const newTag = await addTag(tagWithoutId);
+        dispatch({ type: 'ADD_TAG', payload: newTag });
+        return newTag;
+      } else {
+        // Если id не было, отправляем как есть
+        const newTag = await addTag(tagToAdd);
+        dispatch({ type: 'ADD_TAG', payload: newTag });
+        return newTag;
+      }
     } catch (error) {
+      console.error('Ошибка при добавлении тега в Firestore:', error);
       dispatch({
         type: 'SET_ERROR',
         payload: 'Не удалось добавить тег. Пожалуйста, попробуйте позже.'
