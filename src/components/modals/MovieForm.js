@@ -498,39 +498,36 @@ const handleAddImage = (e) => {
             </div>
             
             <div className="form-row">
-              <div className="form-control">
-                <div className="images-label-row">
-                  <label>Кадры из фильма:</label>
-                  <label className="add-image-btn" htmlFor="image-upload">
-                    <FontAwesomeIcon icon={faPlus} /> Добавить
-                  </label>
-                  <input
-                    type="file"
-                    id="image-upload"
-                    accept="image/*"
-                    multiple
-                    onChange={handleAddImage}
-                    style={{ display: 'none' }}
-                  />
+            <div className="form-control">
+            <div className="images-label-row">
+              <label>Кадры из фильма:</label>
+            </div>
+            <div className="images-container">
+              {movie.images.map((img, index) => (
+                <div key={index} className="movie-image">
+                  <img src={img} alt={`Кадр ${index + 1}`} />
+                  <button
+                    type="button"
+                    className="image-remove"
+                    onClick={() => handleRemoveImage(index)}
+                  >
+                    ×
+                  </button>
                 </div>
-                <div className="images-container">
-                  {movie.images.map((img, index) => (
-                    <div key={index} className="movie-image">
-                      <img src={img} alt={`Кадр ${index + 1}`} />
-                      <button
-                        type="button"
-                        className="image-remove"
-                        onClick={() => handleRemoveImage(index)}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                  <div className="add-image-placeholder">
-                    <FontAwesomeIcon icon={faPlus} />
-                  </div>
-                </div>
-              </div>
+              ))}
+              <label htmlFor="image-upload" className="add-image-placeholder">
+                <FontAwesomeIcon icon={faPlus} />
+              </label>
+              <input
+                type="file"
+                id="image-upload"
+                accept="image/*"
+                multiple
+                onChange={handleAddImage}
+                style={{ display: 'none' }}
+              />
+            </div>
+          </div>
             </div>
             
             <div className="form-row">
