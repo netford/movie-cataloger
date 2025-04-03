@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useContext, useEffect, useState } from 'react';
+import React, { createContext, useReducer, useContext, useEffect } from 'react';
 import { getAllMovies, addMovie, updateMovie, deleteMovie } from '../firebase/movieService';
 
 // Создаем контекст для фильмов

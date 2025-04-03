@@ -53,15 +53,6 @@ const ViewMovie = ({ movieId }) => {
     }
   };
   
-  const getStatusClass = (status) => {
-    switch (status) {
-      case 'watched': return 'status-watched';
-      case 'toWatch': return 'status-to-watch';
-      case 'cancelled': return 'status-cancelled';
-      default: return '';
-    }
-  };
-  
   const formatDate = (dateString) => {
     if (!dateString) return null;
     return new Date(dateString).toLocaleDateString('ru-RU');
