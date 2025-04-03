@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faTimes, faPlus, faUpload, faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import Modal from './Modal';
+import TagSelector from '../tags/TagSelector';
 import '../../styles/MovieForm.css';
 
 const MovieForm = ({ movieId = null }) => {
@@ -29,6 +30,7 @@ const MovieForm = ({ movieId = null }) => {
         rating: 50,
         dateAdded: new Date().toISOString(),
         dateWatched: today, // Устанавливаем текущую дату по умолчанию
+        director: '',
         year: new Date().getFullYear(),
         isSeries: false,
         seasons: 1,
@@ -41,7 +43,6 @@ const MovieForm = ({ movieId = null }) => {
       };
   
   const [movie, setMovie] = useState(initialMovie);
-  const [newTag, setNewTag] = useState('');
   
   // Вспомогательные функции для обработки изменений формы
   const handleInputChange = (e) => {
@@ -93,21 +94,9 @@ const MovieForm = ({ movieId = null }) => {
     }
   };
   
-  const handleTagAdd = () => {
-    if (newTag.trim() && !movie.tags.includes(newTag.trim())) {
-      setMovie(prev => ({ 
-        ...prev, 
-        tags: [...prev.tags, newTag.trim()] 
-      }));
-      setNewTag('');
-    }
-  };
-  
-  const handleTagRemove = (tagToRemove) => {
-    setMovie(prev => ({ 
-      ...prev, 
-      tags: prev.tags.filter(tag => tag !== tagToRemove) 
-    }));
+  // Обновлённый обработчик для тегов, работающий с TagSelector
+  const handleTagsChange = (newTags) => {
+    setMovie(prev => ({ ...prev, tags: newTags }));
   };
   
 // Функция для сжатия изображения
@@ -187,14 +176,6 @@ const handleAddImage = (e) => {
   const handleTypeChange = (e) => {
     const isSeries = e.target.value === 'series';
     setMovie(prev => ({ ...prev, isSeries }));
-  };
-  
-  const handleKeyDown = (e) => {
-    // Добавление тега по Enter
-    if (e.key === 'Enter' && newTag.trim()) {
-      e.preventDefault();
-      handleTagAdd();
-    }
   };
   
   const handleSubmit = async (e) => {
@@ -413,36 +394,10 @@ const handleAddImage = (e) => {
             <div className="form-row tags-year-row">
               <div className="form-control tags-control">
                 <label>Теги:</label>
-                <div className="tags-container">
-                  {movie.tags.map((tag, index) => (
-                    <div key={index} className="tag">
-                      <span>{tag}</span>
-                      <button
-                        type="button"
-                        className="tag-remove"
-                        onClick={() => handleTagRemove(tag)}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                  <div className="add-tag">
-                    <input
-                      type="text"
-                      value={newTag}
-                      onChange={(e) => setNewTag(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                      placeholder="+ Добавить тег"
-                    />
-                    <button
-                      type="button"
-                      className="add-tag-btn"
-                      onClick={handleTagAdd}
-                    >
-                      <FontAwesomeIcon icon={faPlus} />
-                    </button>
-                  </div>
-                </div>
+                <TagSelector 
+                  selectedTags={movie.tags} 
+                  onTagsChange={handleTagsChange}
+                />
               </div>
               
               <div className="form-control year-control">

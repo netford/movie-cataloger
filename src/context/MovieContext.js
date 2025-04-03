@@ -1,5 +1,14 @@
 import React, { createContext, useReducer, useContext, useEffect } from 'react';
-import { getAllMovies, addMovie, updateMovie, deleteMovie } from '../firebase/movieService';
+import { 
+  getAllMovies, 
+  addMovie, 
+  updateMovie, 
+  deleteMovie,
+  getAllTags,
+  addTag,
+  updateTag,
+  deleteTag
+} from '../firebase/movieService';
 
 // Создаем контекст для фильмов
 const MovieContext = createContext();
@@ -9,6 +18,8 @@ const movieReducer = (state, action) => {
   switch (action.type) {
     case 'LOAD_MOVIES':
       return { ...state, movies: action.payload, isLoading: false };
+    case 'LOAD_TAGS':
+      return { ...state, tags: action.payload };
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
     case 'ADD_MOVIE':
@@ -24,6 +35,20 @@ const movieReducer = (state, action) => {
       return { 
         ...state, 
         movies: state.movies.filter(movie => movie.id !== action.payload) 
+      };
+    case 'ADD_TAG':
+      return { ...state, tags: [...state.tags, action.payload] };
+    case 'UPDATE_TAG':
+      return {
+        ...state,
+        tags: state.tags.map(tag =>
+          tag.id === action.payload.id ? action.payload : tag
+        )
+      };
+    case 'DELETE_TAG':
+      return {
+        ...state,
+        tags: state.tags.filter(tag => tag.id !== action.payload)
       };
     case 'SET_FILTER':
       return { ...state, filter: action.payload };
@@ -49,6 +74,7 @@ export const MovieProvider = ({ children }) => {
   // Начальное состояние
   const initialState = {
     movies: [],
+    tags: [],
     filter: 'all', // all, watched, toWatch, cancelled
     search: '',
     viewMode: 'cards', // cards, list
@@ -62,23 +88,34 @@ export const MovieProvider = ({ children }) => {
   
   // Загружаем данные из Firestore при монтировании
   useEffect(() => {
-    const fetchMovies = async () => {
+    const fetchData = async () => {
       dispatch({ type: 'SET_LOADING', payload: true });
       
       try {
+        // Загрузка фильмов
         const movies = await getAllMovies();
         dispatch({ type: 'LOAD_MOVIES', payload: movies });
+        
+        // Загрузка тегов
+        let tags = [];
+        try {
+          tags = await getAllTags();
+        } catch (error) {
+          console.error("Не удалось загрузить теги:", error);
+          tags = []; // Если произошла ошибка, используем пустой массив тегов
+        }
+        dispatch({ type: 'LOAD_TAGS', payload: tags });
       } catch (error) {
-        console.error("Ошибка при загрузке фильмов:", error);
+        console.error("Ошибка при загрузке данных:", error);
         dispatch({ 
           type: 'SET_ERROR', 
-          payload: 'Не удалось загрузить фильмы. Пожалуйста, попробуйте позже.' 
+          payload: 'Не удалось загрузить данные. Пожалуйста, попробуйте позже.' 
         });
         dispatch({ type: 'SET_LOADING', payload: false });
       }
     };
     
-    fetchMovies();
+    fetchData();
     
     // Загружаем настройки из localStorage
     const viewMode = localStorage.getItem('viewMode');
@@ -92,7 +129,7 @@ export const MovieProvider = ({ children }) => {
     localStorage.setItem('viewMode', state.viewMode);
   }, [state.viewMode]);
   
-  // Методы для работы с Firestore
+  // Методы для работы с Firestore - ФИЛЬМЫ
   const addMovieToFirestore = async (movieData) => {
     try {
       // Удаляем id из данных перед отправкой в Firestore (он генерируется автоматически)
@@ -139,13 +176,63 @@ export const MovieProvider = ({ children }) => {
     }
   };
   
+  // Методы для работы с Firestore - ТЕГИ
+  const addTagToFirestore = async (tagData) => {
+    try {
+      // Удаляем id из данных перед отправкой в Firestore (он генерируется автоматически)
+      const { id, ...tagWithoutId } = tagData;
+      const newTag = await addTag(tagWithoutId);
+      dispatch({ type: 'ADD_TAG', payload: newTag });
+      return newTag;
+    } catch (error) {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: 'Не удалось добавить тег. Пожалуйста, попробуйте позже.'
+      });
+      throw error;
+    }
+  };
+  
+  const updateTagInFirestore = async (tagData) => {
+    try {
+      // Извлекаем id и отправляем остальные данные
+      const { id, ...updates } = tagData;
+      await updateTag(id, updates);
+      dispatch({ type: 'UPDATE_TAG', payload: tagData });
+      return tagData;
+    } catch (error) {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: 'Не удалось обновить тег. Пожалуйста, попробуйте позже.'
+      });
+      throw error;
+    }
+  };
+  
+  const deleteTagFromFirestore = async (id) => {
+    try {
+      await deleteTag(id);
+      dispatch({ type: 'DELETE_TAG', payload: id });
+      return id;
+    } catch (error) {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: 'Не удалось удалить тег. Пожалуйста, попробуйте позже.'
+      });
+      throw error;
+    }
+  };
+  
   // Расширенное значение контекста с методами Firestore
   const contextValue = {
     state,
     dispatch,
     addMovieToFirestore,
     updateMovieInFirestore,
-    deleteMovieFromFirestore
+    deleteMovieFromFirestore,
+    addTagToFirestore,
+    updateTagInFirestore,
+    deleteTagFromFirestore
   };
   
   return (

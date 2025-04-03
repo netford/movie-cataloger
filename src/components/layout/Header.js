@@ -12,8 +12,7 @@ const Header = () => {
   };
   
   const handleTagsClick = () => {
-    // Будет реализовано позже
-    alert('Управление тегами будет реализовано в следующих версиях');
+    dispatch({ type: 'OPEN_MODAL', payload: { type: 'tags' } });
   };
   
   return (

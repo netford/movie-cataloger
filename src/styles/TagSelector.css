@@ -1,0 +1,95 @@
+.tag-selector {
+    width: 100%;
+  }
+  
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 32px;
+    align-items: center;
+  }
+  
+  .tag {
+    display: flex;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 15px;
+    font-size: 12px;
+  }
+  
+  .tag-remove {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 12px;
+    margin-left: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .tag-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .tag-input {
+    background: none;
+    border: 1px dashed var(--gray-color);
+    border-radius: 15px;
+    padding: 3px 8px;
+    font-size: 12px;
+    width: 120px;
+  }
+  
+  .add-tag-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .tag-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 200px;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid var(--gray-color);
+    border-radius: var(--border-radius);
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .tag-suggestion-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  
+  .tag-suggestion-item:hover {
+    background-color: var(--light-color);
+  }
+  
+  /* Адаптивные стили */
+  @media (max-width: 768px) {
+    .tag-input {
+      width: 100px;
+    }
+    
+    .tag-suggestions {
+      width: 180px;
+    }
+  }
