@@ -118,7 +118,7 @@ const ViewMovie = ({ movieId }) => {
       
       return (
         <div className="form-control">
-          <label>Продолжительность (мин):</label>
+          <label>Продолжительность:</label>
           <div className="metadata-value">
             {movie.duration} мин.
             ({hours > 0 ? `${hours} ч. ` : ''}{minutes > 0 ? `${minutes} мин.` : ''})
@@ -229,7 +229,7 @@ const ViewMovie = ({ movieId }) => {
             
             <div className="form-fields-group">
               {/* Даты */}
-              <div className="form-row">
+              <div className="form-row" style={{ display: 'flex', justifyContent: 'space-between' }}>
                 {movie.dateAdded && (
                   <div className="form-control">
                     <label>Добавлено:</label>
@@ -238,7 +238,7 @@ const ViewMovie = ({ movieId }) => {
                 )}
                 
                 {movie.dateWatched && (
-                  <div className="form-control">
+                  <div className="form-control" style={{ textAlign: 'right' }}>
                     <label>Просмотрено:</label>
                     <div className="metadata-value">{formatDate(movie.dateWatched)}</div>
                   </div>
@@ -266,7 +266,6 @@ const ViewMovie = ({ movieId }) => {
             {/* Название с годом */}
             <div className="form-row">
               <div className="form-control">
-                <label>Название:</label>
                 <h3 className="movie-title">{getMovieTitle()}</h3>
               </div>
             </div>
