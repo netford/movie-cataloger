@@ -1,12 +1,18 @@
 .movie-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
   padding: 10px;
+  padding-bottom: 15px;
 }
 
-/* Новая компактная структура формы */
+/* Структура формы */
 .compact-form-layout {
   display: flex;
   gap: 15px;
   margin-bottom: 10px;
+  padding: 0 15px;
 }
 
 .form-left-panel {
@@ -22,13 +28,48 @@
   flex-direction: column;
 }
 
-/* Стили для строк формы */
+/* Строки формы */
 .form-row {
   display: flex;
   gap: 10px;
   margin-bottom: 8px;
 }
 
+/* Название и год выпуска в одной строке */
+.title-year-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.title-control {
+  flex-grow: 1; /* Название занимает всё доступное пространство */
+}
+
+.year-control {
+  width: 120px !important; /* Принудительно устанавливаем ширину */
+  flex: none !important;   /* Отключаем все flex настройки */
+  max-width: 120px !important; /* Ограничиваем максимальную ширину */
+}
+
+.year-control select {
+  width: 100% !important;  /* Селект занимает всю ширину контейнера */
+}
+
+/* Группировка полей в левой панели */
+.form-fields-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-grow: 1;
+}
+
+/* Растягиваем нижнюю секцию */
+.left-panel-bottom {
+  margin-top: auto;
+}
+
+/* Контролы формы */
 .form-control {
   flex: 1;
   display: flex;
@@ -53,20 +94,7 @@
   font-size: 13px;
 }
 
-/* Стили для группы полей в левой панели */
-.form-fields-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex-grow: 1;
-}
-
-/* Растягиваем нижнюю секцию до конца левой панели */
-.left-panel-bottom {
-  margin-top: auto;
-}
-
-/* Стили для постера */
+/* Постер фильма */
 .form-poster-container {
   width: 100%;
   margin-bottom: 10px;
@@ -74,7 +102,7 @@
 
 .form-poster {
   width: 100%;
-  height: 350px; /* Увеличиваем высоту постера */
+  height: 350px;
   position: relative;
   border-radius: 4px;
   overflow: hidden;
@@ -89,7 +117,7 @@
 
 .form-poster-placeholder {
   width: 100%;
-  height: 350px; /* Увеличиваем высоту плейсхолдера */
+  height: 350px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -132,22 +160,22 @@
   gap: 3px;
 }
 
-/* Стили для текстовых областей */
+/* Текстовые области */
 .form-control textarea {
-  resize: none; /* Запрещаем изменение размера */
+  resize: none;
 }
 
 .description-textarea {
-  height: 200px !important; /* Высота соответствует постеру */
-  overflow-y: auto; /* Добавляем полосу прокрутки при необходимости */
+  height: 200px !important;
+  overflow-y: auto;
 }
 
 .notes-textarea {
   height: 60px !important;
-  overflow-y: auto; /* Добавляем полосу прокрутки при необходимости */
+  overflow-y: auto;
 }
 
-/* Стили для полей с радиокнопками */
+/* Селектор типа контента (фильм/сериал) */
 .type-selector {
   display: flex;
   gap: 15px;
@@ -165,7 +193,7 @@
   margin-right: 5px;
 }
 
-/* Стили для рейтинга */
+/* Рейтинг */
 .rating-number-input {
   display: flex;
   align-items: center;
@@ -212,25 +240,93 @@
   background-color: var(--primary-dark);
 }
 
-/* Стили для тегов и года */
-.tags-year-row {
-  justify-content: space-between;
-}
-
+/* Теги */
 .tags-control {
-  flex: 3;
+  flex: 1;
+  width: 100%;
 }
 
-.year-control {
-  flex: 1;
-  min-width: 120px;
+/* Новые стили для тегов */
+.tag-input-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.tag-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 75px;
+  flex-shrink: 0;
+}
+
+.tags-content {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  flex-grow: 1;
+}
+
+.tag-input {
+  flex-grow: 1;
+  padding: 6px 8px;
+  border-radius: 15px;
+  border: 1px solid var(--gray-color);
+  font-size: 13px;
+}
+
+.add-tag-btn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tags-hint {
+  font-size: 12px;
+  color: var(--dark-gray);
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+.tag-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 150px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid var(--gray-color);
+  border-radius: var(--border-radius);
+  z-index: 100;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tag-suggestion-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.tag-suggestion-item:hover {
+  background-color: var(--light-color);
 }
 
 .tags-container {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 3px;
+  min-height: 30px;
+  margin-bottom: 8px;
 }
 
 .tag {
@@ -240,45 +336,27 @@
   color: white;
   padding: 3px 8px;
   border-radius: 15px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .tag-remove {
   background: none;
   border: none;
   color: white;
-  font-size: 14px;
-  margin-left: 3px;
+  font-size: 12px;
+  margin-left: 5px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.add-tag {
-  display: flex;
-  align-items: center;
+.tag-remove:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
 }
 
-.add-tag input {
-  background: none;
-  border: 1px dashed var(--gray-color);
-  border-radius: 15px;
-  padding: 3px 8px;
-  font-size: 11px;
-  width: 100px;
-}
-
-.add-tag-btn {
-  background: none;
-  border: none;
-  color: var(--primary-color);
-  font-size: 14px;
-  cursor: pointer;
-  margin-left: 3px;
-}
-
-/* Стили для изображений */
+/* Изображения */
 .images-label-row {
   display: flex;
   align-items: center;
@@ -349,7 +427,7 @@
   cursor: pointer;
 }
 
-/* Скрываем стандартные стрелки для числового поля */
+/* Скрываем стрелки для числовых полей */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -360,7 +438,7 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-/* Стили для поля с датой */
+/* Поля с датой */
 .date-input {
   position: relative;
 }
@@ -374,10 +452,11 @@ input[type="number"] {
   opacity: 1;
 }
 
-/* Оформляем календарь одинаково для обоих полей с датами */
+/* Оформление календаря */
 input[type="date"]::-webkit-datetime-edit-fields-wrapper { 
   padding: 0; 
 }
+
 input[type="date"]::-webkit-calendar-picker-indicator {
   background-color: transparent;
   padding: 2px;
@@ -388,16 +467,42 @@ input[type="date"]::-webkit-inner-spin-button {
   display: none;
 }
 
-/* Стили для кнопок внизу формы */
-.modal-actions {
+/* Кнопки действий */
+.form-actions {
+  position: sticky;
+  bottom: 0;
+  background-color: white;
+  padding: 15px 20px;
+  border-top: 1px solid var(--light-color);
+  margin-top: auto;
+  z-index: 10;
   display: flex;
   justify-content: flex-end;
-  padding: 10px 0 0;
   gap: 10px;
-  border-top: 1px solid var(--light-color);
 }
 
-/* Адаптивные стили */
+/* Модальное окно */
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.modal-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+/* Адаптивная верстка */
+@media (min-width: 768px) {
+  .modal-container {
+    width: 90%;
+    max-width: 1000px;
+  }
+}
+
 @media (max-width: 768px) {
   .compact-form-layout {
     flex-direction: column;
@@ -408,7 +513,11 @@ input[type="date"]::-webkit-inner-spin-button {
     width: 100%;
   }
   
-  .tags-year-row,
+  .title-year-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
   .form-row {
     flex-direction: column;
     gap: 8px;
@@ -422,11 +531,25 @@ input[type="date"]::-webkit-inner-spin-button {
     height: 200px;
   }
   
+  .title-control,
   .year-control {
     width: 100%;
+    flex: 1;
   }
   
   .description-textarea {
-    height: 200px !important;
+    height: 150px !important;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions button {
+    width: 100%;
+  }
+  
+  .tag-input-row {
+    width: 100%;
   }
 }

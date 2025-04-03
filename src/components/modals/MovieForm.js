@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faTimes, faPlus, faUpload, faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import Modal from './Modal';
-import TagSelector from '../tags/TagSelector';
 import '../../styles/MovieForm.css';
 
 const MovieForm = ({ movieId = null }) => {
-  const { state, dispatch, addMovieToFirestore, updateMovieInFirestore } = useMovies();
+  const { state, dispatch, addMovieToFirestore, updateMovieInFirestore, addTagToFirestore } = useMovies();
   const isEditMode = Boolean(movieId);
   
   // Генерация списка годов от текущего до 1925
@@ -43,6 +42,48 @@ const MovieForm = ({ movieId = null }) => {
       };
   
   const [movie, setMovie] = useState(initialMovie);
+  const [newTagName, setNewTagName] = useState('');
+  const [showTagSuggestions, setShowTagSuggestions] = useState(false);
+  const tagInputRef = useRef(null);
+  const suggestionsRef = useRef(null);
+  
+  // Фильтрованные теги для предложений
+  const filteredTags = newTagName
+    ? state.tags
+        .filter(tag => 
+          tag.name.toLowerCase().includes(newTagName.toLowerCase()) &&
+          !movie.tags.includes(tag.name)
+        )
+        .sort((a, b) => {
+          // Сначала показываем теги, которые начинаются с введенного текста
+          const aStartsWith = a.name.toLowerCase().startsWith(newTagName.toLowerCase());
+          const bStartsWith = b.name.toLowerCase().startsWith(newTagName.toLowerCase());
+          
+          if (aStartsWith && !bStartsWith) return -1;
+          if (!aStartsWith && bStartsWith) return 1;
+          
+          return a.name.localeCompare(b.name);
+        })
+    : [];
+  
+  // Закрытие выпадающего списка при клике вне него
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        suggestionsRef.current && 
+        !suggestionsRef.current.contains(event.target) &&
+        tagInputRef.current && 
+        !tagInputRef.current.contains(event.target)
+      ) {
+        setShowTagSuggestions(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
   
   // Вспомогательные функции для обработки изменений формы
   const handleInputChange = (e) => {
@@ -68,7 +109,7 @@ const MovieForm = ({ movieId = null }) => {
     setMovie(prev => ({ ...prev, ...updates }));
   };
   
-  // Новая функция для увеличения или уменьшения рейтинга с шагом 5
+  // Функция для увеличения или уменьшения рейтинга с шагом 5
   const handleRatingStep = (step) => {
     const newRating = Math.max(0, Math.min(100, (movie.rating || 0) + step));
     setMovie(prev => ({ ...prev, rating: newRating }));
@@ -94,9 +135,74 @@ const MovieForm = ({ movieId = null }) => {
     }
   };
   
-  // Обновлённый обработчик для тегов, работающий с TagSelector
-  const handleTagsChange = (newTags) => {
-    setMovie(prev => ({ ...prev, tags: newTags }));
+  // Обработчик добавления нового тега
+  const handleAddTag = async (tagNameParam) => {
+    const tagName = tagNameParam || newTagName;
+    
+    if (!tagName.trim()) return;
+    
+    // Проверяем, не выбран ли уже этот тег
+    if (movie.tags.includes(tagName.trim())) {
+      setNewTagName('');
+      return;
+    }
+    
+    // Проверяем, существует ли уже такой тег в системе
+    const existingTag = state.tags.find(
+      tag => tag.name.toLowerCase() === tagName.trim().toLowerCase()
+    );
+    
+    if (existingTag) {
+      // Если тег существует, просто добавляем его к выбранным
+      setMovie(prev => ({ 
+        ...prev, 
+        tags: [...prev.tags, existingTag.name] 
+      }));
+    } else {
+      // Создаем новый тег
+      try {
+        const newTag = {
+          name: tagName.trim(),
+          count: 1
+        };
+        
+        const createdTag = await addTagToFirestore(newTag);
+        
+        // Добавляем новый тег к выбранным
+        setMovie(prev => ({ 
+          ...prev, 
+          tags: [...prev.tags, createdTag.name] 
+        }));
+      } catch (error) {
+        console.error('Ошибка при создании тега:', error);
+      }
+    }
+    
+    setNewTagName('');
+    setShowTagSuggestions(false);
+  };
+  
+  // Обработчик удаления тега
+  const handleRemoveTag = (tagName) => {
+    const updatedTags = movie.tags.filter(tag => tag !== tagName);
+    setMovie(prev => ({ ...prev, tags: updatedTags }));
+  };
+
+  // Обработчик нажатия клавиш в поле ввода тега
+  const handleTagKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      
+      if (filteredTags.length > 0) {
+        // Если есть предложения, выбираем первый тег
+        handleAddTag(filteredTags[0].name);
+      } else if (newTagName.trim()) {
+        // Если предложений нет, создаем новый тег
+        handleAddTag();
+      }
+    } else if (e.key === 'Escape') {
+      setShowTagSuggestions(false);
+    }
   };
   
 // Функция для сжатия изображения
@@ -391,12 +497,16 @@ const handleAddImage = (e) => {
           </div>
           
           <div className="form-right-panel">
-            <div className="form-row tags-year-row">
-              <div className="form-control tags-control">
-                <label>Теги:</label>
-                <TagSelector 
-                  selectedTags={movie.tags} 
-                  onTagsChange={handleTagsChange}
+            {/* Название и Год выпуска в одной строке */}
+            <div className="form-row title-year-row">
+              <div className="form-control title-control">
+                <label>Название:</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={movie.title}
+                  onChange={handleInputChange}
+                  required
                 />
               </div>
               
@@ -414,16 +524,79 @@ const handleAddImage = (e) => {
               </div>
             </div>
             
+            {/* Теги в отдельной строке */}
             <div className="form-row">
-              <div className="form-control">
-                <label>Название:</label>
-                <input
-                  type="text"
-                  name="title"
-                  value={movie.title}
-                  onChange={handleInputChange}
-                  required
-                />
+              <div className="form-control tags-control">
+                <label>Теги:</label>
+                <div className="tag-input-row">
+                  <div className="tag-input-container">
+                    <input
+                      ref={tagInputRef}
+                      type="text"
+                      value={newTagName}
+                      onChange={(e) => {
+                        setNewTagName(e.target.value);
+                        setShowTagSuggestions(!!e.target.value.trim());
+                      }}
+                      onFocus={() => setShowTagSuggestions(!!newTagName.trim())}
+                      onKeyDown={handleTagKeyDown}
+                      placeholder="Введите тег"
+                      className="tag-input"
+                    />
+                    {newTagName.trim() && (
+                      <button
+                        type="button"
+                        className="add-tag-btn"
+                        onClick={() => handleAddTag()}
+                        title="Добавить тег"
+                      >
+                        <FontAwesomeIcon icon={faPlus} />
+                      </button>
+                    )}
+                    
+                    {/* Выпадающий список с подсказками тегов */}
+                    {showTagSuggestions && filteredTags.length > 0 && (
+                      <div ref={suggestionsRef} className="tag-suggestions">
+                        {filteredTags.map(tag => (
+                          <div
+                            key={tag.id}
+                            className="tag-suggestion-item"
+                            onClick={() => {
+                              handleAddTag(tag.name);
+                              setShowTagSuggestions(false);
+                            }}
+                          >
+                            {tag.name}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="tags-content">
+                    {movie.tags.length === 0 ? (
+                      <div className="tags-hint">
+                        Добавьте теги для удобной категоризации фильма
+                      </div>
+                    ) : (
+                      <div className="tags-container">
+                        {movie.tags.map((tag, index) => (
+                          <div key={index} className="tag">
+                            <span>{tag}</span>
+                            <button
+                              type="button"
+                              className="tag-remove"
+                              onClick={() => handleRemoveTag(tag)}
+                              title="Удалить тег"
+                            >
+                              <FontAwesomeIcon icon={faTimes} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
             
@@ -453,36 +626,36 @@ const handleAddImage = (e) => {
             </div>
             
             <div className="form-row">
-            <div className="form-control">
-            <div className="images-label-row">
-              <label>Кадры из фильма:</label>
-            </div>
-            <div className="images-container">
-              {movie.images.map((img, index) => (
-                <div key={index} className="movie-image">
-                  <img src={img} alt={`Кадр ${index + 1}`} />
-                  <button
-                    type="button"
-                    className="image-remove"
-                    onClick={() => handleRemoveImage(index)}
-                  >
-                    ×
-                  </button>
+              <div className="form-control">
+                <div className="images-label-row">
+                  <label>Кадры из фильма:</label>
                 </div>
-              ))}
-              <label htmlFor="image-upload" className="add-image-placeholder">
-                <FontAwesomeIcon icon={faPlus} />
-              </label>
-              <input
-                type="file"
-                id="image-upload"
-                accept="image/*"
-                multiple
-                onChange={handleAddImage}
-                style={{ display: 'none' }}
-              />
-            </div>
-          </div>
+                <div className="images-container">
+                  {movie.images.map((img, index) => (
+                    <div key={index} className="movie-image">
+                      <img src={img} alt={`Кадр ${index + 1}`} />
+                      <button
+                        type="button"
+                        className="image-remove"
+                        onClick={() => handleRemoveImage(index)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  <label htmlFor="image-upload" className="add-image-placeholder">
+                    <FontAwesomeIcon icon={faPlus} />
+                  </label>
+                  <input
+                    type="file"
+                    id="image-upload"
+                    accept="image/*"
+                    multiple
+                    onChange={handleAddImage}
+                    style={{ display: 'none' }}
+                  />
+                </div>
+              </div>
             </div>
             
             <div className="form-row">
@@ -499,7 +672,7 @@ const handleAddImage = (e) => {
           </div>
         </div>
         
-        <div className="modal-actions">
+        <div className="form-actions">
           <button
             type="button"
             className="btn btn-secondary"
