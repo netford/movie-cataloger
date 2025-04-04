@@ -1,13 +1,17 @@
 /* ViewMovie.css */
 .movie-view {
   padding: 10px;
+  height: 100%;
 }
 
 /* Используем такую же структуру формы, как в MovieForm */
 .compact-form-layout {
   display: flex;
-  gap: 15px;
+  gap: 65px; /* Увеличено с 15px до 65px для увеличения расстояния между колонками */
   margin-bottom: 10px;
+  height: calc(850px - 145px);
+  overflow: hidden;
+  padding: 0 15px;
 }
 
 .form-left-panel {
@@ -18,9 +22,11 @@
 }
 
 .form-right-panel {
-  width: 65%;
+  width: calc(65% - 50px); /* Уменьшена ширина правой колонки на 50px */
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
 
 /* Стили для строк формы */
@@ -52,6 +58,8 @@
 .form-poster {
   width: 100%;
   height: 385px;
+  max-height: calc(850px - 350px);
+  min-height: 200px;
   position: relative;
   border-radius: 4px;
   overflow: hidden;
@@ -139,20 +147,28 @@
 .description-display, .notes-display {
   font-size: 14px;
   line-height: 1.5;
-  padding: 8px 10px;
-  background-color: #f9f9f9;
+  padding: 0; /* Убран отступ текста с левого края */
+  background-color: transparent; /* Убран серый фон */
   border-radius: 4px;
-  min-height: 40px;
   white-space: pre-line;
 }
 
+/* Только для notes-display сохраняем отступ слева из-за цветной линии */
+.notes-display {
+  padding-left: 10px;
+}
+
 .description-display {
-  height: 285px;
+  max-height: 280px;
+  min-height: 80px;
+  height: auto;
   overflow-y: auto;
 }
 
 .notes-display {
-  height: 60px;
+  max-height: 100px;
+  min-height: 40px;
+  height: auto;
   overflow-y: auto;
   border-left: 3px solid var(--primary-color);
 }
@@ -166,6 +182,8 @@
 .trailer-container iframe {
   width: 100%;
   height: 200px;
+  max-height: 200px;
+  min-height: 150px;
   border: none;
   border-radius: 4px;
 }
@@ -189,10 +207,12 @@
 .images-container {
   display: flex;
   gap: 8px;
-  overflow-x: auto;
+  overflow: hidden; /* Скрываем полосу прокрутки */
   padding-bottom: 5px;
   margin-top: 5px;
   height: 100px;
+  flex-wrap: wrap; /* Размещаем контент в несколько строк */
+  max-height: 210px; /* Позволяем отображаться в 2 строки */
 }
 
 .movie-image {
@@ -261,22 +281,46 @@
 
 /* Стили для кнопок действий */
 .modal-actions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: flex-end;
-  padding: 10px 0 0;
+  padding: 15px 20px;
   gap: 10px;
   border-top: 1px solid var(--light-color);
+  height: 70px;
+  background-color: white;
+}
+
+.modal-actions button {
+  min-height: 40px;
+}
+
+.form-row .form-control label {
+  display: block;
+  margin-top: 5px; /* Добавляем отступ сверху */
+  margin-bottom: 5px;
 }
 
 /* Адаптивные стили */
 @media (max-width: 768px) {
   .compact-form-layout {
     flex-direction: column;
+    height: auto;
+    overflow: visible;
   }
   
   .form-left-panel,
   .form-right-panel {
     width: 100%;
+    height: auto;
+  }
+  
+  .movie-form {
+    overflow-y: auto;
+    padding-bottom: 90px;
   }
   
   .tags-year-row,
@@ -287,6 +331,7 @@
   
   .form-poster {
     height: 250px;
+    max-height: 250px;
   }
   
   .year-display {
@@ -294,6 +339,24 @@
   }
   
   .description-display {
-    height: 150px;
+    max-height: 150px;
+  }
+  
+  .notes-display {
+    max-height: 60px;
+  }
+  
+  .trailer-container iframe {
+    height: 180px;
+    max-height: 180px;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .modal-actions button {
+    width: 100%;
   }
 }
