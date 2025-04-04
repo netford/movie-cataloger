@@ -63,6 +63,10 @@
     background-color: var(--success-color);
   }
   
+  .movie-status.status-watching {
+    background-color: var(--secondary-color);
+  }
+  
   .movie-status.status-cancelled {
     background-color: var(--warning-color);
   }

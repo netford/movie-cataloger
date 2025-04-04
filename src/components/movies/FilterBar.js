@@ -53,6 +53,12 @@ const FilterBar = () => {
           Запланировано
         </button>
         <button 
+          className={`category-btn ${state.filter === 'watching' ? 'active' : ''}`}
+          onClick={() => handleFilterChange('watching')}
+        >
+          Смотрим
+        </button>
+        <button 
           className={`category-btn ${state.filter === 'cancelled' ? 'active' : ''}`}
           onClick={() => handleFilterChange('cancelled')}
         >

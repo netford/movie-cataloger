@@ -105,6 +105,10 @@
     color: var(--success-color);
   }
   
+  .status-watching {
+    color: var(--secondary-color);
+  }
+  
   .status-cancelled {
     color: var(--warning-color);
   }

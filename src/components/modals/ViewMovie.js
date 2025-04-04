@@ -47,15 +47,22 @@ const ViewMovie = ({ movieId }) => {
   const getStatusLabel = (status) => {
     switch (status) {
       case 'watched': return 'Просмотрено';
-      case 'toWatch': return 'Запланировано';
-      case 'cancelled': return 'Отменено';
+      case 'toWatch': return 'Планирую посмотреть';
+      case 'watching': return 'Смотрим';
+      case 'cancelled': return 'Отменён';
       default: return '';
     }
   };
   
   const formatDate = (dateString) => {
     if (!dateString) return null;
-    return new Date(dateString).toLocaleDateString('ru-RU');
+    
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2);
+    
+    return `${day}.${month}.${year}`;
   };
   
   const getYoutubeEmbedUrl = (url) => {
@@ -177,6 +184,7 @@ const ViewMovie = ({ movieId }) => {
                   padding: '5px 15px',
                   backgroundColor: movie.status === 'watched' ? 'var(--primary-color)' : 
                                   movie.status === 'toWatch' ? 'var(--success-color)' : 
+                                  movie.status === 'watching' ? 'var(--secondary-color)' : 
                                   'var(--warning-color)',
                   color: 'white',
                   fontSize: '14px',
@@ -190,20 +198,26 @@ const ViewMovie = ({ movieId }) => {
                       
             <div className="form-fields-group">
               {/* Даты */}
-              <div className="form-row" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                {movie.dateAdded && (
-                  <div className="form-control">
-                    <label>Добавлено:</label>
-                    <div className="metadata-value">{formatDate(movie.dateAdded)}</div>
+              <div className="form-row">
+                <div className="form-control" style={{ width: '100%' }}>
+                  <div className="metadata-value" style={{ 
+                    fontSize: '13px', 
+                    letterSpacing: '-0.2px', 
+                    whiteSpace: 'nowrap',
+                    display: 'flex',
+                    justifyContent: (movie.status === 'watched' || movie.status === 'cancelled') && movie.dateWatched ? 'space-between' : 'flex-start'
+                  }}>
+                    <span>Добавлено: {formatDate(movie.dateAdded)}</span>
+                    
+                    {movie.status === 'watched' && movie.dateWatched && (
+                      <span>Просмотрено: {formatDate(movie.dateWatched)}</span>
+                    )}
+                    
+                    {movie.status === 'cancelled' && movie.dateWatched && (
+                      <span>Отменено: {formatDate(movie.dateWatched)}</span>
+                    )}
                   </div>
-                )}
-                
-                {movie.dateWatched && (
-                  <div className="form-control" style={{ textAlign: 'right' }}>
-                    <label>Просмотрено:</label>
-                    <div className="metadata-value">{formatDate(movie.dateWatched)}</div>
-                  </div>
-                )}
+                </div>
               </div>
               
               {/* Информация о продолжительности */}

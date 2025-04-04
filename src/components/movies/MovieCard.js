@@ -23,6 +23,7 @@ const MovieCard = ({ movie }) => {
     switch (status) {
       case 'watched': return 'Просмотрено';
       case 'toWatch': return 'Запланировано';
+      case 'watching': return 'Смотрим';
       case 'cancelled': return 'Отменено';
       default: return '';
     }
@@ -32,6 +33,7 @@ const MovieCard = ({ movie }) => {
     switch (status) {
       case 'watched': return 'status-watched';
       case 'toWatch': return 'status-to-watch';
+      case 'watching': return 'Смотрим';
       case 'cancelled': return 'status-cancelled';
       default: return '';
     }

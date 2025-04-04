@@ -80,6 +80,7 @@ const MovieList = () => {
     switch (status) {
       case 'watched': return 'Просмотрено';
       case 'toWatch': return 'Планирую посмотреть';
+      case 'watching': return 'Смотрим';
       case 'cancelled': return 'Отменён';
       default: return '';
     }
@@ -89,6 +90,7 @@ const MovieList = () => {
     switch (status) {
       case 'watched': return 'status-watched';
       case 'toWatch': return 'status-to-watch';
+      case 'watching': return 'status-watching';
       case 'cancelled': return 'status-cancelled';
       default: return '';
     }

@@ -5,7 +5,7 @@ export const movieModel = {
   description: "", // описание
   poster: "", // URL постера (или base64)
   tags: [], // массив тегов/жанров
-  status: "toWatch", // просмотрено (watched), к просмотру (toWatch), отменено (cancelled)
+  status: "toWatch", // просмотрено (watched), к просмотру (toWatch), отменено (cancelled), смотрим (watching)
   rating: null, // рейтинг от 0 до 100
   dateAdded: "", // дата добавления
   dateWatched: null, // дата просмотра

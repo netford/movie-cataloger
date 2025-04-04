@@ -382,6 +382,7 @@ const handleAddImage = (e) => {
                     onChange={handleStatusChange}
                   >
                     <option value="toWatch">Запланировано</option>
+                    <option value="watching">Смотрим</option>
                     <option value="watched">Просмотрено</option>
                     <option value="cancelled">Отменено</option>
                   </select>
