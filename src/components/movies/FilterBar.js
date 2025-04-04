@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faTh, faList, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faTh, faList, faSort, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import '../../styles/FilterBar.css';
 
 const FilterBar = () => {
-  const { state, dispatch } = useMovies();
+  const { state, dispatch, getPopularTags } = useMovies();
+  
+  // Получаем популярные теги (максимум 5)
+  const popularTags = useMemo(() => getPopularTags(5), [getPopularTags]);
   
   const handleFilterChange = (filter) => {
     dispatch({ type: 'SET_FILTER', payload: filter });
@@ -29,6 +32,16 @@ const FilterBar = () => {
         direction: newDirection 
       } 
     });
+  };
+  
+  // Обработчик клика по тегу для фильтрации
+  const handleTagClick = (tagName) => {
+    dispatch({ type: 'SET_SEARCH', payload: tagName });
+  };
+  
+  // Очистить поиск (и фильтрацию по тегам)
+  const clearSearch = () => {
+    dispatch({ type: 'SET_SEARCH', payload: '' });
   };
   
   return (
@@ -66,6 +79,24 @@ const FilterBar = () => {
         </button>
       </div>
       
+      {/* Добавляем популярные теги */}
+      {popularTags.length > 0 && (
+        <div className="popular-tags">
+          <div className="popular-tags-label">Популярные теги:</div>
+          <div className="tags-buttons">
+            {popularTags.map(tag => (
+              <button 
+                key={tag.id}
+                className={`tag-btn ${state.search === tag.name ? 'active' : ''}`}
+                onClick={() => handleTagClick(tag.name)}
+              >
+                {tag.name} <span className="tag-count">({tag.count})</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      
       <div className="search-sort-view">
         <div className="search-container">
           <input
@@ -75,7 +106,13 @@ const FilterBar = () => {
             onChange={handleSearchChange}
             className="search-input"
           />
-          <FontAwesomeIcon icon={faSearch} className="search-icon" />
+          {state.search ? (
+            <button className="clear-search" onClick={clearSearch}>
+              <FontAwesomeIcon icon={faTimesCircle} />
+            </button>
+          ) : (
+            <FontAwesomeIcon icon={faSearch} className="search-icon" />
+          )}
         </div>
         
         <div className="view-sort-controls">

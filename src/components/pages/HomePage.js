@@ -5,7 +5,6 @@ import MovieGrid from '../movies/MovieGrid';
 import MovieList from '../movies/MovieList';
 import ViewMovie from '../modals/ViewMovie';
 import MovieForm from '../modals/MovieForm';
-import TagsManager from '../modals/TagsManager';
 import '../../styles/HomePage.css';
 
 const HomePage = () => {
@@ -22,8 +21,6 @@ const HomePage = () => {
         return <MovieForm />;
       case 'edit':
         return <MovieForm movieId={state.modal.movieId} />;
-      case 'tags':
-        return <TagsManager />;
       default:
         return null;
     }

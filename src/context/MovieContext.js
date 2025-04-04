@@ -233,6 +233,35 @@ export const MovieProvider = ({ children }) => {
     }
   };
   
+  // Функция для получения популярных тегов
+  const getPopularTags = (limit = 10) => {
+    // Считаем использование каждого тега
+    const tagUsage = {};
+    state.tags.forEach(tag => {
+      tagUsage[tag.name] = 0;
+    });
+    
+    // Подсчитываем использование тегов в фильмах
+    state.movies.forEach(movie => {
+      movie.tags.forEach(tagName => {
+        if (tagName in tagUsage) {
+          tagUsage[tagName]++;
+        }
+      });
+    });
+    
+    // Преобразуем в массив объектов для сортировки
+    const tagsWithUsage = state.tags.map(tag => ({
+      ...tag,
+      count: tagUsage[tag.name] || 0
+    }));
+    
+    // Сортируем по количеству использований и берем top-limit
+    return tagsWithUsage
+      .sort((a, b) => b.count - a.count)
+      .slice(0, limit);
+  };
+  
   // Расширенное значение контекста с методами Firestore
   const contextValue = {
     state,
@@ -242,7 +271,8 @@ export const MovieProvider = ({ children }) => {
     deleteMovieFromFirestore,
     addTagToFirestore,
     updateTagInFirestore,
-    deleteTagFromFirestore
+    deleteTagFromFirestore,
+    getPopularTags
   };
   
   return (
