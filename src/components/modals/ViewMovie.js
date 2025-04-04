@@ -93,12 +93,12 @@ const ViewMovie = ({ movieId }) => {
         const minutes = totalMinutes % 60;
         
         return (
-          <div className="series-duration-info">
-            <div className="duration-header">Продолжительность:</div>
-            <div className="duration-row">
+          <div style={{ margin: '5px 0' }}>
+            <div style={{ fontWeight: 'bold', marginBottom: '3px', fontSize: '14px' }}>Продолжительность:</div>
+            <div style={{ fontSize: '14px' }}>
               <span>Серия: </span>{movie.episodeDuration} мин.
             </div>
-            <div className="duration-row total-duration" style={{fontStyle: 'normal'}}>
+            <div style={{ marginTop: '3px', fontSize: '14px' }}>
               <span>Общая: </span>{totalMinutes} мин. 
               ({hours > 0 ? `${hours} ч. ` : ''}{minutes > 0 ? `${minutes} мин.` : ''})
             </div>
@@ -111,9 +111,9 @@ const ViewMovie = ({ movieId }) => {
       const minutes = movie.duration % 60;
       
       return (
-        <div className="form-control">
-          <label>Продолжительность:</label>
-          <div className="metadata-value">
+        <div style={{ margin: '5px 0' }}>
+          <div style={{ fontWeight: 'bold', marginBottom: '3px', fontSize: '14px' }}>Продолжительность:</div>
+          <div style={{ fontSize: '14px' }}>
             {movie.duration} мин.
             ({hours > 0 ? `${hours} ч. ` : ''}{minutes > 0 ? `${minutes} мин.` : ''})
           </div>
@@ -144,8 +144,8 @@ const ViewMovie = ({ movieId }) => {
   
   return (
     <Modal title="Детальная информация о фильме">
-      <div className="movie-form">
-        <div className="compact-form-layout">
+      <div className="movie-form" style={{ height: '850px', overflow: 'auto' }}>
+        <div className="compact-form-layout" style={{ height: '780px', overflow: 'visible' }}>
           <div className="form-left-panel">
             {/* Блок с постером */}
             <div className="form-poster-container">
@@ -220,19 +220,24 @@ const ViewMovie = ({ movieId }) => {
                 </div>
               </div>
               
-              {/* Информация о продолжительности */}
+              {/* Информация о продолжительности сразу после дат */}
+              <div style={{ margin: '5px 0', padding: '0' }}>
+                {renderDurationInfo()}
+              </div>
+              
+              {/* Заметки (перемещено из правой колонки) */}
+              {movie.notes && (
+                <div style={{ margin: '10px 0 5px 0', padding: '0' }}>
+                  <div style={{ fontWeight: 'bold', marginBottom: '3px', fontSize: '14px' }}>Мои заметки:</div>
+                  <div style={{ fontSize: '14px', whiteSpace: 'pre-line' }}>
+                    {movie.notes}
+                  </div>
+                </div>
+              )}
+              
+              {/* Пустой блок для сохранения структуры */}
               <div className="left-panel-bottom">
-                {movie.isSeries ? (
-                  <div className="series-details">
-                    <div className="form-row">
-                      {renderDurationInfo()}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="form-row">
-                    {renderDurationInfo()}
-                  </div>
-                )}
+                {/* Пустое пространство */}
               </div>
             </div>
           </div>
@@ -307,18 +312,6 @@ const ViewMovie = ({ movieId }) => {
                     <label>Кадры из фильма:</label>
                   </div>
                   {renderMovieImages()}
-                </div>
-              </div>
-            )}
-            
-            {/* Заметки */}
-            {movie.notes && (
-              <div className="form-row">
-                <div className="form-control">
-                  <label>Мои заметки:</label>
-                  <div className="notes-display">
-                    {movie.notes}
-                  </div>
                 </div>
               </div>
             )}

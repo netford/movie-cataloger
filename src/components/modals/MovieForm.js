@@ -135,6 +135,17 @@ const MovieForm = ({ movieId = null }) => {
     }
   };
   
+  // Обработчик увеличения/уменьшения значения поля
+  const handleNumberStep = (field, step, min, max) => {
+    const currentValue = movie[field] || min;
+    let newValue = currentValue + step;
+    
+    // Проверка на выход за границы диапазона
+    newValue = Math.max(min, Math.min(max, newValue));
+    
+    setMovie(prev => ({ ...prev, [field]: newValue }));
+  };
+  
   // Обработчик добавления нового тега
   const handleAddTag = async (tagNameParam) => {
     const tagName = tagNameParam || newTagName;
@@ -313,8 +324,8 @@ const handleAddImage = (e) => {
   
   return (
     <Modal title={isEditMode ? 'Редактирование фильма' : 'Добавление фильма'}>
-      <form className="movie-form" onSubmit={handleSubmit}>
-        <div className="compact-form-layout">
+      <form className="movie-form" style={{ height: '850px', overflow: 'auto' }} onSubmit={handleSubmit}>
+        <div className="compact-form-layout" style={{ height: '780px', overflow: 'visible' }}>
           <div className="form-left-panel">
             <div className="form-poster-container">
               {movie.poster ? (
@@ -341,10 +352,10 @@ const handleAddImage = (e) => {
               />
             </div>
             
-            <div className="form-fields-group">
-              <div className="form-row">
+            <div className="form-fields-group" style={{ gap: '4px' }}>
+              <div className="form-row" style={{ marginBottom: '4px' }}>
                 <div className="form-control">
-                  <label>Рейтинг:</label>
+                  <label style={{ marginBottom: '2px' }}>Рейтинг:</label>
                   <div className="rating-number-input">
                     <input
                       type="number"
@@ -375,7 +386,7 @@ const handleAddImage = (e) => {
                 </div>
                 
                 <div className="form-control">
-                  <label>Статус:</label>
+                  <label style={{ marginBottom: '2px' }}>Статус:</label>
                   <select
                     name="status"
                     value={movie.status}
@@ -389,9 +400,9 @@ const handleAddImage = (e) => {
                 </div>
               </div>
               
-              <div className="form-row">
+              <div className="form-row" style={{ marginBottom: '4px' }}>
                 <div className="form-control">
-                  <label>Добавлено:</label>
+                  <label style={{ marginBottom: '2px' }}>Добавлено:</label>
                   <input
                     type="date"
                     name="dateAdded"
@@ -402,7 +413,7 @@ const handleAddImage = (e) => {
                 </div>
                 
                 <div className="form-control">
-                  <label>Просмотрено:</label>
+                  <label style={{ marginBottom: '2px' }}>Просмотрено:</label>
                   <input
                     type="date"
                     name="dateWatched"
@@ -413,9 +424,9 @@ const handleAddImage = (e) => {
                 </div>
               </div>
               
-              <div className="form-row">
+              <div className="form-row" style={{ marginBottom: '0', marginTop: '6px' }}>
                 <div className="form-control type-selector">
-                  <label className="radio-label">
+                  <label className="radio-label" style={{ marginTop: '0' }}>
                     <input
                       type="radio"
                       name="contentType"
@@ -425,7 +436,7 @@ const handleAddImage = (e) => {
                     />
                     Фильм
                   </label>
-                  <label className="radio-label">
+                  <label className="radio-label" style={{ marginTop: '0' }}>
                     <input
                       type="radio"
                       name="contentType"
@@ -438,61 +449,239 @@ const handleAddImage = (e) => {
                 </div>
               </div>
               
-              <div className="left-panel-bottom">
-                {movie.isSeries ? (
-                  <div className="series-details">
-                    <div className="form-row">
-                      <div className="form-control">
-                        <label>Сезонов:</label>
+              {/* Блок с информацией о сезонах/сериях - с числовыми полями со стрелками */}
+              {movie.isSeries ? (
+                <div className="series-details" style={{ marginBottom: '4px', marginTop: '-8px' }}>
+                  <div className="form-row" style={{ marginBottom: '0' }}>
+                    <div className="form-control" style={{ width: '50px' }}>
+                      <label style={{ marginBottom: '2px', fontSize: '12px' }}>Сезон:</label>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
                         <input
                           type="number"
                           name="seasons"
                           min="1"
+                          max="99"
                           value={movie.seasons || ''}
                           onChange={handleInputChange}
+                          style={{ 
+                            width: '40px', 
+                            appearance: 'textfield',
+                            MozAppearance: 'textfield',
+                            WebkitAppearance: 'textfield',
+                            margin: '0'
+                          }}
                         />
+                        <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '2px' }}>
+                          <button 
+                            type="button" 
+                            onClick={() => handleNumberStep('seasons', 1, 1, 99)}
+                            style={{ 
+                              border: 'none', 
+                              background: '#3498db', 
+                              color: 'white', 
+                              width: '12px', 
+                              height: '12px',
+                              fontSize: '8px',
+                              padding: '0',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              borderTopLeftRadius: '2px',
+                              borderTopRightRadius: '2px',
+                              marginBottom: '1px'
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faChevronUp} />
+                          </button>
+                          <button 
+                            type="button" 
+                            onClick={() => handleNumberStep('seasons', -1, 1, 99)}
+                            style={{ 
+                              border: 'none', 
+                              background: '#3498db', 
+                              color: 'white', 
+                              width: '12px', 
+                              height: '12px',
+                              fontSize: '8px',
+                              padding: '0',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              borderBottomLeftRadius: '2px',
+                              borderBottomRightRadius: '2px'
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faChevronDown} />
+                          </button>
+                        </div>
                       </div>
-                      
-                      <div className="form-control">
-                        <label>Серий:</label>
+                    </div>
+                    
+                    <div className="form-control" style={{ width: '60px' }}>
+                      <label style={{ marginBottom: '2px', fontSize: '12px' }}>Серий:</label>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
                         <input
                           type="number"
                           name="episodes"
-                          min="1"
+                          min="2"
+                          max="300"
                           value={movie.episodes || ''}
                           onChange={handleInputChange}
                           required={movie.isSeries}
+                          style={{ 
+                            width: '45px', 
+                            appearance: 'textfield',
+                            MozAppearance: 'textfield',
+                            WebkitAppearance: 'textfield',
+                            margin: '0'
+                          }}
                         />
+                        <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '2px' }}>
+                          <button 
+                            type="button" 
+                            onClick={() => handleNumberStep('episodes', 1, 2, 300)}
+                            style={{ 
+                              border: 'none', 
+                              background: '#3498db', 
+                              color: 'white', 
+                              width: '12px', 
+                              height: '12px',
+                              fontSize: '8px',
+                              padding: '0',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              borderTopLeftRadius: '2px',
+                              borderTopRightRadius: '2px',
+                              marginBottom: '1px'
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faChevronUp} />
+                          </button>
+                          <button 
+                            type="button" 
+                            onClick={() => handleNumberStep('episodes', -1, 2, 300)}
+                            style={{ 
+                              border: 'none', 
+                              background: '#3498db', 
+                              color: 'white', 
+                              width: '12px', 
+                              height: '12px',
+                              fontSize: '8px',
+                              padding: '0',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              borderBottomLeftRadius: '2px',
+                              borderBottomRightRadius: '2px'
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faChevronDown} />
+                          </button>
+                        </div>
                       </div>
-                      
-                      <div className="form-control">
-                        <label>Длит. серии:</label>
+                    </div>
+                    
+                    <div className="form-control" style={{ width: '80px' }}>
+                      <label style={{ marginBottom: '2px', fontSize: '12px' }}>Длит. серии:</label>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
                         <input
                           type="number"
                           name="episodeDuration"
                           min="1"
+                          max="150"
                           value={movie.episodeDuration || ''}
                           onChange={handleInputChange}
                           required={movie.isSeries}
+                          style={{ 
+                            width: '45px', 
+                            appearance: 'textfield',
+                            MozAppearance: 'textfield',
+                            WebkitAppearance: 'textfield',
+                            margin: '0'
+                          }}
                         />
+                        <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '2px' }}>
+                          <button 
+                            type="button" 
+                            onClick={() => handleNumberStep('episodeDuration', 1, 1, 150)}
+                            style={{ 
+                              border: 'none', 
+                              background: '#3498db', 
+                              color: 'white', 
+                              width: '12px', 
+                              height: '12px',
+                              fontSize: '8px',
+                              padding: '0',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              borderTopLeftRadius: '2px',
+                              borderTopRightRadius: '2px',
+                              marginBottom: '1px'
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faChevronUp} />
+                          </button>
+                          <button 
+                            type="button" 
+                            onClick={() => handleNumberStep('episodeDuration', -1, 1, 150)}
+                            style={{ 
+                              border: 'none', 
+                              background: '#3498db', 
+                              color: 'white', 
+                              width: '12px', 
+                              height: '12px',
+                              fontSize: '8px',
+                              padding: '0',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              borderBottomLeftRadius: '2px',
+                              borderBottomRightRadius: '2px'
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faChevronDown} />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                ) : (
-                  <div className="form-row">
-                    <div className="form-control">
-                      <label>Продолжительность (мин):</label>
-                      <input
-                        type="number"
-                        name="duration"
-                        min="1"
-                        value={movie.duration || ''}
-                        onChange={handleInputChange}
-                        required={!movie.isSeries}
-                      />
-                    </div>
+                </div>
+              ) : (
+                <div className="form-row" style={{ marginBottom: '4px', marginTop: '-8px' }}>
+                  <div className="form-control">
+                    <label style={{ marginBottom: '2px' }}>Продолжительность (мин):</label>
+                    <input
+                      type="number"
+                      name="duration"
+                      min="1"
+                      value={movie.duration || ''}
+                      onChange={handleInputChange}
+                      required={!movie.isSeries}
+                    />
                   </div>
-                )}
+                </div>
+              )}
+              
+              {/* Добавляем поле Мои заметки в левую часть, поднято вверх */}
+              <div className="form-row" style={{ marginTop: '2px' }}>
+                <div className="form-control">
+                  <label style={{ marginBottom: '2px' }}>Мои заметки:</label>
+                  <textarea
+                    name="notes"
+                    value={movie.notes}
+                    onChange={handleInputChange}
+                    className="notes-textarea"
+                    style={{ height: '120px', maxHeight: '120px' }}
+                  ></textarea>
+                </div>
               </div>
             </div>
           </div>
@@ -656,18 +845,6 @@ const handleAddImage = (e) => {
                     style={{ display: 'none' }}
                   />
                 </div>
-              </div>
-            </div>
-            
-            <div className="form-row">
-              <div className="form-control">
-                <label>Мои заметки:</label>
-                <textarea
-                  name="notes"
-                  value={movie.notes}
-                  onChange={handleInputChange}
-                  className="notes-textarea"
-                ></textarea>
               </div>
             </div>
           </div>
