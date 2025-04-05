@@ -1,68 +1,74 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTimes, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import '../../styles/TagSelector.css';
 
 const TagSelector = ({ selectedTags, onTagsChange }) => {
-  const { state, dispatch, addTagToFirestore } = useMovies();
-  const [inputValue, setInputValue] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const inputRef = useRef(null);
-  const suggestionsRef = useRef(null);
+  const { state, addTagToFirestore } = useMovies();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [newTagName, setNewTagName] = useState('');
+  const [showNewTagInput, setShowNewTagInput] = useState(false);
+  const dropdownRef = useRef(null);
   
-  // Фильтрованные теги для предложений
-  const filteredTags = inputValue
-    ? state.tags
-        .filter(tag => 
-          tag.name.toLowerCase().includes(inputValue.toLowerCase()) &&
-          !selectedTags.includes(tag.name)
-        )
-        .sort((a, b) => {
-          // Сначала показываем теги, которые начинаются с введенного текста
-          const aStartsWith = a.name.toLowerCase().startsWith(inputValue.toLowerCase());
-          const bStartsWith = b.name.toLowerCase().startsWith(inputValue.toLowerCase());
-          
-          if (aStartsWith && !bStartsWith) return -1;
-          if (!aStartsWith && bStartsWith) return 1;
-          
-          return a.name.localeCompare(b.name);
-        })
-    : [];
-  
-  // Закрытие выпадающего списка при клике вне него
+  // Обработчик клика вне выпадающего списка для его закрытия
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        suggestionsRef.current && 
-        !suggestionsRef.current.contains(event.target) &&
-        inputRef.current && 
-        !inputRef.current.contains(event.target)
-      ) {
-        setShowSuggestions(false);
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
       }
     };
     
-    document.addEventListener('mousedown', handleClickOutside);
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [isDropdownOpen]);
   
-  // Обработчик добавления тега
-  const handleAddTag = (tagName) => {
-    if (!tagName.trim()) return;
+  // Обработчик добавления существующего тега
+  const handleAddExistingTag = (tagName) => {
+    if (!selectedTags.includes(tagName)) {
+      onTagsChange([...selectedTags, tagName]);
+    }
+    setIsDropdownOpen(false);
+  };
+  
+  // Обработчик создания нового тега
+  const handleCreateTag = async () => {
+    if (!newTagName.trim()) return;
     
-    // Проверяем, не выбран ли уже этот тег
-    if (selectedTags.includes(tagName.trim())) {
-      setInputValue('');
-      return;
+    // Проверяем, существует ли уже такой тег
+    const existingTag = state.tags.find(
+      tag => tag.name.toLowerCase() === newTagName.trim().toLowerCase()
+    );
+    
+    if (existingTag) {
+      // Если тег существует, просто добавляем его к выбранным
+      handleAddExistingTag(existingTag.name);
+    } else {
+      // Создаем новый тег
+      try {
+        const newTag = {
+          name: newTagName.trim(),
+          count: 1
+        };
+        
+        const createdTag = await addTagToFirestore(newTag);
+        
+        // Добавляем новый тег к выбранным
+        onTagsChange([...selectedTags, createdTag.name]);
+      } catch (error) {
+        console.error('Ошибка при создании тега:', error);
+      }
     }
     
-    // Добавляем тег к выбранным
-    onTagsChange([...selectedTags, tagName.trim()]);
-    setInputValue('');
-    setShowSuggestions(false);
+    // Очищаем поле ввода и скрываем его
+    setNewTagName('');
+    setShowNewTagInput(false);
+    setIsDropdownOpen(false);
   };
   
   // Обработчик удаления тега
@@ -71,62 +77,33 @@ const TagSelector = ({ selectedTags, onTagsChange }) => {
     onTagsChange(updatedTags);
   };
   
-  // Обработчик создания нового тега, если его нет в списке
-  const handleCreateTag = async () => {
-    if (!inputValue.trim()) return;
-    
-    // Проверяем, существует ли уже такой тег
-    const existingTag = state.tags.find(
-      tag => tag.name.toLowerCase() === inputValue.trim().toLowerCase()
-    );
-    
-    if (existingTag) {
-      // Если тег существует, просто добавляем его к выбранным
-      handleAddTag(existingTag.name);
-    } else {
-      // Создаем новый тег
-      try {
-        const newTag = {
-          name: inputValue.trim(),
-          count: 1
-        };
-        
-        const createdTag = await addTagToFirestore(newTag);
-        
-        // Добавляем новый тег к выбранным
-        onTagsChange([...selectedTags, createdTag.name]);
-        setInputValue('');
-      } catch (error) {
-        console.error('Ошибка при создании тега:', error);
-      }
-    }
-  };
-  
-  // Обработчик клика по тегу в списке предложений
-  const handleTagClick = (tagName) => {
-    handleAddTag(tagName);
-  };
-  
-  // Обработчик нажатия клавиш
+  // Обработчик нажатия клавиш в поле ввода нового тега
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && newTagName.trim()) {
       e.preventDefault();
-      
-      if (filteredTags.length > 0) {
-        // Если есть предложения, выбираем первый тег
-        handleAddTag(filteredTags[0].name);
-      } else if (inputValue.trim()) {
-        // Если предложений нет, создаем новый тег
-        handleCreateTag();
-      }
+      handleCreateTag();
     } else if (e.key === 'Escape') {
-      setShowSuggestions(false);
+      setShowNewTagInput(false);
+      setNewTagName('');
     }
   };
+  
+  // Получаем список доступных тегов (исключая уже выбранные)
+  const availableTags = state.tags.filter(tag => !selectedTags.includes(tag.name));
   
   return (
-    <div className="tag-selector">
+    <div className="tag-selector-compact">
+      {/* Отображение уже выбранных тегов */}
       <div className="tags-container">
+        <button 
+          type="button"
+          className="btn-tag-selector"
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+        >
+          <span className="btn-text">Теги</span>
+          <FontAwesomeIcon icon={faChevronDown} className="dropdown-icon" />
+        </button>
+        
         {selectedTags.map((tag, index) => (
           <div key={index} className="tag">
             <span>{tag}</span>
@@ -134,52 +111,75 @@ const TagSelector = ({ selectedTags, onTagsChange }) => {
               type="button"
               className="tag-remove"
               onClick={() => handleRemoveTag(tag)}
+              title="Удалить тег"
             >
               <FontAwesomeIcon icon={faTimes} />
             </button>
           </div>
         ))}
-        
-        <div className="tag-input-container">
-          <input
-            ref={inputRef}
-            type="text"
-            value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-              setShowSuggestions(true);
-            }}
-            onFocus={() => setShowSuggestions(true)}
-            onKeyDown={handleKeyDown}
-            placeholder="+ Добавить тег"
-            className="tag-input"
-          />
-          
-          {inputValue.trim() && (
-            <button
-              type="button"
-              className="add-tag-btn"
-              onClick={handleCreateTag}
-            >
-              <FontAwesomeIcon icon={faPlus} />
-            </button>
-          )}
-          
-          {showSuggestions && filteredTags.length > 0 && (
-            <div ref={suggestionsRef} className="tag-suggestions">
-              {filteredTags.map(tag => (
-                <div
-                  key={tag.id}
-                  className="tag-suggestion-item"
-                  onClick={() => handleTagClick(tag.name)}
+      </div>
+      
+      {/* Выпадающий список тегов */}
+      {isDropdownOpen && (
+        <div className="tags-dropdown" ref={dropdownRef}>
+          {showNewTagInput ? (
+            <div className="new-tag-form">
+              <input
+                type="text"
+                value={newTagName}
+                onChange={(e) => setNewTagName(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Введите название нового тега"
+                className="new-tag-input"
+                autoFocus
+              />
+              <div className="tag-form-actions">
+                <button
+                  type="button"
+                  className="btn-create-tag"
+                  onClick={handleCreateTag}
+                  disabled={!newTagName.trim()}
                 >
-                  {tag.name}
-                </div>
-              ))}
+                  Создать
+                </button>
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={() => setShowNewTagInput(false)}
+                >
+                  Отмена
+                </button>
+              </div>
             </div>
+          ) : (
+            <>
+              {availableTags.length > 0 ? (
+                <div className="available-tags-dropdown">
+                  {availableTags.map(tag => (
+                    <div 
+                      key={tag.id} 
+                      className="dropdown-tag-item"
+                      onClick={() => handleAddExistingTag(tag.name)}
+                    >
+                      {tag.name}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="no-tags-message">Нет доступных тегов</div>
+              )}
+              <div className="dropdown-footer">
+                <button 
+                  className="btn-add-new-tag"
+                  onClick={() => setShowNewTagInput(true)}
+                >
+                  <FontAwesomeIcon icon={faPlus} /> Создать новый тег
+                </button>
+              </div>
+            </>
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 };
