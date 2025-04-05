@@ -29,7 +29,7 @@ const MovieForm = ({ movieId = null }) => {
         status: 'toWatch',
         rating: 50,
         dateAdded: new Date().toISOString(),
-        dateWatched: today, // Устанавливаем текущую дату по умолчанию
+        dateWatched: null, // Изначально null для нового фильма
         director: '',
         year: new Date().getFullYear(),
         isSeries: false,
@@ -107,9 +107,13 @@ const MovieForm = ({ movieId = null }) => {
     const status = e.target.value;
     let updates = { status };
     
-    // Если статус изменился на "просмотрено", устанавливаем дату просмотра
+    // Если статус изменился на "просмотрено", устанавливаем дату просмотра на сегодня
     if (status === 'watched' && !movie.dateWatched) {
       updates.dateWatched = today;
+    }
+    // Если статус изменился с "просмотрено" на другой, сбрасываем дату просмотра
+    else if (status !== 'watched' && movie.status === 'watched') {
+      updates.dateWatched = null;
     }
     
     setMovie(prev => ({ ...prev, ...updates }));
@@ -258,10 +262,33 @@ const handleAddImage = (e) => {
     }
   };
   
+  // Определяем, какой режим отображения полей использовать
+  const isWatchedStatus = movie.status === 'watched';
+  
+  // Генерируем уникальный ID для стилей
+  const formId = `movie-form-${movieId || 'new'}`;
+  
   return (
     <Modal title={isEditMode ? 'Редактирование фильма' : 'Добавление фильма'}>
-      <form className="movie-form" style={{ height: '850px', overflow: 'auto' }} onSubmit={handleSubmit}>
-        <div className="compact-form-layout" style={{ height: '780px', overflow: 'visible' }}>
+      {/* Вставляем стили непосредственно в компонент */}
+      <style>
+        {`
+          #${formId} .watched-notes-textarea {
+            height: 135px !important;
+            max-height: 135px !important;
+            min-height: 135px !important;
+          }
+          
+          #${formId} .non-watched-notes-textarea {
+            height: 189px !important;
+            max-height: 189px !important;
+            min-height: 189px !important;
+          }
+        `}
+      </style>
+      
+      <form id={formId} className="movie-form" style={{ height: 'auto', overflow: 'visible' }} onSubmit={handleSubmit}>
+        <div className="compact-form-layout" style={{ height: 'auto', overflow: 'visible' }}>
           <div className="form-left-panel">
             <div className="form-poster-container">
               {movie.poster ? (
@@ -287,43 +314,78 @@ const handleAddImage = (e) => {
                 style={{ display: 'none' }}
               />
             </div>
+
+            {/* Добавляем заметки сразу после постера */}
+            <div className="form-control" style={{ marginTop: '2px' }}>
+              <label style={{ marginBottom: '2px' }}>Мои заметки:</label>
+              <textarea
+                name="notes"
+                value={movie.notes}
+                onChange={handleInputChange}
+                style={{ 
+                  height: '56px', 
+                  maxHeight: '56px',
+                  width: '100%',
+                  resize: 'none',
+                  border: '1px solid var(--gray-color)',
+                  borderRadius: 'var(--border-radius)',
+                  padding: '6px 8px',
+                  fontSize: '13px'
+                }}
+              ></textarea>
+            </div>
             
-            <div className="form-fields-group" style={{ gap: '2px' }}>
+            <div className="form-fields-group" style={{ gap: '2px', marginTop: '10px' }}>
               <div className="form-row" style={{ marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
-                {/* Рейтинг - всегда занимает свое место слева, но может быть скрыт */}
-                <div className="form-control" style={{ width: '48%', visibility: movie.status === 'watched' ? 'visible' : 'hidden' }}>
-                  <label style={{ marginBottom: '2px' }}>Рейтинг:</label>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <input
-                      type="number"
-                      name="rating"
-                      min="0"
-                      max="100"
-                      value={movie.rating}
-                      onChange={handleRatingChange}
-                      style={{...numberInputStyle, width: '60px'}}
-                    />
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <button 
-                        type="button" 
-                        onClick={() => handleRatingStep(5)}
-                        style={upButtonStyle}
-                      >
-                        <FontAwesomeIcon icon={faChevronUp} />
-                      </button>
-                      <button 
-                        type="button" 
-                        onClick={() => handleRatingStep(-5)}
-                        style={downButtonStyle}
-                      >
-                        <FontAwesomeIcon icon={faChevronDown} />
-                      </button>
-                    </div>
-                  </div>
+                {/* Левая часть верхней строки: при статусе "Просмотрено" - рейтинг, при других статусах - дата добавления */}
+                <div className="form-control" style={{ width: '48%' }}>
+                  {isWatchedStatus ? (
+                    <>
+                      <label style={{ marginBottom: '2px' }}>Рейтинг:</label>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <input
+                          type="number"
+                          name="rating"
+                          min="0"
+                          max="100"
+                          value={movie.rating}
+                          onChange={handleRatingChange}
+                          style={{...numberInputStyle, width: '60px'}}
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <button 
+                            type="button" 
+                            onClick={() => handleRatingStep(5)}
+                            style={upButtonStyle}
+                          >
+                            <FontAwesomeIcon icon={faChevronUp} />
+                          </button>
+                          <button 
+                            type="button" 
+                            onClick={() => handleRatingStep(-5)}
+                            style={downButtonStyle}
+                          >
+                            <FontAwesomeIcon icon={faChevronDown} />
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <label style={{ marginBottom: '2px' }}>Добавлено:</label>
+                      <input
+                        type="date"
+                        name="dateAdded"
+                        value={movie.dateAdded.slice(0, 10)}
+                        onChange={handleInputChange}
+                        className="date-input"
+                      />
+                    </>
+                  )}
                 </div>
 
                 {/* Статус - всегда справа */}
-                <div className="form-control" style={{ width: '48%', marginLeft: 'auto' }}>
+                <div className="form-control" style={{ width: '48%' }}>
                   <label style={{ marginBottom: '2px' }}>Статус:</label>
                   <select
                     name="status"
@@ -339,30 +401,36 @@ const handleAddImage = (e) => {
                 </div>
               </div>
               
-              <div className="form-row" style={{ marginBottom: '4px' }}>
-                <div className="form-control">
-                  <label style={{ marginBottom: '2px' }}>Добавлено:</label>
-                  <input
-                    type="date"
-                    name="dateAdded"
-                    value={movie.dateAdded.slice(0, 10)}
-                    onChange={handleInputChange}
-                    className="date-input"
-                  />
+              {/* Нижняя часть полей дат */}
+              {isWatchedStatus && (
+                <div className="form-row" style={{ marginBottom: '4px' }}>
+                  {/* При статусе "Просмотрено" показываем обе даты */}
+                  <div className="form-control" style={{ width: '48%' }}>
+                    <label style={{ marginBottom: '2px' }}>Добавлено:</label>
+                    <input
+                      type="date"
+                      name="dateAdded"
+                      value={movie.dateAdded.slice(0, 10)}
+                      onChange={handleInputChange}
+                      className="date-input"
+                    />
+                  </div>
+                  
+                  <div className="form-control" style={{ width: '48%' }}>
+                    <label style={{ marginBottom: '2px' }}>Просмотрено:</label>
+                    <input
+                      type="date"
+                      name="dateWatched"
+                      value={movie.dateWatched ? movie.dateWatched.slice(0, 10) : ''}
+                      onChange={handleInputChange}
+                      className="date-input"
+                      required={isWatchedStatus}
+                    />
+                  </div>
                 </div>
-                
-                <div className="form-control">
-                  <label style={{ marginBottom: '2px' }}>Просмотрено:</label>
-                  <input
-                    type="date"
-                    name="dateWatched"
-                    value={movie.dateWatched ? movie.dateWatched.slice(0, 10) : ''}
-                    onChange={handleInputChange}
-                    className="date-input"
-                  />
-                </div>
-              </div>
-              <div className="form-row" style={{ marginBottom: '0', marginTop: '15px', display: 'flex', alignItems: 'center' }}>
+              )}
+              
+              <div className="form-row" style={{ marginBottom: '0', marginTop: isWatchedStatus ? '15px' : '25px', display: 'flex', alignItems: 'center' }}>
                 <div className="form-control type-selector" style={{ marginRight: '15px' }}>
                   <label className="radio-label" style={{ marginTop: '0' }}>
                     <input
@@ -520,20 +588,6 @@ const handleAddImage = (e) => {
                   </div>
                 </div>
               )}
-              
-              {/* Добавляем поле Мои заметки в левую часть, поднято вверх */}
-              <div className="form-row" style={{ marginTop: '2px' }}>
-                <div className="form-control">
-                  <label style={{ marginBottom: '2px' }}>Мои заметки:</label>
-                  <textarea
-                    name="notes"
-                    value={movie.notes}
-                    onChange={handleInputChange}
-                    className="notes-textarea"
-                    style={{ height: '135px', maxHeight: '135px' }}
-                  ></textarea>
-                </div>
-              </div>
             </div>
           </div>
           
