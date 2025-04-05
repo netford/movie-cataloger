@@ -1,12 +1,12 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faBan, faEdit, faPlay, faFilm } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faTimes, faPlay, faFilm } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import Modal from './Modal';
 import '../../styles/ViewMovie.css';
 
 const ViewMovie = ({ movieId }) => {
-  const { state, dispatch, updateMovieInFirestore, deleteMovieFromFirestore } = useMovies();
+  const { state, dispatch, deleteMovieFromFirestore } = useMovies();
   
   // Находим фильм по ID
   const movie = state.movies.find(m => m.id === movieId);
@@ -31,17 +31,8 @@ const ViewMovie = ({ movieId }) => {
     }
   };
   
-  const handleCancel = async () => {
-    if (movie.status !== 'cancelled') {
-      try {
-        await updateMovieInFirestore({ 
-          ...movie, 
-          status: 'cancelled' 
-        });
-      } catch (error) {
-        console.error("Ошибка при отмене фильма:", error);
-      }
-    }
+  const handleClose = () => {
+    dispatch({ type: 'CLOSE_MODAL' });
   };
   
   const getStatusLabel = (status) => {
@@ -318,32 +309,34 @@ const ViewMovie = ({ movieId }) => {
           </div>
         </div>
         
-        <div className="modal-actions">
-          <button
-            type="button"
-            className="btn btn-danger"
-            onClick={handleDelete}
-          >
-            <FontAwesomeIcon icon={faTrash} /> Удалить
-          </button>
+        <div className="modal-actions" style={{ justifyContent: 'space-between' }}>
+          <div>
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={handleDelete}
+            >
+              <FontAwesomeIcon icon={faTrash} /> Удалить
+            </button>
+          </div>
           
-          {movie.status !== 'cancelled' && (
+          <div style={{ display: 'flex', gap: '10px' }}>
             <button 
               type="button" 
-              className="btn btn-warning"
-              onClick={handleCancel}
+              className="btn btn-primary"
+              onClick={handleEdit}
             >
-              <FontAwesomeIcon icon={faBan} /> Отменить
+              <FontAwesomeIcon icon={faEdit} /> Изменить
             </button>
-          )}
-          
-          <button 
-            type="button" 
-            className="btn btn-primary"
-            onClick={handleEdit}
-          >
-            <FontAwesomeIcon icon={faEdit} /> Изменить
-          </button>
+            
+            <button 
+              type="button" 
+              className="btn btn-secondary"
+              onClick={handleClose}
+            >
+              <FontAwesomeIcon icon={faTimes} /> Закрыть
+            </button>
+          </div>
         </div>
       </div>
     </Modal>
