@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faTimes, faPlus, faUpload, faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
@@ -43,6 +43,53 @@ const MovieForm = ({ movieId = null }) => {
       };
   
   const [movie, setMovie] = useState(initialMovie);
+  
+  // Общий стиль для числовых полей ввода
+  const numberInputStyle = {
+    height: '30px',
+    padding: '4px 6px',
+    border: '1px solid var(--gray-color)',
+    borderRadius: '3px 0 0 3px',
+    appearance: 'textfield',
+    MozAppearance: 'textfield',
+    WebkitAppearance: 'textfield',
+    margin: '0'
+  };
+
+  // Общий стиль для кнопки вверх
+  const upButtonStyle = {
+    border: '1px solid var(--gray-color)',
+    borderLeft: 'none',
+    borderBottom: 'none',
+    background: '#f5f5f5', 
+    color: 'var(--dark-gray)', 
+    width: '16px', 
+    height: '15px',
+    fontSize: '8px',
+    padding: '0',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    borderTopRightRadius: '3px',
+  };
+
+  // Общий стиль для кнопки вниз
+  const downButtonStyle = {
+    border: '1px solid var(--gray-color)',
+    borderLeft: 'none',
+    background: '#f5f5f5', 
+    color: 'var(--dark-gray)', 
+    width: '16px', 
+    height: '15px',
+    fontSize: '8px',
+    padding: '0',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    borderBottomRightRadius: '3px',
+  };
   
   // Вспомогательные функции для обработки изменений формы
   const handleInputChange = (e) => {
@@ -246,7 +293,7 @@ const handleAddImage = (e) => {
                 {/* Рейтинг - всегда занимает свое место слева, но может быть скрыт */}
                 <div className="form-control" style={{ width: '48%', visibility: movie.status === 'watched' ? 'visible' : 'hidden' }}>
                   <label style={{ marginBottom: '2px' }}>Рейтинг:</label>
-                  <div className="rating-number-input">
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
                     <input
                       type="number"
                       name="rating"
@@ -254,20 +301,20 @@ const handleAddImage = (e) => {
                       max="100"
                       value={movie.rating}
                       onChange={handleRatingChange}
-                      className="rating-input"
+                      style={{...numberInputStyle, width: '60px'}}
                     />
-                    <div className="rating-controls">
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <button 
                         type="button" 
-                        className="rating-btn" 
                         onClick={() => handleRatingStep(5)}
+                        style={upButtonStyle}
                       >
                         <FontAwesomeIcon icon={faChevronUp} />
                       </button>
                       <button 
                         type="button" 
-                        className="rating-btn" 
                         onClick={() => handleRatingStep(-5)}
+                        style={downButtonStyle}
                       >
                         <FontAwesomeIcon icon={faChevronDown} />
                       </button>
@@ -355,55 +402,20 @@ const handleAddImage = (e) => {
                           max="99"
                           value={movie.seasons || ''}
                           onChange={handleInputChange}
-                          style={{ 
-                            width: '40px', 
-                            appearance: 'textfield',
-                            MozAppearance: 'textfield',
-                            WebkitAppearance: 'textfield',
-                            margin: '0'
-                          }}
+                          style={{...numberInputStyle, width: '40px'}}
                         />
-                        <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '2px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
                           <button 
                             type="button" 
                             onClick={() => handleNumberStep('seasons', 1, 1, 99)}
-                            style={{ 
-                              border: 'none', 
-                              background: '#3498db', 
-                              color: 'white', 
-                              width: '12px', 
-                              height: '12px',
-                              fontSize: '8px',
-                              padding: '0',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              borderTopLeftRadius: '2px',
-                              borderTopRightRadius: '2px',
-                              marginBottom: '1px'
-                            }}
+                            style={upButtonStyle}
                           >
                             <FontAwesomeIcon icon={faChevronUp} />
                           </button>
                           <button 
                             type="button" 
                             onClick={() => handleNumberStep('seasons', -1, 1, 99)}
-                            style={{ 
-                              border: 'none', 
-                              background: '#3498db', 
-                              color: 'white', 
-                              width: '12px', 
-                              height: '12px',
-                              fontSize: '8px',
-                              padding: '0',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              borderBottomLeftRadius: '2px',
-                              borderBottomRightRadius: '2px'
-                            }}
+                            style={downButtonStyle}
                           >
                             <FontAwesomeIcon icon={faChevronDown} />
                           </button>
@@ -422,55 +434,20 @@ const handleAddImage = (e) => {
                           value={movie.episodes || ''}
                           onChange={handleInputChange}
                           required={movie.isSeries}
-                          style={{ 
-                            width: '45px', 
-                            appearance: 'textfield',
-                            MozAppearance: 'textfield',
-                            WebkitAppearance: 'textfield',
-                            margin: '0'
-                          }}
+                          style={{...numberInputStyle, width: '45px'}}
                         />
-                        <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '2px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
                           <button 
                             type="button" 
                             onClick={() => handleNumberStep('episodes', 1, 2, 300)}
-                            style={{ 
-                              border: 'none', 
-                              background: '#3498db', 
-                              color: 'white', 
-                              width: '12px', 
-                              height: '12px',
-                              fontSize: '8px',
-                              padding: '0',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              borderTopLeftRadius: '2px',
-                              borderTopRightRadius: '2px',
-                              marginBottom: '1px'
-                            }}
+                            style={upButtonStyle}
                           >
                             <FontAwesomeIcon icon={faChevronUp} />
                           </button>
                           <button 
                             type="button" 
                             onClick={() => handleNumberStep('episodes', -1, 2, 300)}
-                            style={{ 
-                              border: 'none', 
-                              background: '#3498db', 
-                              color: 'white', 
-                              width: '12px', 
-                              height: '12px',
-                              fontSize: '8px',
-                              padding: '0',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              borderBottomLeftRadius: '2px',
-                              borderBottomRightRadius: '2px'
-                            }}
+                            style={downButtonStyle}
                           >
                             <FontAwesomeIcon icon={faChevronDown} />
                           </button>
@@ -489,55 +466,20 @@ const handleAddImage = (e) => {
                           value={movie.episodeDuration || ''}
                           onChange={handleInputChange}
                           required={movie.isSeries}
-                          style={{ 
-                            width: '45px', 
-                            appearance: 'textfield',
-                            MozAppearance: 'textfield',
-                            WebkitAppearance: 'textfield',
-                            margin: '0'
-                          }}
+                          style={{...numberInputStyle, width: '45px'}}
                         />
-                        <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '2px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
                           <button 
                             type="button" 
                             onClick={() => handleNumberStep('episodeDuration', 1, 1, 150)}
-                            style={{ 
-                              border: 'none', 
-                              background: '#3498db', 
-                              color: 'white', 
-                              width: '12px', 
-                              height: '12px',
-                              fontSize: '8px',
-                              padding: '0',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              borderTopLeftRadius: '2px',
-                              borderTopRightRadius: '2px',
-                              marginBottom: '1px'
-                            }}
+                            style={upButtonStyle}
                           >
                             <FontAwesomeIcon icon={faChevronUp} />
                           </button>
                           <button 
                             type="button" 
                             onClick={() => handleNumberStep('episodeDuration', -1, 1, 150)}
-                            style={{ 
-                              border: 'none', 
-                              background: '#3498db', 
-                              color: 'white', 
-                              width: '12px', 
-                              height: '12px',
-                              fontSize: '8px',
-                              padding: '0',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              borderBottomLeftRadius: '2px',
-                              borderBottomRightRadius: '2px'
-                            }}
+                            style={downButtonStyle}
                           >
                             <FontAwesomeIcon icon={faChevronDown} />
                           </button>
@@ -550,14 +492,33 @@ const handleAddImage = (e) => {
                 <div className="form-row" style={{ marginBottom: '4px', marginTop: '-5px' }}>
                   <div className="form-control">
                     <label style={{ marginBottom: '2px' }}>Продолжительность (мин):</label>
-                    <input
-                      type="number"
-                      name="duration"
-                      min="1"
-                      value={movie.duration || ''}
-                      onChange={handleInputChange}
-                      required={!movie.isSeries}
-                    />
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <input
+                        type="number"
+                        name="duration"
+                        min="1"
+                        value={movie.duration || ''}
+                        onChange={handleInputChange}
+                        required={!movie.isSeries}
+                        style={{...numberInputStyle, width: '60px'}}
+                      />
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <button 
+                          type="button" 
+                          onClick={() => handleNumberStep('duration', 5, 1, 999)}
+                          style={upButtonStyle}
+                        >
+                          <FontAwesomeIcon icon={faChevronUp} />
+                        </button>
+                        <button 
+                          type="button" 
+                          onClick={() => handleNumberStep('duration', -5, 1, 999)}
+                          style={downButtonStyle}
+                        >
+                          <FontAwesomeIcon icon={faChevronDown} />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
