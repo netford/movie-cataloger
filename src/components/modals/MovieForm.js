@@ -151,8 +151,8 @@ const MovieForm = ({ movieId = null }) => {
     
     setMovie(prev => ({ ...prev, [field]: newValue }));
   };
-  
-// Функция для сжатия изображения
+
+ // Функция для сжатия изображения
 const compressImage = (dataUrl, maxWidth = 800, maxHeight = 800, quality = 0.7) => {
   return new Promise((resolve) => {
     const img = new Image();
@@ -362,9 +362,8 @@ const handleAddImage = (e) => {
                   />
                 </div>
               </div>
-              
-              <div className="form-row" style={{ marginBottom: '0', marginTop: '3px' }}>
-                <div className="form-control type-selector">
+              <div className="form-row" style={{ marginBottom: '0', marginTop: '15px', display: 'flex', alignItems: 'center' }}>
+                <div className="form-control type-selector" style={{ marginRight: '15px' }}>
                   <label className="radio-label" style={{ marginTop: '0' }}>
                     <input
                       type="radio"
@@ -386,138 +385,137 @@ const handleAddImage = (e) => {
                     Сериал
                   </label>
                 </div>
-              </div>
-              
-              {/* Блок с информацией о сезонах/сериях - с числовыми полями со стрелками */}
-              {movie.isSeries ? (
-                <div className="series-details" style={{ marginBottom: '4px', marginTop: '-5px' }}>
-                  <div className="form-row" style={{ marginBottom: '0' }}>
-                    <div className="form-control" style={{ width: '50px' }}>
-                      <label style={{ marginBottom: '2px', fontSize: '12px' }}>Сезон:</label>
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <input
-                          type="number"
-                          name="seasons"
-                          min="1"
-                          max="99"
-                          value={movie.seasons || ''}
-                          onChange={handleInputChange}
-                          style={{...numberInputStyle, width: '40px'}}
-                        />
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <button 
-                            type="button" 
-                            onClick={() => handleNumberStep('seasons', 1, 1, 99)}
-                            style={upButtonStyle}
-                          >
-                            <FontAwesomeIcon icon={faChevronUp} />
-                          </button>
-                          <button 
-                            type="button" 
-                            onClick={() => handleNumberStep('seasons', -1, 1, 99)}
-                            style={downButtonStyle}
-                          >
-                            <FontAwesomeIcon icon={faChevronDown} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="form-control" style={{ width: '60px' }}>
-                      <label style={{ marginBottom: '2px', fontSize: '12px' }}>Серий:</label>
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <input
-                          type="number"
-                          name="episodes"
-                          min="2"
-                          max="300"
-                          value={movie.episodes || ''}
-                          onChange={handleInputChange}
-                          required={movie.isSeries}
-                          style={{...numberInputStyle, width: '45px'}}
-                        />
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <button 
-                            type="button" 
-                            onClick={() => handleNumberStep('episodes', 1, 2, 300)}
-                            style={upButtonStyle}
-                          >
-                            <FontAwesomeIcon icon={faChevronUp} />
-                          </button>
-                          <button 
-                            type="button" 
-                            onClick={() => handleNumberStep('episodes', -1, 2, 300)}
-                            style={downButtonStyle}
-                          >
-                            <FontAwesomeIcon icon={faChevronDown} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="form-control" style={{ width: '80px' }}>
-                      <label style={{ marginBottom: '2px', fontSize: '12px' }}>Длит. серии:</label>
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <input
-                          type="number"
-                          name="episodeDuration"
-                          min="1"
-                          max="150"
-                          value={movie.episodeDuration || ''}
-                          onChange={handleInputChange}
-                          required={movie.isSeries}
-                          style={{...numberInputStyle, width: '45px'}}
-                        />
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <button 
-                            type="button" 
-                            onClick={() => handleNumberStep('episodeDuration', 1, 1, 150)}
-                            style={upButtonStyle}
-                          >
-                            <FontAwesomeIcon icon={faChevronUp} />
-                          </button>
-                          <button 
-                            type="button" 
-                            onClick={() => handleNumberStep('episodeDuration', -1, 1, 150)}
-                            style={downButtonStyle}
-                          >
-                            <FontAwesomeIcon icon={faChevronDown} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="form-row" style={{ marginBottom: '4px', marginTop: '-5px' }}>
-                  <div className="form-control">
-                    <label style={{ marginBottom: '2px' }}>Продолжительность (мин):</label>
+                
+                {/* Добавляем поле Сезон сразу после радиокнопок, только если выбран Сериал */}
+                {movie.isSeries && (
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', marginRight: '5px' }}>Сезон:</span>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <input
                         type="number"
-                        name="duration"
+                        name="seasons"
                         min="1"
-                        value={movie.duration || ''}
+                        max="99"
+                        value={movie.seasons || ''}
                         onChange={handleInputChange}
-                        required={!movie.isSeries}
-                        style={{...numberInputStyle, width: '60px'}}
+                        style={{...numberInputStyle, width: '35px'}}
                       />
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <button 
                           type="button" 
-                          onClick={() => handleNumberStep('duration', 5, 1, 999)}
+                          onClick={() => handleNumberStep('seasons', 1, 1, 99)}
                           style={upButtonStyle}
                         >
                           <FontAwesomeIcon icon={faChevronUp} />
                         </button>
                         <button 
                           type="button" 
-                          onClick={() => handleNumberStep('duration', -5, 1, 999)}
+                          onClick={() => handleNumberStep('seasons', -1, 1, 99)}
                           style={downButtonStyle}
                         >
                           <FontAwesomeIcon icon={faChevronDown} />
                         </button>
                       </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* А теперь отдельная строка для Серий и Длительности серии, только если выбран Сериал */}
+              {movie.isSeries ? (
+                <div className="form-row" style={{ marginBottom: '4px', marginTop: '2px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <span style={{ fontSize: '12px', marginRight: '5px' }}>Серий:</span>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="number"
+                      name="episodes"
+                      min="2"
+                      max="300"
+                      value={movie.episodes || ''}
+                      onChange={handleInputChange}
+                      required={movie.isSeries}
+                      style={{...numberInputStyle, width: '40px'}}
+                    />
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <button 
+                        type="button" 
+                        onClick={() => handleNumberStep('episodes', 1, 2, 300)}
+                        style={upButtonStyle}
+                      >
+                        <FontAwesomeIcon icon={faChevronUp} />
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => handleNumberStep('episodes', -1, 2, 300)}
+                        style={downButtonStyle}
+                      >
+                        <FontAwesomeIcon icon={faChevronDown} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <span style={{ fontSize: '12px', marginRight: '5px' }}>Длит. серии:</span>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="number"
+                      name="episodeDuration"
+                      min="1"
+                      max="150"
+                      value={movie.episodeDuration || ''}
+                      onChange={handleInputChange}
+                      required={movie.isSeries}
+                      style={{...numberInputStyle, width: '40px'}}
+                    />
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <button 
+                        type="button" 
+                        onClick={() => handleNumberStep('episodeDuration', 1, 1, 150)}
+                        style={upButtonStyle}
+                      >
+                        <FontAwesomeIcon icon={faChevronUp} />
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => handleNumberStep('episodeDuration', -1, 1, 150)}
+                        style={downButtonStyle}
+                      >
+                        <FontAwesomeIcon icon={faChevronDown} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              ) : (
+                <div className="form-row" style={{ marginBottom: '4px', marginTop: '-5px', display: 'flex', alignItems: 'center' }}>
+                  <span style={{ fontSize: '12px', marginRight: '5px' }}>Продолжит. (мин.):</span>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="number"
+                      name="duration"
+                      min="1"
+                      value={movie.duration || ''}
+                      onChange={handleInputChange}
+                      required={!movie.isSeries}
+                      style={{...numberInputStyle, width: '60px'}}
+                    />
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <button 
+                        type="button" 
+                        onClick={() => handleNumberStep('duration', 5, 1, 999)}
+                        style={upButtonStyle}
+                      >
+                        <FontAwesomeIcon icon={faChevronUp} />
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => handleNumberStep('duration', -5, 1, 999)}
+                        style={downButtonStyle}
+                      >
+                        <FontAwesomeIcon icon={faChevronDown} />
+                      </button>
                     </div>
                   </div>
                 </div>
