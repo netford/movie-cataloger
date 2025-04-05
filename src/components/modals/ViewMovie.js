@@ -159,12 +159,12 @@ const ViewMovie = ({ movieId }) => {
                 )}
                 
                 {/* Рейтинг вверху слева - отображаем всегда при наличии рейтинга */}
-                {hasRating && (
+                {hasRating && movie.status === 'watched' && (
                   <div style={{ 
                     position: 'absolute', 
                     top: '0', 
                     left: '0',
-                    backgroundColor: 'var(--danger-color)',
+                    backgroundColor: 'rgba(231, 76, 60, 0.8)', // Полупрозрачный красный цвет (danger-color)
                     color: 'white',
                     fontWeight: 'bold',
                     padding: '3px 8px',
@@ -175,17 +175,17 @@ const ViewMovie = ({ movieId }) => {
                     {movie.rating}
                   </div>
                 )}
-                
+                                
                 {/* Статус вверху справа */}
                 <div style={{ 
                   position: 'absolute', 
                   top: '0',
                   right: '0', 
                   padding: '5px 15px',
-                  backgroundColor: movie.status === 'watched' ? 'var(--primary-color)' : 
-                                  movie.status === 'toWatch' ? 'var(--success-color)' : 
-                                  movie.status === 'watching' ? 'var(--secondary-color)' : 
-                                  'var(--warning-color)',
+                  backgroundColor: movie.status === 'watched' ? 'rgba(52, 152, 219, 0.8)' : // Полупрозрачный синий (primary-color)
+                                movie.status === 'toWatch' ? 'rgba(39, 174, 96, 0.8)' : // Полупрозрачный зеленый (success-color)
+                                movie.status === 'watching' ? 'rgba(52, 73, 94, 0.8)' : // Полупрозрачный темно-синий (secondary-color)
+                                'rgba(243, 156, 18, 0.8)', // Полупрозрачный оранжевый (warning-color)
                   color: 'white',
                   fontSize: '14px',
                   fontWeight: 'bold',
