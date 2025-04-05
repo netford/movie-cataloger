@@ -47,9 +47,9 @@ const ViewMovie = ({ movieId }) => {
   const getStatusLabel = (status) => {
     switch (status) {
       case 'watched': return 'Просмотрено';
-      case 'toWatch': return 'Планирую посмотреть';
+      case 'toWatch': return 'Запланировано';
       case 'watching': return 'Смотрим';
-      case 'cancelled': return 'Отменён';
+      case 'cancelled': return 'Отменено';
       default: return '';
     }
   };
@@ -164,7 +164,7 @@ const ViewMovie = ({ movieId }) => {
                     position: 'absolute', 
                     top: '0', 
                     left: '0',
-                    backgroundColor: 'rgba(231, 76, 60, 0.8)', // Полупрозрачный красный цвет (danger-color)
+                    backgroundColor: 'rgba(39, 174, 96, 0.8)', // Полупрозрачный зеленый для соответствия статусу "просмотрено"
                     color: 'white',
                     fontWeight: 'bold',
                     padding: '3px 8px',
@@ -182,10 +182,10 @@ const ViewMovie = ({ movieId }) => {
                   top: '0',
                   right: '0', 
                   padding: '5px 15px',
-                  backgroundColor: movie.status === 'watched' ? 'rgba(52, 152, 219, 0.8)' : // Полупрозрачный синий (primary-color)
-                                movie.status === 'toWatch' ? 'rgba(39, 174, 96, 0.8)' : // Полупрозрачный зеленый (success-color)
-                                movie.status === 'watching' ? 'rgba(52, 73, 94, 0.8)' : // Полупрозрачный темно-синий (secondary-color)
-                                'rgba(243, 156, 18, 0.8)', // Полупрозрачный оранжевый (warning-color)
+                  backgroundColor: movie.status === 'watched' ? 'rgba(39, 174, 96, 0.8)' : // Полупрозрачный зеленый для "просмотрено"
+                              movie.status === 'toWatch' ? 'rgba(52, 152, 219, 0.8)' : // Полупрозрачный синий для "запланировано"
+                              movie.status === 'watching' ? 'rgba(243, 156, 18, 0.8)' : // Полупрозрачный оранжевый для "смотрим"
+                              'rgba(127, 140, 141, 0.8)', // Полупрозрачный серый для "отменено"
                   color: 'white',
                   fontSize: '14px',
                   fontWeight: 'bold',

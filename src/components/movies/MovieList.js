@@ -79,9 +79,9 @@ const MovieList = () => {
   const getStatusLabel = (status) => {
     switch (status) {
       case 'watched': return 'Просмотрено';
-      case 'toWatch': return 'Планирую посмотреть';
+      case 'toWatch': return 'Запланировано';
       case 'watching': return 'Смотрим';
-      case 'cancelled': return 'Отменён';
+      case 'cancelled': return 'Отменено';
       default: return '';
     }
   };

@@ -33,7 +33,7 @@ const MovieCard = ({ movie }) => {
     switch (status) {
       case 'watched': return 'status-watched';
       case 'toWatch': return 'status-to-watch';
-      case 'watching': return 'Смотрим';
+      case 'watching': return 'status-watching';
       case 'cancelled': return 'status-cancelled';
       default: return '';
     }
