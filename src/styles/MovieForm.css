@@ -385,7 +385,7 @@
 }
 
 .add-image-placeholder:after {
-  content: "+";
+  content: "";
   display: block;
   position: absolute;
   top: 50%;

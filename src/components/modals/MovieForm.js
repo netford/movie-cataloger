@@ -619,9 +619,19 @@ const handleAddImage = (e) => {
                       </button>
                     </div>
                   ))}
-                  <label htmlFor="image-upload" className="add-image-placeholder">
-                    <FontAwesomeIcon icon={faPlus} />
-                  </label>
+                    <label htmlFor="image-upload" className="add-image-placeholder">
+                      <FontAwesomeIcon 
+                        icon={faPlus} 
+                        style={{ 
+                          fontSize: '24px', 
+                          color: 'var(--gray-color)',
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)'
+                        }} 
+                      />
+                    </label>
                   <input
                     type="file"
                     id="image-upload"
