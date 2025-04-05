@@ -452,6 +452,31 @@ input[type="date"]::-webkit-inner-spin-button {
   max-height: 850px;
 }
 
+.btn-tag-selector {
+  border-radius: 5px !important; /* Делаем прямоугольную кнопку тегов */
+}
+
+/* Стили для наведения на селект (year и status) */
+.hover-select {
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.hover-select:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+/* Оптимизация размеров полей */
+.year-control {
+  width: 80px !important;
+  flex: none !important;
+  max-width: 80px !important;
+}
+
+.title-control {
+  flex-grow: 1;
+}
+
 /* Адаптивная верстка */
 @media (min-width: 768px) {
   .modal-container {

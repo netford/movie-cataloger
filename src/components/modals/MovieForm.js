@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faTimes, faPlus, faUpload, faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
@@ -7,7 +7,7 @@ import TagSelector from '../tags/TagSelector';
 import '../../styles/MovieForm.css';
 
 const MovieForm = ({ movieId = null }) => {
-  const { state, dispatch, addMovieToFirestore, updateMovieInFirestore, addTagToFirestore } = useMovies();
+  const { state, dispatch, addMovieToFirestore, updateMovieInFirestore } = useMovies();
   const isEditMode = Boolean(movieId);
   
   // Генерация списка годов от текущего до 1925
@@ -241,9 +241,10 @@ const handleAddImage = (e) => {
               />
             </div>
             
-            <div className="form-fields-group" style={{ gap: '4px' }}>
-              <div className="form-row" style={{ marginBottom: '4px' }}>
-                <div className="form-control">
+            <div className="form-fields-group" style={{ gap: '2px' }}>
+              <div className="form-row" style={{ marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
+                {/* Рейтинг - всегда занимает свое место слева, но может быть скрыт */}
+                <div className="form-control" style={{ width: '48%', visibility: movie.status === 'watched' ? 'visible' : 'hidden' }}>
                   <label style={{ marginBottom: '2px' }}>Рейтинг:</label>
                   <div className="rating-number-input">
                     <input
@@ -273,13 +274,15 @@ const handleAddImage = (e) => {
                     </div>
                   </div>
                 </div>
-                
-                <div className="form-control">
+
+                {/* Статус - всегда справа */}
+                <div className="form-control" style={{ width: '48%', marginLeft: 'auto' }}>
                   <label style={{ marginBottom: '2px' }}>Статус:</label>
                   <select
                     name="status"
                     value={movie.status}
                     onChange={handleStatusChange}
+                    className="hover-select"
                   >
                     <option value="toWatch">Запланировано</option>
                     <option value="watching">Смотрим</option>
@@ -313,7 +316,7 @@ const handleAddImage = (e) => {
                 </div>
               </div>
               
-              <div className="form-row" style={{ marginBottom: '0', marginTop: '6px' }}>
+              <div className="form-row" style={{ marginBottom: '0', marginTop: '3px' }}>
                 <div className="form-control type-selector">
                   <label className="radio-label" style={{ marginTop: '0' }}>
                     <input
@@ -340,7 +343,7 @@ const handleAddImage = (e) => {
               
               {/* Блок с информацией о сезонах/сериях - с числовыми полями со стрелками */}
               {movie.isSeries ? (
-                <div className="series-details" style={{ marginBottom: '4px', marginTop: '-8px' }}>
+                <div className="series-details" style={{ marginBottom: '4px', marginTop: '-5px' }}>
                   <div className="form-row" style={{ marginBottom: '0' }}>
                     <div className="form-control" style={{ width: '50px' }}>
                       <label style={{ marginBottom: '2px', fontSize: '12px' }}>Сезон:</label>
@@ -544,7 +547,7 @@ const handleAddImage = (e) => {
                   </div>
                 </div>
               ) : (
-                <div className="form-row" style={{ marginBottom: '4px', marginTop: '-8px' }}>
+                <div className="form-row" style={{ marginBottom: '4px', marginTop: '-5px' }}>
                   <div className="form-control">
                     <label style={{ marginBottom: '2px' }}>Продолжительность (мин):</label>
                     <input
@@ -568,7 +571,7 @@ const handleAddImage = (e) => {
                     value={movie.notes}
                     onChange={handleInputChange}
                     className="notes-textarea"
-                    style={{ height: '120px', maxHeight: '120px' }}
+                    style={{ height: '135px', maxHeight: '135px' }}
                   ></textarea>
                 </div>
               </div>
@@ -579,22 +582,22 @@ const handleAddImage = (e) => {
             {/* Название и Год выпуска в одной строке */}
             <div className="form-row title-year-row">
               <div className="form-control title-control">
-                <label>Название:</label>
                 <input
                   type="text"
                   name="title"
                   value={movie.title}
                   onChange={handleInputChange}
                   required
+                  placeholder="Введите название фильма"
                 />
               </div>
               
-              <div className="form-control year-control">
-                <label>Год выпуска:</label>
+              <div className="form-control year-control" style={{ width: '80px !important', maxWidth: '80px !important' }}>
                 <select 
                   name="year"
                   value={movie.year || currentYear}
                   onChange={handleInputChange}
+                  className="hover-select"
                 >
                   {yearOptions.map(year => (
                     <option key={year} value={year}>{year}</option>
