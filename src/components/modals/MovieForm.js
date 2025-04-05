@@ -317,14 +317,15 @@ const handleAddImage = (e) => {
 
             {/* Добавляем заметки сразу после постера */}
             <div className="form-control" style={{ marginTop: '2px' }}>
-              <label style={{ marginBottom: '2px' }}>Мои заметки:</label>
               <textarea
                 name="notes"
                 value={movie.notes}
                 onChange={handleInputChange}
+                maxLength={130}
+                placeholder="Здесь вы можете добавить свой комментарий"
                 style={{ 
-                  height: '56px', 
-                  maxHeight: '56px',
+                  height: '75px',
+                  maxHeight: '75px',
                   width: '100%',
                   resize: 'none',
                   border: '1px solid var(--gray-color)',
@@ -333,9 +334,17 @@ const handleAddImage = (e) => {
                   fontSize: '13px'
                 }}
               ></textarea>
+              <div style={{ 
+                textAlign: 'right', 
+                fontSize: '11px', 
+                color: 'var(--dark-gray)',
+                marginTop: '2px' 
+              }}>
+                {movie.notes ? movie.notes.length : 0}/130
+              </div>
             </div>
             
-            <div className="form-fields-group" style={{ gap: '2px', marginTop: '10px' }}>
+            <div className="form-fields-group" style={{ gap: '2px', marginTop: '-5px' }}>
               <div className="form-row" style={{ marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
                 {/* Левая часть верхней строки: при статусе "Просмотрено" - рейтинг, при других статусах - дата добавления */}
                 <div className="form-control" style={{ width: '48%' }}>
