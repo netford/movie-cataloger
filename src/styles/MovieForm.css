@@ -326,14 +326,21 @@
   overflow-x: auto;
   padding-bottom: 5px;
   height: 100px;
+  width: 100%;
+}
+
+/* Добавим новое правило для настройки ширины поля "формы" */
+.form-right-panel .form-control {
+  width: 100%;
 }
 
 .movie-image {
-  min-width: 160px;
+  width: 160px;
   height: 100px;
   position: relative;
   border-radius: 4px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .movie-image img {
@@ -361,8 +368,10 @@
 }
 
 .add-image-placeholder {
-  min-width: 160px;
+  width: 160px;
   height: 100px;
+  min-height: 100px;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -370,8 +379,22 @@
   border: 1px dashed var(--gray-color);
   border-radius: 4px;
   color: var(--dark-gray);
-  font-size: 20px;
+  font-size: 24px;
   cursor: pointer;
+  flex-shrink: 0;
+}
+
+.add-image-placeholder:after {
+  content: "+";
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 40px;
+  line-height: 1;
+  font-weight: 300;
+  color: var(--gray-color);
 }
 
 /* Скрываем стрелки для числовых полей */
@@ -478,6 +501,19 @@ input[type="date"]::-webkit-inner-spin-button {
 }
 
 /* Адаптивная верстка */
+
+@media (min-width: 992px) {
+  .movie-image, .add-image-placeholder {
+    width: calc(25% - 6px);
+    min-width: 140px;
+  }
+  
+  .images-container {
+    flex-wrap: wrap;
+    max-height: 208px;
+  }
+}
+
 @media (min-width: 768px) {
   .modal-container {
     width: 90%;
