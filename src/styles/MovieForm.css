@@ -34,6 +34,7 @@
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+  position: relative; /* Добавляем для позиционирования дочерних элементов */
 }
 
 /* Строки формы */
@@ -181,9 +182,9 @@
 }
 
 .description-textarea {
-  height: 200px !important;
-  min-height: 150px;
-  max-height: 400px;
+  height: 240px !important;
+  min-height: 240px;
+  max-height: px;
   overflow-y: auto;
 }
 
@@ -269,6 +270,15 @@
   gap: 5px;
 }
 
+/* Изменяем секцию с изображениями */
+.form-row.images-section {
+  position: absolute;
+  bottom: 25px; /* Увеличиваем с 15px до 25px для более точного позиционирования */
+  left: 0;
+  right: 0;
+  margin-bottom: 0;
+}
+
 .images-container {
   display: flex;
   gap: 8px;
@@ -344,6 +354,15 @@
   line-height: 1;
   font-weight: 300;
   color: var(--gray-color);
+}
+
+/* Создаем контейнер для верхней части правой панели */
+.form-right-panel-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  margin-bottom: 155px; /* Увеличиваем со 125px до 155px для большего пространства */
 }
 
 /* Скрываем стрелки для числовых полей */
@@ -495,6 +514,15 @@ input[type="date"]::-webkit-inner-spin-button {
   .form-row {
     flex-direction: column;
     gap: 8px;
+  }
+  
+  .form-right-panel-content {
+    margin-bottom: 0;
+  }
+  
+  .form-row.images-section {
+    position: static;
+    margin-top: 15px;
   }
   
   .form-poster, .form-poster-placeholder {

@@ -156,72 +156,72 @@ const MovieForm = ({ movieId = null }) => {
     setMovie(prev => ({ ...prev, [field]: newValue }));
   };
 
- // Функция для сжатия изображения
-const compressImage = (dataUrl, maxWidth = 800, maxHeight = 800, quality = 0.7) => {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.src = dataUrl;
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      let width = img.width;
-      let height = img.height;
-      
-      // Вычисляем размеры с сохранением пропорций
-      if (width > height) {
-        if (width > maxWidth) {
-          height = Math.round(height * maxWidth / width);
-          width = maxWidth;
+  // Функция для сжатия изображения
+  const compressImage = (dataUrl, maxWidth = 800, maxHeight = 800, quality = 0.7) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = dataUrl;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        // Вычисляем размеры с сохранением пропорций
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round(height * maxWidth / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round(width * maxHeight / height);
+            height = maxHeight;
+          }
         }
-      } else {
-        if (height > maxHeight) {
-          width = Math.round(width * maxHeight / height);
-          height = maxHeight;
-        }
-      }
-      
-      canvas.width = width;
-      canvas.height = height;
-      
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, width, height);
-      
-      // Получаем сжатое изображение в формате base64
-      const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
-      resolve(compressedDataUrl);
-    };
-  });
-};
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Получаем сжатое изображение в формате base64
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(compressedDataUrl);
+      };
+    });
+  };
 
-const handlePosterChange = async (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      // Сжимаем изображение перед сохранением
-      const compressedImage = await compressImage(reader.result, 600, 800);
-      setMovie(prev => ({ ...prev, poster: compressedImage }));
-    };
-    reader.readAsDataURL(file);
-  }
-};
-
-const handleAddImage = (e) => {
-  const files = e.target.files;
-  if (files.length > 0) {
-    Array.from(files).forEach(file => {
+  const handlePosterChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
       const reader = new FileReader();
       reader.onloadend = async () => {
-        // Сжимаем изображение кадра перед сохранением
-        const compressedImage = await compressImage(reader.result, 400, 300);
-        setMovie(prev => ({ 
-          ...prev, 
-          images: [...prev.images, compressedImage] 
-        }));
+        // Сжимаем изображение перед сохранением
+        const compressedImage = await compressImage(reader.result, 600, 800);
+        setMovie(prev => ({ ...prev, poster: compressedImage }));
       };
       reader.readAsDataURL(file);
-    });
-  }
-};
+    }
+  };
+
+  const handleAddImage = (e) => {
+    const files = e.target.files;
+    if (files.length > 0) {
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          // Сжимаем изображение кадра перед сохранением
+          const compressedImage = await compressImage(reader.result, 400, 300);
+          setMovie(prev => ({ 
+            ...prev, 
+            images: [...prev.images, compressedImage] 
+          }));
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
   
   const handleRemoveImage = (indexToRemove) => {
     setMovie(prev => ({ 
@@ -283,6 +283,21 @@ const handleAddImage = (e) => {
             height: 189px !important;
             max-height: 189px !important;
             min-height: 189px !important;
+          }
+          
+          #${formId} .form-right-panel {
+            position: relative;
+          }
+          
+          #${formId} .form-right-panel-content {
+            margin-bottom: 200px;
+          }
+          
+          #${formId} .images-section {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
           }
         `}
       </style>
@@ -600,71 +615,75 @@ const handleAddImage = (e) => {
             </div>
           </div>
           
-          <div className="form-right-panel">
-            {/* Название и Год выпуска в одной строке */}
-            <div className="form-row title-year-row">
-              <div className="form-control title-control">
-                <input
-                  type="text"
-                  name="title"
-                  value={movie.title}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Введите название фильма"
-                />
+          <div className="form-right-panel" style={{ position: 'relative' }}>
+            {/* Обертка для верхней части правой панели, которая скроллится */}
+            <div className="form-right-panel-content" style={{ marginBottom: '270px' }}>
+              {/* Название и Год выпуска в одной строке */}
+              <div className="form-row title-year-row">
+                <div className="form-control title-control">
+                  <input
+                    type="text"
+                    name="title"
+                    value={movie.title}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Введите название фильма"
+                  />
+                </div>
+                
+                <div className="form-control year-control" style={{ width: '80px !important', maxWidth: '80px !important' }}>
+                  <select 
+                    name="year"
+                    value={movie.year || currentYear}
+                    onChange={handleInputChange}
+                    className="hover-select"
+                  >
+                    {yearOptions.map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
               
-              <div className="form-control year-control" style={{ width: '80px !important', maxWidth: '80px !important' }}>
-                <select 
-                  name="year"
-                  value={movie.year || currentYear}
-                  onChange={handleInputChange}
-                  className="hover-select"
-                >
-                  {yearOptions.map(year => (
-                    <option key={year} value={year}>{year}</option>
-                  ))}
-                </select>
+              {/* Теги в отдельной строке */}
+              <div className="form-row">
+                <div className="form-control">
+                  <label>Теги:</label>
+                  <TagSelector 
+                    selectedTags={movie.tags} 
+                    onTagsChange={(newTags) => setMovie(prev => ({ ...prev, tags: newTags }))}
+                  />
+                </div>
+              </div>
+              
+              <div className="form-row">
+                <div className="form-control">
+                  <label>Описание:</label>
+                  <textarea
+                    name="description"
+                    value={movie.description}
+                    onChange={handleInputChange}
+                    className="description-textarea"
+                  ></textarea>
+                </div>
+              </div>
+              
+              <div className="form-row">
+                <div className="form-control">
+                  <label>URL трейлера:</label>
+                  <input
+                    type="text"
+                    name="trailerUrl"
+                    value={movie.trailerUrl}
+                    onChange={handleInputChange}
+                    placeholder="https://youtube.com/watch?v=..."
+                  />
+                </div>
               </div>
             </div>
             
-            {/* Теги в отдельной строке */}
-            <div className="form-row">
-              <div className="form-control">
-                <label>Теги:</label>
-                <TagSelector 
-                  selectedTags={movie.tags} 
-                  onTagsChange={(newTags) => setMovie(prev => ({ ...prev, tags: newTags }))}
-                />
-              </div>
-            </div>
-            
-            <div className="form-row">
-              <div className="form-control">
-                <label>Описание:</label>
-                <textarea
-                  name="description"
-                  value={movie.description}
-                  onChange={handleInputChange}
-                  className="description-textarea"
-                ></textarea>
-              </div>
-            </div>
-            
-            <div className="form-row">
-              <div className="form-control">
-                <label>URL трейлера:</label>
-                <input
-                  type="text"
-                  name="trailerUrl"
-                  value={movie.trailerUrl}
-                  onChange={handleInputChange}
-                  placeholder="https://youtube.com/watch?v=..."
-                />
-              </div>
-            </div>
-            
-            <div className="form-row">
+            {/* Секция с изображениями, прижатая к низу правой панели */}
+            <div className="form-row images-section" style={{ position: 'absolute', bottom: '35px', left: 0, right: 0 }}>
               <div className="form-control">
                 <div className="images-label-row">
                   <label>Кадры из фильма:</label>
