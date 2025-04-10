@@ -295,9 +295,9 @@ const ViewMovie = ({ movieId }) => {
               </div>
             )}
             
-            {/* Кадры из фильма */}
+            {/* Добавляем отступ перед "Кадрами из фильма" */}
             {movie.images && movie.images.length > 0 && (
-              <div className="form-row">
+              <div className="form-row" style={{ marginTop: '80px' }}> {/* Увеличиваем отступ до 80 пикселей */}
                 <div className="form-control">
                   <div className="images-label-row">
                     <label>Кадры из фильма:</label>
