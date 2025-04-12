@@ -66,6 +66,26 @@ const ViewMovie = ({ movieId }) => {
       ? `https://www.youtube.com/embed/${match[2]}`
       : null;
   };
+
+  // Функция для получения Vimeo ссылки
+  const getVimeoEmbedUrl = (url) => {
+    if (!url) return null;
+    
+    const regExp = /vimeo.com\/(\d+)/;
+    const match = url.match(regExp);
+    
+    return match ? `https://player.vimeo.com/video/${match[1]}` : null;
+  };
+
+  // Функция для получения RuTube ссылки
+  const getRutubeEmbedUrl = (url) => {
+    if (!url) return null;
+    
+    const regExp = /rutube.ru\/video\/([a-zA-Z0-9]+)/;
+    const match = url.match(regExp);
+    
+    return match ? `https://rutube.ru/play/embed/${match[1]}` : null;
+  };
   
   // Формирует заголовок с годом выпуска
   const getMovieTitle = () => {
@@ -115,15 +135,81 @@ const ViewMovie = ({ movieId }) => {
     return null;
   };
   
-  // Рендерим кадры из фильма
+  // Функция для определения типа медиа
+  const isImageMedia = (media) => {
+    return typeof media === 'string' || (media.type && media.type === 'image');
+  };
+  
+  // Функция для получения URL медиа
+  const getMediaUrl = (media) => {
+    return typeof media === 'string' ? media : media.url;
+  };
+  
+  // Функция для отображения видео
+  const renderVideo = (url, index) => {
+    // Определяем, является ли видео YouTube, Vimeo, RuTube или другим
+    const youtubeEmbedUrl = getYoutubeEmbedUrl(url);
+    const vimeoEmbedUrl = getVimeoEmbedUrl(url);
+    const rutubeEmbedUrl = getRutubeEmbedUrl(url);
+    
+    if (youtubeEmbedUrl) {
+      return (
+        <iframe
+          title={typeof index === 'string' ? index : `Видео ${index + 1}`}
+          src={youtubeEmbedUrl}
+          frameBorder="0"
+          allowFullScreen
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        ></iframe>
+      );
+    } else if (vimeoEmbedUrl) {
+      return (
+        <iframe
+          title={typeof index === 'string' ? index : `Видео ${index + 1}`}
+          src={vimeoEmbedUrl}
+          frameBorder="0"
+          allowFullScreen
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        ></iframe>
+      );
+    } else if (rutubeEmbedUrl) {
+      return (
+        <iframe
+          title={typeof index === 'string' ? index : `Видео ${index + 1}`}
+          src={rutubeEmbedUrl}
+          frameBorder="0"
+          allowFullScreen
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        ></iframe>
+      );
+    } else {
+      // Для других URL создаем ссылку
+      return (
+        <div className="external-video">
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            <div className="video-play-icon">
+              <FontAwesomeIcon icon={faPlay} />
+            </div>
+            <span>Открыть видео</span>
+          </a>
+        </div>
+      );
+    }
+  };
+  
+  // Рендерим кадры и видео из фильма
   const renderMovieImages = () => {
     if (!movie.images || movie.images.length === 0) return null;
     
     return (
       <div className="images-container">
-        {movie.images.map((img, index) => (
-          <div key={index} className="movie-image">
-            <img src={img} alt={`Кадр ${index + 1}`} />
+        {movie.images.map((media, index) => (
+          <div key={index} className={`movie-image ${isImageMedia(media) ? '' : 'movie-video'}`}>
+            {isImageMedia(media) ? (
+              <img src={getMediaUrl(media)} alt={`Кадр ${index + 1}`} />
+            ) : (
+              renderVideo(getMediaUrl(media), index)
+            )}
           </div>
         ))}
       </div>
@@ -216,12 +302,12 @@ const ViewMovie = ({ movieId }) => {
                 {renderDurationInfo()}
               </div>
               
-              {/* Заметки (перемещено из правой колонки) */}
-              {movie.notes && (
-                <div style={{ margin: '10px 0 5px 0', padding: '0' }}>
-                  <div style={{ fontWeight: 'bold', marginBottom: '3px', fontSize: '14px' }}>Мои заметки:</div>
-                  <div style={{ fontSize: '14px', whiteSpace: 'pre-line' }}>
-                    {movie.notes}
+              {/* Блок трейлера, если он существует */}
+              {movie.trailerUrl && (
+                <div style={{ margin: '15px 0', padding: '0' }}>
+                  <div style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '14px' }}>Трейлер:</div>
+                  <div style={{ width: '100%', height: '220px', borderRadius: '4px', overflow: 'hidden' }}>
+                    {renderVideo(movie.trailerUrl, 'trailer')}
                   </div>
                 </div>
               )}
@@ -269,38 +355,22 @@ const ViewMovie = ({ movieId }) => {
               </div>
             </div>
             
-            {/* Трейлер */}
-            {movie.trailerUrl && (
-              <div className="form-row">
-                <div className="form-control">
-                  <label>URL трейлера:</label>
-                  <div className="trailer-container">
-                    {getYoutubeEmbedUrl(movie.trailerUrl) ? (
-                      <iframe
-                        title={`Трейлер ${movie.title}`}
-                        src={getYoutubeEmbedUrl(movie.trailerUrl)}
-                        frameBorder="0"
-                        allowFullScreen
-                      ></iframe>
-                    ) : (
-                      <div className="trailer-link">
-                        <FontAwesomeIcon icon={faPlay} />
-                        <a href={movie.trailerUrl} target="_blank" rel="noopener noreferrer">
-                          {movie.trailerUrl}
-                        </a>
-                      </div>
-                    )}
-                  </div>
+            {/* Мои заметки - под описанием */}
+            <div className="form-row" style={{ marginTop: '15px' }}>
+              <div className="form-control">
+                <label>Мои заметки:</label>
+                <div className="notes-display">
+                  {movie.notes || 'Заметки отсутствуют'}
                 </div>
               </div>
-            )}
+            </div>
             
             {/* Добавляем отступ перед "Кадрами из фильма" */}
             {movie.images && movie.images.length > 0 && (
-              <div className="form-row" style={{ marginTop: '80px' }}> {/* Увеличиваем отступ до 80 пикселей */}
+              <div className="form-row" style={{ marginTop: '30px' }}>
                 <div className="form-control">
                   <div className="images-label-row">
-                    <label>Кадры из фильма:</label>
+                    <label>Кадры и видео:</label>
                   </div>
                   {renderMovieImages()}
                 </div>
