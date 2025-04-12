@@ -135,16 +135,6 @@ const ViewMovie = ({ movieId }) => {
     return null;
   };
   
-  // Функция для определения типа медиа
-  const isImageMedia = (media) => {
-    return typeof media === 'string' || (media.type && media.type === 'image');
-  };
-  
-  // Функция для получения URL медиа
-  const getMediaUrl = (media) => {
-    return typeof media === 'string' ? media : media.url;
-  };
-  
   // Функция для отображения видео
   const renderVideo = (url, index) => {
     // Определяем, является ли видео YouTube, Vimeo, RuTube или другим
@@ -197,25 +187,61 @@ const ViewMovie = ({ movieId }) => {
     }
   };
   
-  // Рендерим кадры и видео из фильма
+  // Функция для определения типа медиа
+  const isImageMedia = (media) => {
+    return typeof media === 'string' || (media.type && media.type === 'image');
+  };
+
+  // Функция для получения URL медиа
+  const getMediaUrl = (media) => {
+    return typeof media === 'string' ? media : media.url;
+  };
+
+  // Рендерим кадры из фильма (только изображения)
   const renderMovieImages = () => {
     if (!movie.images || movie.images.length === 0) return null;
     
+    // Фильтруем только изображения
+    const images = movie.images.filter(media => isImageMedia(media));
+    
+    if (images.length === 0) return null;
+    
+    // Ограничиваем количество отображаемых кадров до 3
+    const limitedImages = images.slice(0, 3);
+    
     return (
-      <div className="images-container">
-        {movie.images.map((media, index) => (
-          <div key={index} className={`movie-image ${isImageMedia(media) ? '' : 'movie-video'}`}>
-            {isImageMedia(media) ? (
-              <img src={getMediaUrl(media)} alt={`Кадр ${index + 1}`} />
-            ) : (
-              renderVideo(getMediaUrl(media), index)
-            )}
+      <div className="images-container" style={{
+        display: 'flex',
+        gap: '10px',
+        height: '100%',
+        overflow: 'hidden',
+        padding: '0',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        {limitedImages.map((media, index) => (
+          <div key={index} className="movie-image" style={{
+            flex: '0 0 auto',
+            width: '160px',
+            height: '100%',
+            borderRadius: '4px',
+            overflow: 'hidden'
+          }}>
+            <img 
+              src={getMediaUrl(media)} 
+              alt={`Кадр ${index + 1}`} 
+              style={{
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'cover'
+              }}
+            />
           </div>
         ))}
       </div>
     );
   };
-   
+  
   // Проверяем, есть ли рейтинг у фильма
   const hasRating = movie.rating !== null && movie.rating !== undefined;
   
@@ -297,85 +323,165 @@ const ViewMovie = ({ movieId }) => {
                 </div>
               </div>
               
-              {/* Информация о продолжительности сразу после дат */}
-              <div style={{ margin: '5px 0', padding: '0' }}>
+              {/* Возвращаем информацию о продолжительности */}
+              <div style={{ margin: '-8px 0 10px 0', padding: '0' }}>
                 {renderDurationInfo()}
               </div>
-              
-              {/* Блок трейлера, если он существует */}
-              {movie.trailerUrl && (
-                <div style={{ margin: '15px 0', padding: '0' }}>
-                  <div style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '14px' }}>Трейлер:</div>
-                  <div style={{ width: '100%', height: '220px', borderRadius: '4px', overflow: 'hidden' }}>
-                    {renderVideo(movie.trailerUrl, 'trailer')}
-                  </div>
+
+              {/* Мои заметки - перенесли из правой панели */}
+              <div style={{ margin: '0', padding: '0' }}>
+                <label style={{ fontWeight: 'bold', marginBottom: '3px', fontSize: '14px' }}>Мои заметки:</label>
+                <div style={{ 
+                  fontSize: '14px', 
+                  lineHeight: '1.5', 
+                  padding: '0', 
+                  backgroundColor: 'transparent', 
+                  borderRadius: '4px', 
+                  whiteSpace: 'pre-line',
+                  maxHeight: '85px',
+                  minHeight: '40px', 
+                  height: 'auto', 
+                  overflowY: 'auto'
+                }}>
+                  {movie.notes || 'Заметки отсутствуют'}
                 </div>
-              )}
-              
-              {/* Пустой блок для сохранения структуры */}
-              <div className="left-panel-bottom">
-                {/* Пустое пространство */}
               </div>
             </div>
           </div>
           
           <div className="form-right-panel">
-            {/* Название с годом */}
-            <div className="form-row">
-              <div className="form-control">
-                <h3 className="movie-title">{getMovieTitle()}</h3>
+            {/* Название с годом и теги в одной строке */}
+            <div className="form-row" style={{ marginBottom: '15px' }}>
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                width: '100%',
+                overflow: 'hidden'
+              }}>
+                <h3 style={{ 
+                  margin: '0', 
+                  textAlign: 'left',
+                  maxWidth: '50%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}>{getMovieTitle()}</h3>
+                
+                <div style={{ 
+                  display: 'flex', 
+                  flex: '1 1 auto', 
+                  marginLeft: '10px', 
+                  flexWrap: 'wrap',
+                  justifyContent: 'flex-end',
+                  overflow: 'hidden'
+                }}>
+                  {movie.isSeries && (
+                    <span style={{ 
+                      color: 'var(--secondary-color)', 
+                      fontWeight: 'bold',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      Сезон {movie.seasons}, Серий {movie.episodes}
+                    </span>
+                  )}
+                  
+                  {/* Теги в той же строке */}
+                  {movie.tags && movie.tags.length > 0 && (
+                    <div style={{ 
+                      display: 'flex', 
+                      gap: '5px', 
+                      flexWrap: 'wrap', 
+                      justifyContent: 'flex-end',
+                      margin: '0 0 0 8px'
+                    }}>
+                      {movie.isSeries && <span style={{ margin: '0 4px' }}></span>}
+                      {movie.tags.map((tag, index) => (
+                        <div key={index} className="movie-tag" style={{ 
+                          flex: '0 0 auto',
+                          backgroundColor: '#2176ff',
+                          color: 'white',
+                          padding: '3px 10px',
+                          borderRadius: '15px',
+                          fontSize: '12px',
+                          fontWeight: 'bold',
+                          margin: '2px',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                        }}>
+                          <span>{tag}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div className="metadata-value series-info" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-              {movie.isSeries && (
-                <span>Сезон {movie.seasons}, Серий {movie.episodes}</span>
-              )}
-              
-              {/* Теги в той же строке */}
-              {movie.tags && movie.tags.length > 0 && (
-                <>
-                  {movie.isSeries && <span style={{ margin: '0 8px' }}></span>}
-                  {movie.tags.map((tag, index) => (
-                    <div key={index} className="movie-tag">
-                      <span>{tag}</span>
-                    </div>
-                  ))}
-                </>
-              )}
-            </div>
-            
-            {/* Описание */}
-            <div className="form-row">
+            {/* Описание - с оптимизированной высотой */}
+            <div className="form-row" style={{ marginTop: '0' }}>
               <div className="form-control">
                 <label>Описание:</label>
-                <div className="description-display">
+                <div className="description-display" style={{ 
+                  maxHeight: '200px',
+                  overflowY: 'auto',
+                  backgroundColor: 'rgba(245, 245, 245, 0.3)',
+                  padding: '10px',
+                  borderRadius: '5px' 
+                }}>
                   {movie.description || 'Описание отсутствует'}
                 </div>
               </div>
             </div>
-            
-            {/* Мои заметки - под описанием */}
-            <div className="form-row" style={{ marginTop: '15px' }}>
-              <div className="form-control">
-                <label>Мои заметки:</label>
-                <div className="notes-display">
-                  {movie.notes || 'Заметки отсутствуют'}
-                </div>
-              </div>
-            </div>
-            
-            {/* Добавляем отступ перед "Кадрами из фильма" */}
-            {movie.images && movie.images.length > 0 && (
-              <div className="form-row" style={{ marginTop: '30px' }}>
-                <div className="form-control">
-                  <div className="images-label-row">
-                    <label>Кадры и видео:</label>
+
+            {/* Компактный блок с трейлером и кадрами */}
+            <div className="form-row" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: '20px',
+              marginTop: '15px',
+              marginBottom: '0'
+            }}>
+              {/* Компактный трейлер без лейбла */}
+              {movie.trailerUrl && (
+                <div style={{ 
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginBottom: '0'
+                }}>
+                  <div style={{ 
+                    width: '350px', 
+                    height: '197px',
+                    borderRadius: '4px', 
+                    overflow: 'hidden'
+                  }}>
+                    {renderVideo(movie.trailerUrl, 'compact-trailer')}
                   </div>
-                  {renderMovieImages()}
                 </div>
-              </div>
-            )}
+              )}
+              
+              {/* Компактные кадры из фильма без лейбла и приподнятые вверх */}
+              {movie.images && movie.images.filter(media => isImageMedia(media)).length > 0 && (
+                <div style={{ 
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginTop: '5px'
+                }}>
+                  <div style={{ 
+                    height: '130px',
+                    overflow: 'hidden',
+                    padding: '0',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    width: '100%',
+                    maxWidth: '550px'
+                  }}>
+                    {renderMovieImages()}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         

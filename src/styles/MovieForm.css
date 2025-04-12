@@ -271,9 +271,10 @@
 }
 
 /* Изменяем секцию с изображениями */
+/* Закомментировали стили для секции с изображениями 
 .form-row.images-section {
   position: absolute;
-  bottom: 25px; /* Увеличиваем с 15px до 25px для более точного позиционирования */
+  bottom: 25px;
   left: 0;
   right: 0;
   margin-bottom: 0;
@@ -285,11 +286,6 @@
   overflow-x: auto;
   padding-bottom: 5px;
   height: 100px;
-  width: 100%;
-}
-
-/* Добавим новое правило для настройки ширины поля "формы" */
-.form-right-panel .form-control {
   width: 100%;
 }
 
@@ -354,6 +350,12 @@
   line-height: 1;
   font-weight: 300;
   color: var(--gray-color);
+}
+*/
+
+/* Добавим новое правило для настройки ширины поля "формы" */
+.form-right-panel .form-control {
+  width: 100%;
 }
 
 /* Создаем контейнер для верхней части правой панели */
@@ -468,7 +470,7 @@ input[type="date"]::-webkit-inner-spin-button {
   flex-grow: 1;
 }
 
-/* Адаптивная верстка */
+/* Закомментировали стили для секции с изображениями 
 @media (min-width: 992px) {
   .movie-image, .add-image-placeholder {
     width: calc(25% - 6px);
@@ -480,6 +482,7 @@ input[type="date"]::-webkit-inner-spin-button {
     max-height: 208px;
   }
 }
+*/
 
 @media (min-width: 768px) {
   .modal-container {

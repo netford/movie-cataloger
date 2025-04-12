@@ -203,16 +203,16 @@
   word-break: break-all;
 }
 
-/* Стили для изображений */
+/* Закомментировали стили для изображений 
 .images-container {
   display: flex;
   gap: 8px;
-  overflow: hidden; /* Скрываем полосу прокрутки */
+  overflow: hidden;
   padding-bottom: 5px;
   margin-top: 5px;
   height: 100px;
-  flex-wrap: wrap; /* Размещаем контент в несколько строк */
-  max-height: 210px; /* Позволяем отображаться в 2 строки */
+  flex-wrap: wrap;
+  max-height: 210px;
 }
 
 .movie-image {
@@ -228,6 +228,7 @@
   height: 100%;
   object-fit: cover;
 }
+*/
 
 /* Стили для сериальной информации */
 .series-info {
@@ -359,4 +360,12 @@
   .modal-actions button {
     width: 100%;
   }
+}
+
+.trailer-container-elevated {
+  position: relative;
+  top: -25px;
+  margin: 0;
+  padding: 0;
+  z-index: 1;
 }

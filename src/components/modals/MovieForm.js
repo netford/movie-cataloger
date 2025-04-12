@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faTimes, faUpload, faChevronUp, faChevronDown, faImage, faVideo } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faTimes, faUpload, faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import Modal from './Modal';
 import TagSelector from '../tags/TagSelector';
@@ -206,6 +206,7 @@ const MovieForm = ({ movieId = null }) => {
   };
 
   // Обработчик для добавления видео
+  // eslint-disable-next-line no-unused-vars
   const handleAddVideoLink = () => {
     // Запрашиваем ссылку на видео
     const videoUrl = prompt("Введите ссылку на видео (YouTube, Vimeo и др.):");
@@ -225,6 +226,7 @@ const MovieForm = ({ movieId = null }) => {
   };
 
   // Обновленный обработчик для добавления изображений
+  // eslint-disable-next-line no-unused-vars
   const handleAddImage = (e) => {
     const files = e.target.files;
     if (files.length > 0) {
@@ -245,6 +247,7 @@ const MovieForm = ({ movieId = null }) => {
     }
   };
   
+  // eslint-disable-next-line no-unused-vars
   const handleRemoveImage = (indexToRemove) => {
     setMovie(prev => ({ 
       ...prev, 
@@ -291,11 +294,13 @@ const MovieForm = ({ movieId = null }) => {
   const formId = `movie-form-${movieId || 'new'}`;
   
   // Вспомогательная функция для проверки типа медиа
+  // eslint-disable-next-line no-unused-vars
   const isImageMedia = (media) => {
     return typeof media === 'string' || (media.type && media.type === 'image');
   };
   
   // Вспомогательная функция для получения URL медиа
+  // eslint-disable-next-line no-unused-vars
   const getMediaUrl = (media) => {
     return typeof media === 'string' ? media : media.url;
   };
@@ -723,7 +728,7 @@ const MovieForm = ({ movieId = null }) => {
             </div>
           </div>
           
-          {/* Секция с изображениями, прижатая к низу правой панели */}
+          {/* Закомментировали секцию с изображениями 
           <div className="form-row images-section" style={{ position: 'absolute', bottom: '35px', left: 0, right: 0 }}>
             <div className="form-control">
               <div className="images-label-row">
@@ -750,7 +755,6 @@ const MovieForm = ({ movieId = null }) => {
                   </div>
                 ))}
                 
-                {/* Плейсхолдеры для добавления медиа */}
                 <div className="add-media-placeholders">
                   <label htmlFor="image-upload" className="add-image-placeholder" title="Добавить изображение">
                     <FontAwesomeIcon icon={faImage} />
@@ -775,6 +779,7 @@ const MovieForm = ({ movieId = null }) => {
               </div>
             </div>
           </div>
+          */}
         </div>
       </div>
       
