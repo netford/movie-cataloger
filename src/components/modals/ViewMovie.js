@@ -107,10 +107,10 @@ const ViewMovie = ({ movieId }) => {
           <div style={{ margin: '5px 0' }}>
             <div style={{ fontWeight: 'bold', marginBottom: '3px', fontSize: '14px' }}>Продолжительность:</div>
             <div style={{ fontSize: '14px' }}>
-              <span>Серия: </span>{movie.episodeDuration} мин.
+              <span>Серия: ~</span>{movie.episodeDuration} мин.
             </div>
             <div style={{ marginTop: '3px', fontSize: '14px' }}>
-              <span>Общая: </span>{totalMinutes} мин. 
+              <span>Общая: ~</span>{totalMinutes} мин. 
               ({hours > 0 ? `${hours} ч. ` : ''}{minutes > 0 ? `${minutes} мин.` : ''})
             </div>
           </div>

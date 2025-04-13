@@ -394,8 +394,8 @@ const MovieForm = ({ movieId = null }) => {
   
   return (
     <Modal title={isEditMode ? 'Редактирование фильма' : 'Добавление фильма'}>
-      <div className="movie-form" style={{ height: '850px', overflow: 'auto' }}>
-        <div className="compact-form-layout" style={{ height: 'auto', overflow: 'visible', paddingTop: '10px' }}>
+      <div className="movie-form" style={{ height: 'auto', overflow: 'hidden' }}>
+        <div className="compact-form-layout" style={{ height: 'auto', overflow: 'visible', paddingTop: '5px', paddingBottom: '70px' }}>
           <div className="form-left-panel">
             {/* Блок с постером */}
             <div className="form-poster-container" style={{ marginTop: '5px' }}>
@@ -421,36 +421,6 @@ const MovieForm = ({ movieId = null }) => {
                 onChange={handlePosterChange}
                 style={{ display: 'none' }}
               />
-            </div>
-
-            {/* Добавляем заметки сразу после постера */}
-            <div className="form-control" style={{ marginTop: '2px' }}>
-              <label style={{ fontWeight: 'bold', marginBottom: '3px', fontSize: '14px' }}>Мои заметки:</label>
-              <textarea
-                name="notes"
-                value={movie.notes}
-                onChange={handleInputChange}
-                maxLength={130}
-                placeholder="Здесь вы можете добавить свой комментарий"
-                style={{ 
-                  height: '75px',
-                  maxHeight: '75px',
-                  width: '100%',
-                  resize: 'none',
-                  border: '1px solid var(--gray-color)',
-                  borderRadius: 'var(--border-radius)',
-                  padding: '6px 8px',
-                  fontSize: '13px'
-                }}
-              ></textarea>
-              <div style={{ 
-                textAlign: 'right', 
-                fontSize: '11px', 
-                color: 'var(--dark-gray)',
-                marginTop: '2px' 
-              }}>
-                {movie.notes ? movie.notes.length : 0}/130
-              </div>
             </div>
             
             <div className="form-fields-group" style={{ gap: '2px', marginTop: '-5px' }}>
@@ -548,7 +518,7 @@ const MovieForm = ({ movieId = null }) => {
                 </div>
               )}
               
-              <div className="form-row" style={{ marginBottom: '0', marginTop: isWatchedStatus ? '15px' : '25px', display: 'flex', alignItems: 'center' }}>
+              <div className="form-row" style={{ marginBottom: '0', marginTop: isWatchedStatus ? '8px' : '12px', display: 'flex', alignItems: 'center' }}>
                 <div className="form-control type-selector" style={{ marginRight: '15px' }}>
                   <label className="radio-label" style={{ marginTop: '0', fontWeight: 'bold', fontSize: '14px' }}>
                     <input
@@ -643,7 +613,7 @@ const MovieForm = ({ movieId = null }) => {
                 </div>
                 
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <span style={{ fontSize: '12px', marginRight: '5px', fontWeight: 'bold' }}>Длит. серии:</span>
+                  <span style={{ fontSize: '12px', marginRight: '5px', fontWeight: 'bold' }}>Длит. серии: </span>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
                     <input
                       type="number"
@@ -707,6 +677,41 @@ const MovieForm = ({ movieId = null }) => {
                 </div>
               )}
             </div>
+
+            {/* Мои заметки */}
+            <div className="form-control" style={{ marginTop: '8px' }}>
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                marginBottom: '3px'
+              }}>
+                <label style={{ fontWeight: 'bold', fontSize: '14px' }}>Мои заметки:</label>
+                <span style={{ 
+                  fontSize: '11px', 
+                  color: 'var(--dark-gray)'
+                }}>
+                  {movie.notes ? movie.notes.length : 0}/130
+                </span>
+              </div>
+              <textarea
+                name="notes"
+                value={movie.notes}
+                onChange={handleInputChange}
+                maxLength={130}
+                placeholder="Здесь вы можете добавить свой комментарий"
+                style={{ 
+                  height: '70px',
+                  maxHeight: '70px',
+                  width: '100%',
+                  resize: 'none',
+                  border: '1px solid var(--gray-color)',
+                  borderRadius: 'var(--border-radius)',
+                  padding: '6px 8px',
+                  fontSize: '13px'
+                }}
+              ></textarea>
+            </div>
           </div>
           
           <div className="form-right-panel" style={{ position: 'relative' }}>
@@ -759,8 +764,8 @@ const MovieForm = ({ movieId = null }) => {
                     onChange={handleInputChange}
                     className="description-textarea"
                     style={{
-                      maxHeight: '300px',
-                      height: '300px',
+                      maxHeight: '290px',
+                      height: '290px',
                       overflowY: 'auto',
                       backgroundColor: 'rgba(245, 245, 245, 0.3)',
                       padding: '10px',
@@ -775,7 +780,7 @@ const MovieForm = ({ movieId = null }) => {
                 display: 'flex', 
                 flexDirection: 'row', 
                 gap: '15px',
-                marginTop: '30px',
+                                  marginTop: '20px',
                 marginBottom: '0',
                 justifyContent: 'space-between',
                 paddingRight: '15px'
