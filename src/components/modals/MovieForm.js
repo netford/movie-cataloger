@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faTimes, faUpload, faChevronUp, faChevronDown, faImage, faVideo } from '@fortawesome/free-solid-svg-icons';
+import { 
+  faSave, 
+  faTimes, 
+  faUpload, 
+  faChevronUp, 
+  faChevronDown, 
+  faImage, 
+  faVideo, 
+  faPlus 
+} from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import Modal from './Modal';
 import TagSelector from '../tags/TagSelector';
@@ -300,188 +309,139 @@ const MovieForm = ({ movieId = null }) => {
     return typeof media === 'string' ? media : media.url;
   };
   
-  // Функция для отображения миниатюр кадров из фильма в сетке 2×2
-  const renderMovieImagesGrid = () => {
-    if (!movie.images || movie.images.length === 0) return null;
-    
-    // Фильтруем только изображения
-    const images = movie.images.filter(media => isImageMedia(media));
-    
-    if (images.length === 0) return null;
-    
-    // Ограничиваем количество отображаемых кадров до 4 для сетки 2×2
-    const limitedImages = images.slice(0, 4);
-    
-    return limitedImages.map((media, index) => (
-      <div key={index} className="movie-image-grid" style={{
-        borderRadius: '4px',
-        overflow: 'hidden',
-        width: '100%',
-        height: '100%',
-        position: 'relative'
-      }}>
-        <img 
-          src={getMediaUrl(media)} 
-          alt={`Кадр ${index + 1}`} 
-          style={{
-            width: '100%', 
-            height: '100%', 
-            objectFit: 'cover'
-          }}
-        />
-        <button
-          type="button"
-          className="image-remove"
-          onClick={() => handleRemoveImage(index)}
-          style={{
-            position: 'absolute',
-            top: '3px',
-            right: '3px',
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            border: 'none',
-            borderRadius: '50%',
-            width: '18px',
-            height: '18px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--danger-color)',
-            fontWeight: 'bold',
-            fontSize: '12px',
-            cursor: 'pointer',
-            zIndex: '5'
-          }}
-        >
-          ×
-        </button>
-      </div>
-    ));
-  };
-  
   return (
     <Modal title={isEditMode ? 'Редактирование фильма' : 'Добавление фильма'}>
-    {/* Вставляем стили непосредственно в компонент */}
-    <style>
-      {`
-        #${formId} .watched-notes-textarea {
-          height: 135px !important;
-          max-height: 135px !important;
-          min-height: 135px !important;
-        }
-        
-        #${formId} .non-watched-notes-textarea {
-          height: 189px !important;
-          max-height: 189px !important;
-          min-height: 189px !important;
-        }
-        
-        #${formId} .form-right-panel {
-          position: relative;
-        }
-        
-        #${formId} .form-right-panel-content {
-          margin-bottom: 200px;
-        }
-      `}
-    </style>
-    
-    <form id={formId} className="movie-form" style={{ height: 'auto', overflow: 'visible' }} onSubmit={handleSubmit}>
-      <div className="compact-form-layout" style={{ height: 'auto', overflow: 'visible' }}>
-        <div className="form-left-panel">
-          <div className="form-poster-container">
-            {movie.poster ? (
-              <div className="form-poster">
-                <img src={movie.poster} alt="Постер фильма" />
-                <div className="poster-overlay">
-                  <label className="poster-upload-btn" htmlFor="poster-upload">
-                    Изменить
-                  </label>
+      <div className="movie-form" style={{ height: '850px', overflow: 'auto' }}>
+        <div className="compact-form-layout" style={{ height: 'auto', overflow: 'visible', paddingTop: '10px' }}>
+          <div className="form-left-panel">
+            {/* Блок с постером */}
+            <div className="form-poster-container" style={{ marginTop: '5px' }}>
+              {movie.poster ? (
+                <div className="form-poster">
+                  <img src={movie.poster} alt="Постер фильма" />
+                  <div className="poster-overlay">
+                    <label className="poster-upload-btn" htmlFor="poster-upload">
+                      Изменить
+                    </label>
+                  </div>
+                </div>
+              ) : (
+                <label className="form-poster-placeholder" htmlFor="poster-upload">
+                  <FontAwesomeIcon icon={faUpload} size="2x" style={{ marginBottom: '10px' }} />
+                  <span>Загрузить постер</span>
+                </label>
+              )}
+              <input
+                type="file"
+                id="poster-upload"
+                accept="image/*"
+                onChange={handlePosterChange}
+                style={{ display: 'none' }}
+              />
+            </div>
+
+            {/* Добавляем заметки сразу после постера */}
+            <div className="form-control" style={{ marginTop: '2px' }}>
+              <label style={{ fontWeight: 'bold', marginBottom: '3px', fontSize: '14px' }}>Мои заметки:</label>
+              <textarea
+                name="notes"
+                value={movie.notes}
+                onChange={handleInputChange}
+                maxLength={130}
+                placeholder="Здесь вы можете добавить свой комментарий"
+                style={{ 
+                  height: '75px',
+                  maxHeight: '75px',
+                  width: '100%',
+                  resize: 'none',
+                  border: '1px solid var(--gray-color)',
+                  borderRadius: 'var(--border-radius)',
+                  padding: '6px 8px',
+                  fontSize: '13px'
+                }}
+              ></textarea>
+              <div style={{ 
+                textAlign: 'right', 
+                fontSize: '11px', 
+                color: 'var(--dark-gray)',
+                marginTop: '2px' 
+              }}>
+                {movie.notes ? movie.notes.length : 0}/130
+              </div>
+            </div>
+            
+            <div className="form-fields-group" style={{ gap: '2px', marginTop: '-5px' }}>
+              <div className="form-row" style={{ marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
+                {/* Левая часть верхней строки: при статусе "Просмотрено" - рейтинг, при других статусах - дата добавления */}
+                <div className="form-control" style={{ width: '48%' }}>
+                  {isWatchedStatus ? (
+                    <>
+                      <label style={{ marginBottom: '2px', fontWeight: 'bold', fontSize: '14px' }}>Рейтинг:</label>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <input
+                          type="number"
+                          name="rating"
+                          min="0"
+                          max="100"
+                          value={movie.rating}
+                          onChange={handleRatingChange}
+                          style={{...numberInputStyle, width: '60px'}}
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <button 
+                            type="button" 
+                            onClick={() => handleRatingStep(5)}
+                            style={upButtonStyle}
+                          >
+                            <FontAwesomeIcon icon={faChevronUp} />
+                          </button>
+                          <button 
+                            type="button" 
+                            onClick={() => handleRatingStep(-5)}
+                            style={downButtonStyle}
+                          >
+                            <FontAwesomeIcon icon={faChevronDown} />
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <label style={{ marginBottom: '2px', fontWeight: 'bold', fontSize: '14px' }}>Добавлено:</label>
+                      <input
+                        type="date"
+                        name="dateAdded"
+                        value={movie.dateAdded.slice(0, 10)}
+                        onChange={handleInputChange}
+                        className="date-input"
+                      />
+                    </>
+                  )}
+                </div>
+
+                {/* Статус - всегда справа */}
+                <div className="form-control" style={{ width: '48%' }}>
+                  <label style={{ marginBottom: '2px', fontWeight: 'bold', fontSize: '14px' }}>Статус:</label>
+                  <select
+                    name="status"
+                    value={movie.status}
+                    onChange={handleStatusChange}
+                    className="hover-select"
+                  >
+                    <option value="toWatch">Запланировано</option>
+                    <option value="watching">Смотрим</option>
+                    <option value="watched">Просмотрено</option>
+                    <option value="cancelled">Отменено</option>
+                  </select>
                 </div>
               </div>
-            ) : (
-              <label className="form-poster-placeholder" htmlFor="poster-upload">
-                <FontAwesomeIcon icon={faUpload} size="2x" style={{ marginBottom: '10px' }} />
-                <span>Загрузить постер</span>
-              </label>
-            )}
-            <input
-              type="file"
-              id="poster-upload"
-              accept="image/*"
-              onChange={handlePosterChange}
-              style={{ display: 'none' }}
-            />
-          </div>
-
-          {/* Добавляем заметки сразу после постера */}
-          <div className="form-control" style={{ marginTop: '2px' }}>
-            <textarea
-              name="notes"
-              value={movie.notes}
-              onChange={handleInputChange}
-              maxLength={130}
-              placeholder="Здесь вы можете добавить свой комментарий"
-              style={{ 
-                height: '75px',
-                maxHeight: '75px',
-                width: '100%',
-                resize: 'none',
-                border: '1px solid var(--gray-color)',
-                borderRadius: 'var(--border-radius)',
-                padding: '6px 8px',
-                fontSize: '13px'
-              }}
-            ></textarea>
-            <div style={{ 
-              textAlign: 'right', 
-              fontSize: '11px', 
-              color: 'var(--dark-gray)',
-              marginTop: '2px' 
-            }}>
-              {movie.notes ? movie.notes.length : 0}/130
-            </div>
-          </div>
-          
-          
-          
-          <div className="form-fields-group" style={{ gap: '2px', marginTop: '-5px' }}>
-            <div className="form-row" style={{ marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
-              {/* Левая часть верхней строки: при статусе "Просмотрено" - рейтинг, при других статусах - дата добавления */}
-              <div className="form-control" style={{ width: '48%' }}>
-                {isWatchedStatus ? (
-                  <>
-                    <label style={{ marginBottom: '2px' }}>Рейтинг:</label>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <input
-                        type="number"
-                        name="rating"
-                        min="0"
-                        max="100"
-                        value={movie.rating}
-                        onChange={handleRatingChange}
-                        style={{...numberInputStyle, width: '60px'}}
-                      />
-                      <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <button 
-                          type="button" 
-                          onClick={() => handleRatingStep(5)}
-                          style={upButtonStyle}
-                        >
-                          <FontAwesomeIcon icon={faChevronUp} />
-                        </button>
-                        <button 
-                          type="button" 
-                          onClick={() => handleRatingStep(-5)}
-                          style={downButtonStyle}
-                        >
-                          <FontAwesomeIcon icon={faChevronDown} />
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <label style={{ marginBottom: '2px' }}>Добавлено:</label>
+              
+              {/* Нижняя часть полей дат */}
+              {isWatchedStatus && (
+                <div className="form-row" style={{ marginBottom: '4px' }}>
+                  {/* При статусе "Просмотрено" показываем обе даты */}
+                  <div className="form-control" style={{ width: '48%' }}>
+                    <label style={{ marginBottom: '2px', fontWeight: 'bold', fontSize: '14px' }}>Добавлено:</label>
                     <input
                       type="date"
                       name="dateAdded"
@@ -489,105 +449,172 @@ const MovieForm = ({ movieId = null }) => {
                       onChange={handleInputChange}
                       className="date-input"
                     />
-                  </>
+                  </div>
+                  
+                  <div className="form-control" style={{ width: '48%' }}>
+                    <label style={{ marginBottom: '2px', fontWeight: 'bold', fontSize: '14px' }}>Просмотрено:</label>
+                    <input
+                      type="date"
+                      name="dateWatched"
+                      value={movie.dateWatched ? movie.dateWatched.slice(0, 10) : ''}
+                      onChange={handleInputChange}
+                      className="date-input"
+                      required={isWatchedStatus}
+                    />
+                  </div>
+                </div>
+              )}
+              
+              <div className="form-row" style={{ marginBottom: '0', marginTop: isWatchedStatus ? '15px' : '25px', display: 'flex', alignItems: 'center' }}>
+                <div className="form-control type-selector" style={{ marginRight: '15px' }}>
+                  <label className="radio-label" style={{ marginTop: '0', fontWeight: 'bold', fontSize: '14px' }}>
+                    <input
+                      type="radio"
+                      name="contentType"
+                      value="movie"
+                      checked={!movie.isSeries}
+                      onChange={handleTypeChange}
+                    />
+                    Фильм
+                  </label>
+                  <label className="radio-label" style={{ marginTop: '0' }}>
+                    <input
+                      type="radio"
+                      name="contentType"
+                      value="series"
+                      checked={movie.isSeries}
+                      onChange={handleTypeChange}
+                    />
+                    Сериал
+                  </label>
+                </div>
+                
+                {/* Добавляем поле Сезон сразу после радиокнопок, только если выбран Сериал */}
+                {movie.isSeries && (
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', marginRight: '5px', fontWeight: 'bold' }}>Сезон:</span>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <input
+                        type="number"
+                        name="seasons"
+                        min="1"
+                        max="99"
+                        value={movie.seasons || ''}
+                        onChange={handleInputChange}
+                        style={{...numberInputStyle, width: '35px'}}
+                      />
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <button 
+                          type="button" 
+                          onClick={() => handleNumberStep('seasons', 1, 1, 99)}
+                          style={upButtonStyle}
+                        >
+                          <FontAwesomeIcon icon={faChevronUp} />
+                        </button>
+                        <button 
+                          type="button" 
+                          onClick={() => handleNumberStep('seasons', -1, 1, 99)}
+                          style={downButtonStyle}
+                        >
+                          <FontAwesomeIcon icon={faChevronDown} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
 
-              {/* Статус - всегда справа */}
-              <div className="form-control" style={{ width: '48%' }}>
-                <label style={{ marginBottom: '2px' }}>Статус:</label>
-                <select
-                  name="status"
-                  value={movie.status}
-                  onChange={handleStatusChange}
-                  className="hover-select"
-                >
-                  <option value="toWatch">Запланировано</option>
-                  <option value="watching">Смотрим</option>
-                  <option value="watched">Просмотрено</option>
-                  <option value="cancelled">Отменено</option>
-                </select>
-              </div>
-            </div>
-            
-            {/* Нижняя часть полей дат */}
-            {isWatchedStatus && (
-              <div className="form-row" style={{ marginBottom: '4px' }}>
-                {/* При статусе "Просмотрено" показываем обе даты */}
-                <div className="form-control" style={{ width: '48%' }}>
-                  <label style={{ marginBottom: '2px' }}>Добавлено:</label>
-                  <input
-                    type="date"
-                    name="dateAdded"
-                    value={movie.dateAdded.slice(0, 10)}
-                    onChange={handleInputChange}
-                    className="date-input"
-                  />
-                </div>
-                
-                <div className="form-control" style={{ width: '48%' }}>
-                  <label style={{ marginBottom: '2px' }}>Просмотрено:</label>
-                  <input
-                    type="date"
-                    name="dateWatched"
-                    value={movie.dateWatched ? movie.dateWatched.slice(0, 10) : ''}
-                    onChange={handleInputChange}
-                    className="date-input"
-                    required={isWatchedStatus}
-                  />
-                </div>
-              </div>
-            )}
-            
-            <div className="form-row" style={{ marginBottom: '0', marginTop: isWatchedStatus ? '15px' : '25px', display: 'flex', alignItems: 'center' }}>
-              <div className="form-control type-selector" style={{ marginRight: '15px' }}>
-                <label className="radio-label" style={{ marginTop: '0' }}>
-                  <input
-                    type="radio"
-                    name="contentType"
-                    value="movie"
-                    checked={!movie.isSeries}
-                    onChange={handleTypeChange}
-                  />
-                  Фильм
-                </label>
-                <label className="radio-label" style={{ marginTop: '0' }}>
-                  <input
-                    type="radio"
-                    name="contentType"
-                    value="series"
-                    checked={movie.isSeries}
-                    onChange={handleTypeChange}
-                  />
-                  Сериал
-                </label>
-              </div>
-              
-              {/* Добавляем поле Сезон сразу после радиокнопок, только если выбран Сериал */}
-              {movie.isSeries && (
+              {/* А теперь отдельная строка для Серий и Длительности серии, только если выбран Сериал */}
+              {movie.isSeries ? (
+                <div className="form-row" style={{ marginBottom: '4px', marginTop: '2px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <span style={{ fontSize: '12px', marginRight: '5px' }}>Сезон:</span>
+                  <span style={{ fontSize: '12px', marginRight: '5px', fontWeight: 'bold' }}>Серий:</span>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
                     <input
                       type="number"
-                      name="seasons"
-                      min="1"
-                      max="99"
-                      value={movie.seasons || ''}
+                      name="episodes"
+                      min="2"
+                      max="300"
+                      value={movie.episodes || ''}
                       onChange={handleInputChange}
-                      style={{...numberInputStyle, width: '35px'}}
+                      required={movie.isSeries}
+                      style={{...numberInputStyle, width: '40px'}}
                     />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <button 
                         type="button" 
-                        onClick={() => handleNumberStep('seasons', 1, 1, 99)}
+                        onClick={() => handleNumberStep('episodes', 1, 2, 300)}
                         style={upButtonStyle}
                       >
                         <FontAwesomeIcon icon={faChevronUp} />
                       </button>
                       <button 
                         type="button" 
-                        onClick={() => handleNumberStep('seasons', -1, 1, 99)}
+                        onClick={() => handleNumberStep('episodes', -1, 2, 300)}
+                        style={downButtonStyle}
+                      >
+                        <FontAwesomeIcon icon={faChevronDown} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <span style={{ fontSize: '12px', marginRight: '5px', fontWeight: 'bold' }}>Длит. серии:</span>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="number"
+                      name="episodeDuration"
+                      min="1"
+                      max="150"
+                      value={movie.episodeDuration || ''}
+                      onChange={handleInputChange}
+                      required={movie.isSeries}
+                      style={{...numberInputStyle, width: '40px'}}
+                    />
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <button 
+                        type="button" 
+                        onClick={() => handleNumberStep('episodeDuration', 1, 1, 150)}
+                        style={upButtonStyle}
+                      >
+                        <FontAwesomeIcon icon={faChevronUp} />
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => handleNumberStep('episodeDuration', -1, 1, 150)}
+                        style={downButtonStyle}
+                      >
+                        <FontAwesomeIcon icon={faChevronDown} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              ) : (
+                <div className="form-row" style={{ marginBottom: '4px', marginTop: '-5px', display: 'flex', alignItems: 'center' }}>
+                  <span style={{ fontSize: '12px', marginRight: '5px', fontWeight: 'bold' }}>Продолжит. (мин.):</span>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="number"
+                      name="duration"
+                      min="1"
+                      value={movie.duration || ''}
+                      onChange={handleInputChange}
+                      required={!movie.isSeries}
+                      style={{...numberInputStyle, width: '60px'}}
+                    />
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <button 
+                        type="button" 
+                        onClick={() => handleNumberStep('duration', 5, 1, 999)}
+                        style={upButtonStyle}
+                      >
+                        <FontAwesomeIcon icon={faChevronUp} />
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => handleNumberStep('duration', -5, 1, 999)}
                         style={downButtonStyle}
                       >
                         <FontAwesomeIcon icon={faChevronDown} />
@@ -597,332 +624,274 @@ const MovieForm = ({ movieId = null }) => {
                 </div>
               )}
             </div>
-
-            {/* А теперь отдельная строка для Серий и Длительности серии, только если выбран Сериал */}
-            {movie.isSeries ? (
-              <div className="form-row" style={{ marginBottom: '4px', marginTop: '2px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{ fontSize: '12px', marginRight: '5px' }}>Серий:</span>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+          </div>
+          
+          <div className="form-right-panel" style={{ position: 'relative' }}>
+            {/* Обертка для верхней части правой панели, которая скроллится */}
+            <div className="form-right-panel-content" style={{ marginBottom: '0' }}>
+              {/* Название и Год выпуска в одной строке */}
+              <div className="form-row title-year-row" style={{ marginTop: '5px' }}>
+                <div className="form-control title-control">
                   <input
-                    type="number"
-                    name="episodes"
-                    min="2"
-                    max="300"
-                    value={movie.episodes || ''}
+                    type="text"
+                    name="title"
+                    value={movie.title}
                     onChange={handleInputChange}
-                    required={movie.isSeries}
-                    style={{...numberInputStyle, width: '40px'}}
+                    required
+                    placeholder="Введите название фильма"
                   />
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <button 
-                      type="button" 
-                      onClick={() => handleNumberStep('episodes', 1, 2, 300)}
-                      style={upButtonStyle}
-                    >
-                      <FontAwesomeIcon icon={faChevronUp} />
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={() => handleNumberStep('episodes', -1, 2, 300)}
-                      style={downButtonStyle}
-                    >
-                      <FontAwesomeIcon icon={faChevronDown} />
-                    </button>
-                  </div>
+                </div>
+                
+                <div className="form-control year-control" style={{ width: '80px !important', maxWidth: '80px !important' }}>
+                  <select 
+                    name="year"
+                    value={movie.year || currentYear}
+                    onChange={handleInputChange}
+                    className="hover-select"
+                  >
+                    {yearOptions.map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
               
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{ fontSize: '12px', marginRight: '5px' }}>Длит. серии:</span>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <input
-                    type="number"
-                    name="episodeDuration"
-                    min="1"
-                    max="150"
-                    value={movie.episodeDuration || ''}
-                    onChange={handleInputChange}
-                    required={movie.isSeries}
-                    style={{...numberInputStyle, width: '40px'}}
+              {/* Теги в отдельной строке */}
+              <div className="form-row">
+                <div className="form-control">
+                  <label style={{ fontWeight: 'bold', fontSize: '14px' }}>Теги:</label>
+                  <TagSelector 
+                    selectedTags={movie.tags} 
+                    onTagsChange={(newTags) => setMovie(prev => ({ ...prev, tags: newTags }))}
                   />
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <button 
-                      type="button" 
-                      onClick={() => handleNumberStep('episodeDuration', 1, 1, 150)}
-                      style={upButtonStyle}
-                    >
-                      <FontAwesomeIcon icon={faChevronUp} />
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={() => handleNumberStep('episodeDuration', -1, 1, 150)}
-                      style={downButtonStyle}
-                    >
-                      <FontAwesomeIcon icon={faChevronDown} />
-                    </button>
+                </div>
+              </div>
+              
+              <div className="form-row">
+                <div className="form-control">
+                  <label style={{ fontWeight: 'bold', fontSize: '14px' }}>Описание:</label>
+                  <textarea
+                    name="description"
+                    value={movie.description}
+                    onChange={handleInputChange}
+                    className="description-textarea"
+                    style={{
+                      maxHeight: '300px',
+                      height: '300px',
+                      overflowY: 'auto',
+                      backgroundColor: 'rgba(245, 245, 245, 0.3)',
+                      padding: '10px',
+                      borderRadius: '5px'
+                    }}
+                  ></textarea>
+                </div>
+              </div>
+              
+              {/* Блок с трейлером и кадрами в горизонтальном расположении */}
+              <div className="form-row media-container-row" style={{ 
+                display: 'flex', 
+                flexDirection: 'row', 
+                gap: '15px',
+                marginTop: '30px',
+                marginBottom: '0',
+                justifyContent: 'space-between',
+                paddingRight: '15px'
+              }}>
+                {/* Кадры из фильма в сетке 2×2 */}
+                <div style={{ 
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start'
+                }}>
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    width: '100%', 
+                    marginBottom: '5px',
+                    alignItems: 'center'
+                  }}>
+                    <label style={{ 
+                      fontWeight: 'bold', 
+                      fontSize: '14px',
+                      alignSelf: 'flex-start'
+                    }}>Кадры из фильма:</label>
+                    
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button
+                        type="button"
+                        className="btn-add-new-tag"
+                        onClick={handleAddVideoLink}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          fontSize: '12px',
+                          color: 'var(--primary-color)',
+                          cursor: 'pointer',
+                          padding: '5px',
+                          transition: 'background-color 0.2s'
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faVideo} /> Добавить видео
+                      </button>
+                      
+                      <label
+                        htmlFor="image-upload"
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          fontSize: '12px',
+                          color: 'var(--primary-color)',
+                          cursor: 'pointer',
+                          padding: '5px',
+                          transition: 'background-color 0.2s'
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faImage} /> Добавить изображение
+                      </label>
+                      <input
+                        type="file"
+                        id="image-upload"
+                        accept="image/*"
+                        multiple
+                        onChange={handleAddImage}
+                        style={{ display: 'none' }}
+                      />
+                    </div>
                   </div>
+                  
+                  {movie.images && movie.images.length > 0 ? (
+                    <div style={{ 
+                      width: '100%',
+                      height: '200px',
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(2, 1fr)',
+                      gridTemplateRows: 'repeat(2, 1fr)',
+                      gap: '10px'
+                    }}>
+                      {movie.images.slice(0, 4).map((media, index) => (
+                        <div key={index} style={{
+                          borderRadius: '4px',
+                          overflow: 'hidden',
+                          width: '100%',
+                          height: '100%',
+                          position: 'relative'
+                        }}>
+                          {isImageMedia(media) ? (
+                            <img 
+                              src={getMediaUrl(media)} 
+                              alt={`Кадр ${index + 1}`} 
+                              style={{
+                                width: '100%', 
+                                height: '100%', 
+                                objectFit: 'cover'
+                              }}
+                            />
+                          ) : (
+                            <div style={{
+                              width: '100%',
+                              height: '100%',
+                              backgroundColor: '#f0f0f0',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: 'var(--primary-color)'
+                            }}>
+                              <FontAwesomeIcon icon={faVideo} size="2x" style={{ marginBottom: '5px' }} />
+                              <span style={{ fontSize: '12px' }}>Видео</span>
+                            </div>
+                          )}
+                          <button
+                            type="button"
+                            style={{
+                              position: 'absolute',
+                              top: '3px',
+                              right: '3px',
+                              backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: '20px',
+                              height: '20px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: 'var(--danger-color)',
+                              cursor: 'pointer',
+                              zIndex: 5
+                            }}
+                            onClick={() => handleRemoveImage(index)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                      
+                      {/* Если изображений меньше 4, показываем кнопку добавления */}
+                      {movie.images.length < 4 && (
+                        <label 
+                          htmlFor="image-upload"
+                          style={{
+                            borderRadius: '4px',
+                            border: '1px dashed var(--gray-color)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            backgroundColor: '#f9f9f9'
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faPlus} />
+                        </label>
+                      )}
+                    </div>
+                  ) : (
+                    <div style={{ 
+                      width: '100%',
+                      height: '200px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: '#f9f9f9',
+                      border: '1px dashed var(--gray-color)',
+                      borderRadius: '4px'
+                    }}>
+                      <label 
+                        htmlFor="image-upload" 
+                        style={{ 
+                          display: 'flex', 
+                          flexDirection: 'column', 
+                          alignItems: 'center',
+                          cursor: 'pointer',
+                          color: 'var(--dark-gray)'
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faImage} size="2x" style={{ marginBottom: '10px' }} />
+                        <span>Добавьте кадры из фильма</span>
+                      </label>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-            ) : (
-              <div className="form-row" style={{ marginBottom: '4px', marginTop: '-5px', display: 'flex', alignItems: 'center' }}>
-                <span style={{ fontSize: '12px', marginRight: '5px' }}>Продолжит. (мин.):</span>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <input
-                    type="number"
-                    name="duration"
-                    min="1"
-                    value={movie.duration || ''}
-                    onChange={handleInputChange}
-                    required={!movie.isSeries}
-                    style={{...numberInputStyle, width: '60px'}}
-                  />
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <button 
-                      type="button" 
-                      onClick={() => handleNumberStep('duration', 5, 1, 999)}
-                      style={upButtonStyle}
-                    >
-                      <FontAwesomeIcon icon={faChevronUp} />
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={() => handleNumberStep('duration', -5, 1, 999)}
-                      style={downButtonStyle}
-                    >
-                      <FontAwesomeIcon icon={faChevronDown} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
         
-        <div className="form-right-panel" style={{ position: 'relative' }}>
-          {/* Обертка для верхней части правой панели, которая скроллится */}
-          <div className="form-right-panel-content" style={{ marginBottom: '270px' }}>
-            {/* Название и Год выпуска в одной строке */}
-            <div className="form-row title-year-row">
-              <div className="form-control title-control">
-                <input
-                  type="text"
-                  name="title"
-                  value={movie.title}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Введите название фильма"
-                />
-              </div>
-              
-              <div className="form-control year-control" style={{ width: '80px !important', maxWidth: '80px !important' }}>
-                <select 
-                  name="year"
-                  value={movie.year || currentYear}
-                  onChange={handleInputChange}
-                  className="hover-select"
-                >
-                  {yearOptions.map(year => (
-                    <option key={year} value={year}>{year}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            
-            {/* Теги в отдельной строке */}
-            <div className="form-row">
-              <div className="form-control">
-                <label>Теги:</label>
-                <TagSelector 
-                  selectedTags={movie.tags} 
-                  onTagsChange={(newTags) => setMovie(prev => ({ ...prev, tags: newTags }))}
-                />
-              </div>
-            </div>
-            
-            <div className="form-row">
-              <div className="form-control">
-                <label>Описание:</label>
-                <textarea
-                  name="description"
-                  value={movie.description}
-                  onChange={handleInputChange}
-                  className="description-textarea"
-                ></textarea>
-              </div>
-            </div>
-            
-            {/* Добавляем блок с трейлером и кадрами в горизонтальном расположении по аналогии с ViewMovie.js */}
-            <div className="form-row media-container-row" style={{ 
-              display: 'flex', 
-              flexDirection: 'row', 
-              gap: '15px',
-              marginTop: '30px',
-              marginBottom: '20px',
-              justifyContent: 'space-between',
-              paddingRight: '15px'
-            }}>
-              {/* Секция для предпросмотра трейлера */}
-              <div style={{ 
-                width: '45%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '5px' }}>
-                  <label style={{ 
-                    fontWeight: 'bold',
-                    fontSize: '14px'
-                  }}>Трейлер:</label>
-                </div>
-                
-                <input
-                  type="text"
-                  name="trailerUrl"
-                  value={movie.trailerUrl}
-                  onChange={handleInputChange}
-                  placeholder="Вставьте URL YouTube, Vimeo или Rutube"
-                  style={{ 
-                    width: '100%', 
-                    padding: '6px 8px', 
-                    borderRadius: 'var(--border-radius)', 
-                    border: '1px solid var(--gray-color)', 
-                    fontSize: '13px',
-                    marginBottom: '5px'
-                  }}
-                />
-                
-                <div style={{ 
-                  width: '100%',
-                  height: '145px',
-                  borderRadius: '4px', 
-                  overflow: 'hidden',
-                  backgroundColor: 'rgba(245, 245, 245, 0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '1px dashed var(--gray-color)'
-                }}>
-                  {movie.trailerUrl ? (
-                    <div style={{ width: '100%', height: '100%', fontSize: '13px', color: 'var(--dark-gray)', textAlign: 'center' }}>
-                      <div style={{ paddingTop: '60px' }}>
-                        URL трейлера указан. Будет доступен при просмотре фильма.
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ fontSize: '13px', color: 'var(--dark-gray)', textAlign: 'center' }}>
-                      Укажите URL трейлера в поле выше
-                    </div>
-                  )}
-                </div>
-                <div style={{ fontSize: '11px', color: 'var(--dark-gray)', marginTop: '3px', width: '100%' }}>
-                  Поддерживаются YouTube, Vimeo и Rutube
-                </div>
-              </div>
-              
-              {/* Секция для кадров из фильма в сетке 2×2 */}
-              <div style={{ 
-                width: '50%',
-                display: 'flex',
-                flexDirection: 'column'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
-                  <label style={{ 
-                    fontWeight: 'bold',
-                    fontSize: '14px'
-                  }}>Кадры из фильма:</label>
-                  
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    <label htmlFor="image-upload" style={{ 
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '5px',
-                      fontSize: '12px',
-                      color: 'var(--primary-color)'
-                    }}>
-                      <FontAwesomeIcon icon={faImage} />
-                      Добавить
-                    </label>
-                    <button 
-                      type="button"
-                      onClick={handleAddVideoLink}
-                      style={{ 
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '5px',
-                        fontSize: '12px',
-                        color: 'var(--primary-color)'
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faVideo} />
-                      Видео
-                    </button>
-                    <input
-                      type="file"
-                      id="image-upload"
-                      accept="image/*"
-                      multiple
-                      onChange={handleAddImage}
-                      style={{ display: 'none' }}
-                    />
-                  </div>
-                </div>
-                
-                <div style={{ 
-                  width: '100%',
-                  height: '180px',
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(2, 1fr)',
-                  gridTemplateRows: 'repeat(2, 1fr)',
-                  gap: '10px'
-                }}>
-                  {movie.images && movie.images.filter(media => isImageMedia(media)).length > 0 ? (
-                    renderMovieImagesGrid()
-                  ) : (
-                    <>
-                      <div style={{ 
-                        gridColumn: '1 / 3', 
-                        gridRow: '1 / 3', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        border: '1px dashed var(--gray-color)',
-                        borderRadius: '4px',
-                        backgroundColor: 'rgba(245, 245, 245, 0.3)',
-                        color: 'var(--dark-gray)',
-                        fontSize: '13px'
-                      }}>
-                        Добавьте кадры из фильма
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="form-actions">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => dispatch({ type: 'CLOSE_MODAL' })}
+          >
+            <FontAwesomeIcon icon={faTimes} /> Отмена
+          </button>
+          <button type="submit" className="btn btn-primary" onClick={handleSubmit}>
+            <FontAwesomeIcon icon={faSave} /> Сохранить
+          </button>
         </div>
       </div>
-      
-      <div className="form-actions">
-        <button
-          type="button"
-          className="btn btn-secondary"
-          onClick={() => dispatch({ type: 'CLOSE_MODAL' })}
-        >
-          <FontAwesomeIcon icon={faTimes} /> Отмена
-        </button>
-        <button type="submit" className="btn btn-primary">
-          <FontAwesomeIcon icon={faSave} /> Сохранить
-        </button>
-      </div>
-    </form>
-  </Modal>
-);
+    </Modal>
+  );
 };
 
 export default MovieForm;
