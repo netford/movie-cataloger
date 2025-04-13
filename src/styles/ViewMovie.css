@@ -7,7 +7,7 @@
 /* Используем такую же структуру формы, как в MovieForm */
 .compact-form-layout {
   display: flex;
-  gap: 65px; /* Увеличено с 15px до 65px для увеличения расстояния между колонками */
+  gap: 75px; /* Увеличено с 65px до 75px для большего расстояния между колонками */
   margin-bottom: 10px;
   height: calc(850px - 145px);
   overflow: hidden;
@@ -15,14 +15,14 @@
 }
 
 .form-left-panel {
-  width: 35%;
+  width: 34%; /* Немного уменьшил с 35% до 34% */
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
 .form-right-panel {
-  width: calc(65% - 50px); /* Уменьшена ширина правой колонки на 50px */
+  width: calc(66% - 50px); /* Увеличил с 65% на 66% */
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -368,4 +368,20 @@
   margin: 0;
   padding: 0;
   z-index: 1;
+}
+
+/* Добавляю стили для корректного выравнивания контейнера с медиа */
+.media-container-row {
+  margin-right: 15px;
+  margin-left: 15px;
+  width: calc(100% - 30px);
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .media-container-row {
+    margin-right: 5px;
+    margin-left: 5px;
+    width: calc(100% - 10px);
+  }
 }

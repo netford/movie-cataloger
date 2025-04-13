@@ -197,7 +197,8 @@ const ViewMovie = ({ movieId }) => {
     return typeof media === 'string' ? media : media.url;
   };
 
-  // Рендерим кадры из фильма (только изображения)
+  // Рендерим кадры из фильма в линейном виде (для совместимости)
+  // eslint-disable-next-line no-unused-vars
   const renderMovieImages = () => {
     if (!movie.images || movie.images.length === 0) return null;
     
@@ -241,6 +242,38 @@ const ViewMovie = ({ movieId }) => {
       </div>
     );
   };
+
+  // Рендерим кадры из фильма в сетке 2×2
+  const renderMovieImagesGrid = () => {
+    if (!movie.images || movie.images.length === 0) return null;
+    
+    // Фильтруем только изображения
+    const images = movie.images.filter(media => isImageMedia(media));
+    
+    if (images.length === 0) return null;
+    
+    // Ограничиваем количество отображаемых кадров до 4 для сетки 2×2
+    const limitedImages = images.slice(0, 4);
+    
+    return limitedImages.map((media, index) => (
+      <div key={index} className="movie-image-grid" style={{
+        borderRadius: '4px',
+        overflow: 'hidden',
+        width: '100%',
+        height: '100%'
+      }}>
+        <img 
+          src={getMediaUrl(media)} 
+          alt={`Кадр ${index + 1}`} 
+          style={{
+            width: '100%', 
+            height: '100%', 
+            objectFit: 'cover'
+          }}
+        />
+      </div>
+    ));
+  };
   
   // Проверяем, есть ли рейтинг у фильма
   const hasRating = movie.rating !== null && movie.rating !== undefined;
@@ -248,10 +281,10 @@ const ViewMovie = ({ movieId }) => {
   return (
     <Modal title="Детальная информация о фильме">
       <div className="movie-form" style={{ height: '850px', overflow: 'auto' }}>
-        <div className="compact-form-layout" style={{ height: '780px', overflow: 'visible' }}>
+        <div className="compact-form-layout" style={{ height: '780px', overflow: 'visible', paddingTop: '10px' }}>
           <div className="form-left-panel">
             {/* Блок с постером */}
-            <div className="form-poster-container">
+            <div className="form-poster-container" style={{ marginTop: '5px' }}>
               <div className="form-poster">
                 {movie.poster ? (
                   <img src={movie.poster} alt={movie.title} />
@@ -351,7 +384,7 @@ const ViewMovie = ({ movieId }) => {
           
           <div className="form-right-panel">
             {/* Название с годом и теги в одной строке */}
-            <div className="form-row" style={{ marginBottom: '15px' }}>
+            <div className="form-row" style={{ marginBottom: '15px', marginTop: '5px' }}>
               <div style={{ 
                 display: 'flex', 
                 justifyContent: 'space-between', 
@@ -422,7 +455,8 @@ const ViewMovie = ({ movieId }) => {
               <div className="form-control">
                 <label>Описание:</label>
                 <div className="description-display" style={{ 
-                  maxHeight: '200px',
+                  maxHeight: '300px',
+                  height: '300px',
                   overflowY: 'auto',
                   backgroundColor: 'rgba(245, 245, 245, 0.3)',
                   padding: '10px',
@@ -433,25 +467,32 @@ const ViewMovie = ({ movieId }) => {
               </div>
             </div>
 
-            {/* Компактный блок с трейлером и кадрами */}
-            <div className="form-row" style={{ 
+            {/* Блок с трейлером и кадрами в горизонтальном расположении */}
+            <div className="form-row media-container-row" style={{ 
               display: 'flex', 
-              flexDirection: 'column', 
-              gap: '20px',
-              marginTop: '15px',
-              marginBottom: '0'
+              flexDirection: 'row', 
+              gap: '15px',
+              marginTop: '30px',
+              marginBottom: '0',
+              justifyContent: 'space-between',
+              paddingRight: '15px'
             }}>
-              {/* Компактный трейлер без лейбла */}
+              {/* Трейлер слева */}
               {movie.trailerUrl && (
                 <div style={{ 
-                  width: '100%',
+                  width: '45%',
                   display: 'flex',
-                  justifyContent: 'center',
-                  marginBottom: '0'
+                  flexDirection: 'column',
+                  alignItems: 'flex-start'
                 }}>
+                  <label style={{ 
+                    fontWeight: 'bold', 
+                    marginBottom: '5px', 
+                    fontSize: '14px' 
+                  }}>Трейлер:</label>
                   <div style={{ 
-                    width: '350px', 
-                    height: '197px',
+                    width: '100%',
+                    height: '200px',
                     borderRadius: '4px', 
                     overflow: 'hidden'
                   }}>
@@ -460,24 +501,29 @@ const ViewMovie = ({ movieId }) => {
                 </div>
               )}
               
-              {/* Компактные кадры из фильма без лейбла и приподнятые вверх */}
+              {/* Кадры справа в сетке 2×2 */}
               {movie.images && movie.images.filter(media => isImageMedia(media)).length > 0 && (
                 <div style={{ 
-                  width: '100%',
+                  width: movie.trailerUrl ? '50%' : '100%',
                   display: 'flex',
-                  justifyContent: 'center',
-                  marginTop: '5px'
+                  flexDirection: 'column',
+                  alignItems: 'flex-end'
                 }}>
+                  <label style={{ 
+                    fontWeight: 'bold', 
+                    marginBottom: '5px', 
+                    fontSize: '14px',
+                    alignSelf: 'flex-start'
+                  }}>Кадры из фильма:</label>
                   <div style={{ 
-                    height: '130px',
-                    overflow: 'hidden',
-                    padding: '0',
-                    display: 'flex',
-                    justifyContent: 'center',
                     width: '100%',
-                    maxWidth: '550px'
+                    height: '200px',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gridTemplateRows: 'repeat(2, 1fr)',
+                    gap: '10px'
                   }}>
-                    {renderMovieImages()}
+                    {renderMovieImagesGrid()}
                   </div>
                 </div>
               )}
