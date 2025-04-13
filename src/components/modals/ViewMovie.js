@@ -362,23 +362,25 @@ const ViewMovie = ({ movieId }) => {
               </div>
 
               {/* Мои заметки - перенесли из правой панели */}
-              <div style={{ margin: '0', padding: '0' }}>
-                <label style={{ fontWeight: 'bold', marginBottom: '3px', fontSize: '14px' }}>Мои заметки:</label>
-                <div style={{ 
-                  fontSize: '14px', 
-                  lineHeight: '1.5', 
-                  padding: '0', 
-                  backgroundColor: 'transparent', 
-                  borderRadius: '4px', 
-                  whiteSpace: 'pre-line',
-                  maxHeight: '85px',
-                  minHeight: '40px', 
-                  height: 'auto', 
-                  overflowY: 'auto'
-                }}>
-                  {movie.notes || 'Заметки отсутствуют'}
+              {movie.notes && (
+                <div style={{ margin: '0', padding: '0' }}>
+                  <label style={{ fontWeight: 'bold', marginBottom: '3px', fontSize: '14px' }}>Мои заметки:</label>
+                  <div style={{ 
+                    fontSize: '14px', 
+                    lineHeight: '1.5', 
+                    padding: '0', 
+                    backgroundColor: 'transparent', 
+                    borderRadius: '4px', 
+                    whiteSpace: 'pre-line',
+                    maxHeight: '85px',
+                    minHeight: '40px', 
+                    height: 'auto', 
+                    overflowY: 'auto'
+                  }}>
+                    {movie.notes}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
           
