@@ -6,8 +6,7 @@ import {
   faUpload, 
   faChevronUp, 
   faChevronDown, 
-  faImage, 
-  faVideo, 
+  faPlay, 
   faPlus 
 } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
@@ -214,20 +213,16 @@ const MovieForm = ({ movieId = null }) => {
     }
   };
 
-  // Обработчик для добавления видео
-  const handleAddVideoLink = () => {
-    // Запрашиваем ссылку на видео
-    const videoUrl = prompt("Введите ссылку на видео (YouTube, Vimeo и др.):");
-    if (!videoUrl || !videoUrl.trim()) return;
+  // Функция для изменения URL трейлера
+  const handleTrailerUrlChange = () => {
+    // Запрашиваем ссылку на трейлер, предзаполняя существующим URL
+    const trailerUrl = prompt("Введите ссылку на трейлер (YouTube, Vimeo и др.):", movie.trailerUrl || "");
+    if (!trailerUrl || !trailerUrl.trim()) return;
     
     // Проверяем, что URL корректный
     try {
-      new URL(videoUrl);
-      // Добавляем видео в массив изображений, но с маркером типа
-      setMovie(prev => ({ 
-        ...prev, 
-        images: [...prev.images, { type: 'video', url: videoUrl.trim() }] 
-      }));
+      new URL(trailerUrl);
+      setMovie(prev => ({ ...prev, trailerUrl: trailerUrl.trim() }));
     } catch (e) {
       alert("Пожалуйста, введите корректную ссылку на видео");
     }
@@ -242,11 +237,9 @@ const MovieForm = ({ movieId = null }) => {
         reader.onloadend = async () => {
           // Сжимаем изображение кадра перед сохранением
           const compressedImage = await compressImage(reader.result, 400, 300);
-          // Для обратной совместимости, можно сохранять как объект или как строку
-          // Но для новых изображений лучше сохранять как объект с типом
           setMovie(prev => ({ 
             ...prev, 
-            images: [...prev.images, { type: 'image', url: compressedImage }] 
+            images: [...prev.images, compressedImage] 
           }));
         };
         reader.readAsDataURL(file);
@@ -259,6 +252,10 @@ const MovieForm = ({ movieId = null }) => {
       ...prev, 
       images: prev.images.filter((_, index) => index !== indexToRemove) 
     }));
+  };
+
+  const handleRemoveTrailer = () => {
+    setMovie(prev => ({ ...prev, trailerUrl: '' }));
   };
   
   const handleTypeChange = (e) => {
@@ -292,22 +289,108 @@ const MovieForm = ({ movieId = null }) => {
       // Можно добавить отображение ошибки для пользователя
     }
   };
+
+  // Функции для работы с трейлером, аналогичные ViewMovie.js
+  const getYoutubeEmbedUrl = (url) => {
+    if (!url) return null;
+    
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    
+    return match && match[2].length === 11
+      ? `https://www.youtube.com/embed/${match[2]}`
+      : null;
+  };
+
+  const getVimeoEmbedUrl = (url) => {
+    if (!url) return null;
+    
+    const regExp = /vimeo.com\/(\d+)/;
+    const match = url.match(regExp);
+    
+    return match ? `https://player.vimeo.com/video/${match[1]}` : null;
+  };
+
+  const getRutubeEmbedUrl = (url) => {
+    if (!url) return null;
+    
+    const regExp = /rutube.ru\/video\/([a-zA-Z0-9]+)/;
+    const match = url.match(regExp);
+    
+    return match ? `https://rutube.ru/play/embed/${match[1]}` : null;
+  };
+
+  const renderTrailerPreview = () => {
+    if (!movie.trailerUrl) return null;
+    
+    const youtubeEmbedUrl = getYoutubeEmbedUrl(movie.trailerUrl);
+    const vimeoEmbedUrl = getVimeoEmbedUrl(movie.trailerUrl);
+    const rutubeEmbedUrl = getRutubeEmbedUrl(movie.trailerUrl);
+    
+    if (youtubeEmbedUrl) {
+      return (
+        <iframe
+          title="Трейлер"
+          src={youtubeEmbedUrl}
+          frameBorder="0"
+          allowFullScreen
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        ></iframe>
+      );
+    } else if (vimeoEmbedUrl) {
+      return (
+        <iframe
+          title="Трейлер"
+          src={vimeoEmbedUrl}
+          frameBorder="0"
+          allowFullScreen
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        ></iframe>
+      );
+    } else if (rutubeEmbedUrl) {
+      return (
+        <iframe
+          title="Трейлер"
+          src={rutubeEmbedUrl}
+          frameBorder="0"
+          allowFullScreen
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        ></iframe>
+      );
+    } else {
+      return (
+        <div style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f0f0f0',
+          color: 'var(--primary-color)'
+        }}>
+          <FontAwesomeIcon icon={faPlay} size="2x" style={{ marginBottom: '5px' }} />
+          <span style={{ fontSize: '14px' }}>Внешнее видео</span>
+          <a 
+            href={movie.trailerUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ 
+              fontSize: '12px', 
+              marginTop: '5px',
+              color: 'var(--primary-color)',
+              textDecoration: 'none'
+            }}
+          >
+            Открыть ссылку
+          </a>
+        </div>
+      );
+    }
+  };
   
   // Определяем, какой режим отображения полей использовать
   const isWatchedStatus = movie.status === 'watched';
-  
-  // Генерируем уникальный ID для стилей
-  const formId = `movie-form-${movieId || 'new'}`;
-  
-  // Вспомогательная функция для проверки типа медиа
-  const isImageMedia = (media) => {
-    return typeof media === 'string' || (media.type && media.type === 'image');
-  };
-  
-  // Вспомогательная функция для получения URL медиа
-  const getMediaUrl = (media) => {
-    return typeof media === 'string' ? media : media.url;
-  };
   
   return (
     <Modal title={isEditMode ? 'Редактирование фильма' : 'Добавление фильма'}>
@@ -697,9 +780,102 @@ const MovieForm = ({ movieId = null }) => {
                 justifyContent: 'space-between',
                 paddingRight: '15px'
               }}>
+                {/* Трейлер слева */}
+                <div style={{ 
+                  width: '45%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start'
+                }}>
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    width: '100%', 
+                    marginBottom: '5px',
+                    alignItems: 'center'
+                  }}>
+                    <label style={{ 
+                      fontWeight: 'bold', 
+                      fontSize: '14px',
+                      alignSelf: 'flex-start'
+                    }}>Трейлер:</label>
+                    
+                    {movie.trailerUrl && (
+                      <button
+                        type="button"
+                        onClick={handleTrailerUrlChange}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          fontSize: '12px',
+                          color: 'var(--primary-color)',
+                          cursor: 'pointer',
+                          padding: '5px',
+                          transition: 'background-color 0.2s'
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faPlay} /> Изменить трейлер
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div style={{ 
+                    width: '100%',
+                    height: '200px',
+                    borderRadius: '4px', 
+                    overflow: 'hidden',
+                    position: 'relative',
+                    backgroundColor: movie.trailerUrl ? '#000' : '#f0f0f0',
+                    border: movie.trailerUrl ? 'none' : '1px dashed var(--gray-color)'
+                  }}>
+                    {movie.trailerUrl ? (
+                      <>
+                        {renderTrailerPreview()}
+                        <button
+                          type="button"
+                          style={{
+                            position: 'absolute',
+                            top: '5px',
+                            right: '5px',
+                            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '20px',
+                            height: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'var(--danger-color)',
+                            cursor: 'pointer',
+                            zIndex: 5
+                          }}
+                          onClick={handleRemoveTrailer}
+                        >
+                          ×
+                        </button>
+                      </>
+                    ) : (
+                      <div style={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer'
+                      }}
+                      onClick={handleTrailerUrlChange}
+                      >
+                        <FontAwesomeIcon icon={faPlay} size="2x" style={{ marginBottom: '10px', color: 'var(--primary-color)' }} />
+                        <span style={{ color: 'var(--dark-gray)' }}>Добавьте трейлер</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
                 {/* Кадры из фильма в сетке 2×2 */}
                 <div style={{ 
-                  width: '100%',
+                  width: '50%',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'flex-start'
@@ -717,59 +893,26 @@ const MovieForm = ({ movieId = null }) => {
                       alignSelf: 'flex-start'
                     }}>Кадры из фильма:</label>
                     
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                      <button
-                        type="button"
-                        className="btn-add-new-tag"
-                        onClick={handleAddVideoLink}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          fontSize: '12px',
-                          color: 'var(--primary-color)',
-                          cursor: 'pointer',
-                          padding: '5px',
-                          transition: 'background-color 0.2s'
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faVideo} /> Добавить видео
-                      </button>
-                      
-                      <label
-                        htmlFor="image-upload"
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          fontSize: '12px',
-                          color: 'var(--primary-color)',
-                          cursor: 'pointer',
-                          padding: '5px',
-                          transition: 'background-color 0.2s'
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faImage} /> Добавить изображение
-                      </label>
-                      <input
-                        type="file"
-                        id="image-upload"
-                        accept="image/*"
-                        multiple
-                        onChange={handleAddImage}
-                        style={{ display: 'none' }}
-                      />
-                    </div>
+                    <input
+                      type="file"
+                      id="image-upload"
+                      accept="image/*"
+                      multiple
+                      onChange={handleAddImage}
+                      style={{ display: 'none' }}
+                    />
                   </div>
                   
-                  {movie.images && movie.images.length > 0 ? (
-                    <div style={{ 
-                      width: '100%',
-                      height: '200px',
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(2, 1fr)',
-                      gridTemplateRows: 'repeat(2, 1fr)',
-                      gap: '10px'
-                    }}>
-                      {movie.images.slice(0, 4).map((media, index) => (
+                  <div style={{ 
+                    width: '100%',
+                    height: '200px',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gridTemplateRows: 'repeat(2, 1fr)',
+                    gap: '10px'
+                  }}>
+                    {movie.images && movie.images.length > 0 ? (
+                      movie.images.slice(0, 4).map((imageUrl, index) => (
                         <div key={index} style={{
                           borderRadius: '4px',
                           overflow: 'hidden',
@@ -777,31 +920,15 @@ const MovieForm = ({ movieId = null }) => {
                           height: '100%',
                           position: 'relative'
                         }}>
-                          {isImageMedia(media) ? (
-                            <img 
-                              src={getMediaUrl(media)} 
-                              alt={`Кадр ${index + 1}`} 
-                              style={{
-                                width: '100%', 
-                                height: '100%', 
-                                objectFit: 'cover'
-                              }}
-                            />
-                          ) : (
-                            <div style={{
-                              width: '100%',
-                              height: '100%',
-                              backgroundColor: '#f0f0f0',
-                              display: 'flex',
-                              flexDirection: 'column',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              color: 'var(--primary-color)'
-                            }}>
-                              <FontAwesomeIcon icon={faVideo} size="2x" style={{ marginBottom: '5px' }} />
-                              <span style={{ fontSize: '12px' }}>Видео</span>
-                            </div>
-                          )}
+                          <img 
+                            src={imageUrl} 
+                            alt={`Кадр ${index + 1}`} 
+                            style={{
+                              width: '100%', 
+                              height: '100%', 
+                              objectFit: 'cover'
+                            }}
+                          />
                           <button
                             type="button"
                             style={{
@@ -825,52 +952,28 @@ const MovieForm = ({ movieId = null }) => {
                             ×
                           </button>
                         </div>
-                      ))}
-                      
-                      {/* Если изображений меньше 4, показываем кнопку добавления */}
-                      {movie.images.length < 4 && (
-                        <label 
-                          htmlFor="image-upload"
-                          style={{
-                            borderRadius: '4px',
-                            border: '1px dashed var(--gray-color)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            backgroundColor: '#f9f9f9'
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faPlus} />
-                        </label>
-                      )}
-                    </div>
-                  ) : (
-                    <div style={{ 
-                      width: '100%',
-                      height: '200px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: '#f9f9f9',
-                      border: '1px dashed var(--gray-color)',
-                      borderRadius: '4px'
-                    }}>
+                      ))
+                    ) : null}
+                    
+                    {/* Если изображений меньше 4, показываем кнопки добавления */}
+                    {movie.images.length < 4 && Array.from({ length: 4 - movie.images.length }).map((_, index) => (
                       <label 
-                        htmlFor="image-upload" 
-                        style={{ 
-                          display: 'flex', 
-                          flexDirection: 'column', 
+                        key={`add-placeholder-${index}`}
+                        htmlFor="image-upload"
+                        style={{
+                          borderRadius: '4px',
+                          border: '1px dashed var(--gray-color)',
+                          display: 'flex',
                           alignItems: 'center',
+                          justifyContent: 'center',
                           cursor: 'pointer',
-                          color: 'var(--dark-gray)'
+                          backgroundColor: '#f9f9f9'
                         }}
                       >
-                        <FontAwesomeIcon icon={faImage} size="2x" style={{ marginBottom: '10px' }} />
-                        <span>Добавьте кадры из фильма</span>
+                        <FontAwesomeIcon icon={faPlus} />
                       </label>
-                    </div>
-                  )}
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
