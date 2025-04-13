@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faTimes, faUpload, faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faTimes, faUpload, faChevronUp, faChevronDown, faImage, faVideo } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import Modal from './Modal';
 import TagSelector from '../tags/TagSelector';
@@ -206,7 +206,6 @@ const MovieForm = ({ movieId = null }) => {
   };
 
   // Обработчик для добавления видео
-  // eslint-disable-next-line no-unused-vars
   const handleAddVideoLink = () => {
     // Запрашиваем ссылку на видео
     const videoUrl = prompt("Введите ссылку на видео (YouTube, Vimeo и др.):");
@@ -226,7 +225,6 @@ const MovieForm = ({ movieId = null }) => {
   };
 
   // Обновленный обработчик для добавления изображений
-  // eslint-disable-next-line no-unused-vars
   const handleAddImage = (e) => {
     const files = e.target.files;
     if (files.length > 0) {
@@ -247,7 +245,6 @@ const MovieForm = ({ movieId = null }) => {
     }
   };
   
-  // eslint-disable-next-line no-unused-vars
   const handleRemoveImage = (indexToRemove) => {
     setMovie(prev => ({ 
       ...prev, 
@@ -294,15 +291,71 @@ const MovieForm = ({ movieId = null }) => {
   const formId = `movie-form-${movieId || 'new'}`;
   
   // Вспомогательная функция для проверки типа медиа
-  // eslint-disable-next-line no-unused-vars
   const isImageMedia = (media) => {
     return typeof media === 'string' || (media.type && media.type === 'image');
   };
   
   // Вспомогательная функция для получения URL медиа
-  // eslint-disable-next-line no-unused-vars
   const getMediaUrl = (media) => {
     return typeof media === 'string' ? media : media.url;
+  };
+  
+  // Функция для отображения миниатюр кадров из фильма в сетке 2×2
+  const renderMovieImagesGrid = () => {
+    if (!movie.images || movie.images.length === 0) return null;
+    
+    // Фильтруем только изображения
+    const images = movie.images.filter(media => isImageMedia(media));
+    
+    if (images.length === 0) return null;
+    
+    // Ограничиваем количество отображаемых кадров до 4 для сетки 2×2
+    const limitedImages = images.slice(0, 4);
+    
+    return limitedImages.map((media, index) => (
+      <div key={index} className="movie-image-grid" style={{
+        borderRadius: '4px',
+        overflow: 'hidden',
+        width: '100%',
+        height: '100%',
+        position: 'relative'
+      }}>
+        <img 
+          src={getMediaUrl(media)} 
+          alt={`Кадр ${index + 1}`} 
+          style={{
+            width: '100%', 
+            height: '100%', 
+            objectFit: 'cover'
+          }}
+        />
+        <button
+          type="button"
+          className="image-remove"
+          onClick={() => handleRemoveImage(index)}
+          style={{
+            position: 'absolute',
+            top: '3px',
+            right: '3px',
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            border: 'none',
+            borderRadius: '50%',
+            width: '18px',
+            height: '18px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--danger-color)',
+            fontWeight: 'bold',
+            fontSize: '12px',
+            cursor: 'pointer',
+            zIndex: '5'
+          }}
+        >
+          ×
+        </button>
+      </div>
+    ));
   };
   
   return (
@@ -328,13 +381,6 @@ const MovieForm = ({ movieId = null }) => {
         
         #${formId} .form-right-panel-content {
           margin-bottom: 200px;
-        }
-        
-        #${formId} .images-section {
-          position: absolute;
-          bottom: 10px;
-          left: 0;
-          right: 0;
         }
       `}
     </style>
@@ -396,27 +442,7 @@ const MovieForm = ({ movieId = null }) => {
             </div>
           </div>
           
-          {/* Поле для URL трейлера */}
-          <div className="form-control" style={{ marginTop: '10px' }}>
-            <label style={{ marginBottom: '5px', display: 'block' }}>URL трейлера:</label>
-            <input
-              type="text"
-              name="trailerUrl"
-              value={movie.trailerUrl}
-              onChange={handleInputChange}
-              placeholder="Вставьте URL YouTube, Vimeo или Rutube"
-              style={{ 
-                width: '100%', 
-                padding: '6px 8px', 
-                borderRadius: 'var(--border-radius)', 
-                border: '1px solid var(--gray-color)', 
-                fontSize: '13px' 
-              }}
-            />
-            <div style={{ fontSize: '11px', color: 'var(--dark-gray)', marginTop: '3px' }}>
-              Поддерживаются YouTube, Vimeo и Rutube
-            </div>
-          </div>
+          
           
           <div className="form-fields-group" style={{ gap: '2px', marginTop: '-5px' }}>
             <div className="form-row" style={{ marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
@@ -726,60 +752,159 @@ const MovieForm = ({ movieId = null }) => {
                 ></textarea>
               </div>
             </div>
-          </div>
-          
-          {/* Закомментировали секцию с изображениями 
-          <div className="form-row images-section" style={{ position: 'absolute', bottom: '35px', left: 0, right: 0 }}>
-            <div className="form-control">
-              <div className="images-label-row">
-                <label>Кадры и видео:</label>
-              </div>
-              <div className="images-container">
-                {movie.images.map((media, index) => (
-                  <div key={index} className="movie-image">
-                    {isImageMedia(media) ? (
-                      <img src={getMediaUrl(media)} alt={`Кадр ${index + 1}`} />
-                    ) : (
-                      <div className="video-preview">
-                        <div className="video-icon">▶</div>
-                        <span className="video-label">Видео</span>
-                      </div>
-                    )}
-                    <button
-                      type="button"
-                      className="image-remove"
-                      onClick={() => handleRemoveImage(index)}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-                
-                <div className="add-media-placeholders">
-                  <label htmlFor="image-upload" className="add-image-placeholder" title="Добавить изображение">
-                    <FontAwesomeIcon icon={faImage} />
-                  </label>
-                  <button 
-                    type="button" 
-                    className="add-video-placeholder" 
-                    onClick={handleAddVideoLink}
-                    title="Добавить ссылку на видео"
-                  >
-                    <FontAwesomeIcon icon={faVideo} />
-                  </button>
+            
+            {/* Добавляем блок с трейлером и кадрами в горизонтальном расположении по аналогии с ViewMovie.js */}
+            <div className="form-row media-container-row" style={{ 
+              display: 'flex', 
+              flexDirection: 'row', 
+              gap: '15px',
+              marginTop: '30px',
+              marginBottom: '20px',
+              justifyContent: 'space-between',
+              paddingRight: '15px'
+            }}>
+              {/* Секция для предпросмотра трейлера */}
+              <div style={{ 
+                width: '45%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '5px' }}>
+                  <label style={{ 
+                    fontWeight: 'bold',
+                    fontSize: '14px'
+                  }}>Трейлер:</label>
                 </div>
+                
                 <input
-                  type="file"
-                  id="image-upload"
-                  accept="image/*"
-                  multiple
-                  onChange={handleAddImage}
-                  style={{ display: 'none' }}
+                  type="text"
+                  name="trailerUrl"
+                  value={movie.trailerUrl}
+                  onChange={handleInputChange}
+                  placeholder="Вставьте URL YouTube, Vimeo или Rutube"
+                  style={{ 
+                    width: '100%', 
+                    padding: '6px 8px', 
+                    borderRadius: 'var(--border-radius)', 
+                    border: '1px solid var(--gray-color)', 
+                    fontSize: '13px',
+                    marginBottom: '5px'
+                  }}
                 />
+                
+                <div style={{ 
+                  width: '100%',
+                  height: '145px',
+                  borderRadius: '4px', 
+                  overflow: 'hidden',
+                  backgroundColor: 'rgba(245, 245, 245, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '1px dashed var(--gray-color)'
+                }}>
+                  {movie.trailerUrl ? (
+                    <div style={{ width: '100%', height: '100%', fontSize: '13px', color: 'var(--dark-gray)', textAlign: 'center' }}>
+                      <div style={{ paddingTop: '60px' }}>
+                        URL трейлера указан. Будет доступен при просмотре фильма.
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: '13px', color: 'var(--dark-gray)', textAlign: 'center' }}>
+                      Укажите URL трейлера в поле выше
+                    </div>
+                  )}
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--dark-gray)', marginTop: '3px', width: '100%' }}>
+                  Поддерживаются YouTube, Vimeo и Rutube
+                </div>
+              </div>
+              
+              {/* Секция для кадров из фильма в сетке 2×2 */}
+              <div style={{ 
+                width: '50%',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                  <label style={{ 
+                    fontWeight: 'bold',
+                    fontSize: '14px'
+                  }}>Кадры из фильма:</label>
+                  
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <label htmlFor="image-upload" style={{ 
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      fontSize: '12px',
+                      color: 'var(--primary-color)'
+                    }}>
+                      <FontAwesomeIcon icon={faImage} />
+                      Добавить
+                    </label>
+                    <button 
+                      type="button"
+                      onClick={handleAddVideoLink}
+                      style={{ 
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        fontSize: '12px',
+                        color: 'var(--primary-color)'
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faVideo} />
+                      Видео
+                    </button>
+                    <input
+                      type="file"
+                      id="image-upload"
+                      accept="image/*"
+                      multiple
+                      onChange={handleAddImage}
+                      style={{ display: 'none' }}
+                    />
+                  </div>
+                </div>
+                
+                <div style={{ 
+                  width: '100%',
+                  height: '180px',
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gridTemplateRows: 'repeat(2, 1fr)',
+                  gap: '10px'
+                }}>
+                  {movie.images && movie.images.filter(media => isImageMedia(media)).length > 0 ? (
+                    renderMovieImagesGrid()
+                  ) : (
+                    <>
+                      <div style={{ 
+                        gridColumn: '1 / 3', 
+                        gridRow: '1 / 3', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        border: '1px dashed var(--gray-color)',
+                        borderRadius: '4px',
+                        backgroundColor: 'rgba(245, 245, 245, 0.3)',
+                        color: 'var(--dark-gray)',
+                        fontSize: '13px'
+                      }}>
+                        Добавьте кадры из фильма
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-          */}
         </div>
       </div>
       
