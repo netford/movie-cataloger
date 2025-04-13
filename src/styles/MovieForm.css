@@ -270,8 +270,7 @@
   gap: 5px;
 }
 
-/* Изменяем секцию с изображениями */
-/* Закомментировали стили для секции с изображениями 
+/* Стили для секции с изображениями */
 .form-row.images-section {
   position: absolute;
   bottom: 25px;
@@ -304,6 +303,21 @@
   object-fit: cover;
 }
 
+/* Стиль для изображений в сетке 2×2 */
+.movie-image-grid {
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.movie-image-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .image-remove {
   position: absolute;
   top: 3px;
@@ -320,6 +334,7 @@
   font-weight: bold;
   font-size: 12px;
   cursor: pointer;
+  z-index: 5;
 }
 
 .add-image-placeholder {
@@ -351,7 +366,37 @@
   font-weight: 300;
   color: var(--gray-color);
 }
-*/
+
+/* Добавим стиль для видео превью */
+.video-preview {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+}
+
+.video-icon {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.video-label {
+  font-size: 12px;
+}
+
+/* Стили для сетки изображений */
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+  width: 100%;
+  height: 200px;
+}
 
 /* Добавим новое правило для настройки ширины поля "формы" */
 .form-right-panel .form-control {
