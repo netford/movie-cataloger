@@ -37,73 +37,74 @@ const FilterBar = () => {
   
   return (
     <div className="filter-bar">
-      <div className="categories">
-        <button 
-          className={`category-btn ${state.filter === 'all' ? 'active' : ''}`}
-          onClick={() => handleFilterChange('all')}
-        >
-          Все фильмы
-        </button>
-        <button 
-          className={`category-btn ${state.filter === 'watched' ? 'active' : ''}`}
-          onClick={() => handleFilterChange('watched')}
-        >
-          Просмотрено
-        </button>
-        <button 
-          className={`category-btn ${state.filter === 'toWatch' ? 'active' : ''}`}
-          onClick={() => handleFilterChange('toWatch')}
-        >
-          Запланировано
-        </button>
-        <button 
-          className={`category-btn ${state.filter === 'watching' ? 'active' : ''}`}
-          onClick={() => handleFilterChange('watching')}
-        >
-          Смотрим
-        </button>
-        <button 
-          className={`category-btn ${state.filter === 'cancelled' ? 'active' : ''}`}
-          onClick={() => handleFilterChange('cancelled')}
-        >
-          Отменено
-        </button>
-      </div>
-      
-      {/* Добавляем популярные теги */}
-      {popularTags.length > 0 && (
-        <div className="popular-tags">
-          <div className="popular-tags-label">Популярные теги:</div>
-          <div className="tags-buttons">
-            {popularTags.map(tag => (
-              <button 
-                key={tag.id}
-                className={`tag-btn ${state.search === tag.name ? 'active' : ''}`}
-                onClick={() => handleTagClick(tag.name)}
-              >
-                {tag.name} <span className="tag-count">({tag.count})</span>
-              </button>
-            ))}
+      <div className="filter-main-row">
+        <div className="filter-left-group">
+          <div className="categories">
+            <button 
+              className={`category-btn ${state.filter === 'all' ? 'active' : ''}`}
+              onClick={() => handleFilterChange('all')}
+            >
+              Все фильмы
+            </button>
+            <button 
+              className={`category-btn ${state.filter === 'watched' ? 'active' : ''}`}
+              onClick={() => handleFilterChange('watched')}
+            >
+              Просмотрено
+            </button>
+            <button 
+              className={`category-btn ${state.filter === 'toWatch' ? 'active' : ''}`}
+              onClick={() => handleFilterChange('toWatch')}
+            >
+              Запланировано
+            </button>
+            <button 
+              className={`category-btn ${state.filter === 'watching' ? 'active' : ''}`}
+              onClick={() => handleFilterChange('watching')}
+            >
+              Смотрим
+            </button>
+            <button 
+              className={`category-btn ${state.filter === 'cancelled' ? 'active' : ''}`}
+              onClick={() => handleFilterChange('cancelled')}
+            >
+              Отменено
+            </button>
           </div>
+          
+          {/* Популярные теги в той же строке */}
+          {popularTags.length > 0 && (
+            <div className="popular-tags">
+              {popularTags.map(tag => (
+                <button 
+                  key={tag.id}
+                  className={`tag-btn ${state.search === tag.name ? 'active' : ''}`}
+                  onClick={() => handleTagClick(tag.name)}
+                >
+                  {tag.name} <span className="tag-count">({tag.count})</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-      )}
-      
-      <div className="view-sort-controls">
-        <button className="sort-btn" onClick={handleSortClick}>
-          <FontAwesomeIcon icon={faSort} />
-        </button>
-        <button 
-          className={`view-btn ${state.viewMode === 'cards' ? 'active' : ''}`}
-          onClick={() => handleViewModeChange('cards')}
-        >
-          <FontAwesomeIcon icon={faTh} />
-        </button>
-        <button 
-          className={`view-btn ${state.viewMode === 'list' ? 'active' : ''}`}
-          onClick={() => handleViewModeChange('list')}
-        >
-          <FontAwesomeIcon icon={faList} />
-        </button>
+        
+        <div className="view-sort-controls">
+          <button className="sort-btn" onClick={handleSortClick}>
+            <FontAwesomeIcon icon={faSort} />
+          </button>
+          <button 
+            className={`view-btn ${state.viewMode === 'cards' ? 'active' : ''}`}
+            onClick={() => handleViewModeChange('cards')}
+          >
+            <FontAwesomeIcon icon={faTh} />
+          </button>
+          <button 
+            className={`view-btn ${state.viewMode === 'list' ? 'active' : ''}`}
+            onClick={() => handleViewModeChange('list')}
+          >
+            <FontAwesomeIcon icon={faList} />
+          </button>
+        </div>
       </div>
     </div>
   );

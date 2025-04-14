@@ -4,10 +4,25 @@
   margin-bottom: 20px;
 }
 
+.filter-main-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 0 10px;
+}
+
+.filter-left-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
 .categories {
   display: flex;
-  gap: 15px;
-  margin-bottom: 10px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
@@ -30,25 +45,19 @@
   background-color: var(--primary-color);
 }
 
-/* Добавляем стили для популярных тегов */
+/* Стили для популярных тегов в одной строке с категориями */
 .popular-tags {
   display: flex;
-  align-items: center;
-  margin-bottom: 10px;
   flex-wrap: wrap;
   gap: 8px;
+  margin-left: 5px;
 }
 
-.popular-tags-label {
-  font-size: 14px;
+.popular-tags::before {
+  content: '|';
   color: var(--dark-gray);
-  margin-right: 8px;
-}
-
-.tags-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  margin-right: 10px;
+  align-self: center;
 }
 
 .tag-btn {
@@ -80,7 +89,6 @@
 
 .view-sort-controls {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
   gap: 5px;
 }
@@ -113,16 +121,32 @@
     padding: 10px;
   }
   
+  .filter-main-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .filter-left-group {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+  
   .categories {
-    justify-content: center;
+    justify-content: flex-start;
+    width: 100%;
   }
   
   .popular-tags {
-    justify-content: center;
+    margin-left: 0;
+  }
+  
+  .popular-tags::before {
+    display: none;
   }
   
   .view-sort-controls {
-    justify-content: center;
-    margin-top: 10px;
+    align-self: flex-end;
   }
 }
