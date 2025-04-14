@@ -27,22 +27,66 @@
 }
 
 .category-btn {
-  background-color: var(--secondary-color);
+  display: flex;
+  align-items: center;
+  gap: 5px;
   color: white;
   border: none;
-  border-radius: 15px;
+  border-radius: 4px;
   padding: 5px 15px;
   font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
 }
 
-.category-btn:hover {
+.category-icon {
+  font-size: 12px;
+}
+
+/* Цвета для различных категорий */
+.category-all {
   background-color: var(--secondary-dark);
 }
 
-.category-btn.active {
+.category-all:hover, .category-all.active {
+  background-color: #2c3e50;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.category-watched {
+  background-color: var(--success-color);
+}
+
+.category-watched:hover, .category-watched.active {
+  background-color: #219a52;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.category-to-watch {
   background-color: var(--primary-color);
+}
+
+.category-to-watch:hover, .category-to-watch.active {
+  background-color: var(--primary-dark);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.category-watching {
+  background-color: var(--warning-color);
+}
+
+.category-watching:hover, .category-watching.active {
+  background-color: #e67e22;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.category-cancelled {
+  background-color: var(--dark-gray);
+}
+
+.category-cancelled:hover, .category-cancelled.active {
+  background-color: #6c7a7a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Стили для популярных тегов в одной строке с категориями */
@@ -51,6 +95,7 @@
   flex-wrap: wrap;
   gap: 8px;
   margin-left: 5px;
+  align-items: center;
 }
 
 .popular-tags::before {
@@ -60,24 +105,34 @@
   align-self: center;
 }
 
+/* Стили ниже больше не используются, так как мы применяем инлайновые стили */
+/* Оставляем их для совместимости, но они не будут применяться к нашим кнопкам */
 .tag-btn {
-  background-color: var(--primary-color);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background-color: #9b59b6;
   opacity: 0.8;
   color: white;
   border: none;
-  border-radius: 15px;
+  border-radius: 4px;
   padding: 3px 10px;
   font-size: 13px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
+.tag-icon {
+  font-size: 10px;
+}
+
 .tag-btn:hover {
   opacity: 1;
+  background-color: #8e44ad;
 }
 
 .tag-btn.active {
-  background-color: var(--primary-dark);
+  background-color: #8e44ad;
   opacity: 1;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
