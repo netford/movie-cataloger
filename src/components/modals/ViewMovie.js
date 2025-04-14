@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faEdit, faTimes, faPlay, faFilm } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faTimes, faPlay, faFilm, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import Modal from './Modal';
 import '../../styles/ViewMovie.css';
@@ -479,37 +479,73 @@ const ViewMovie = ({ movieId }) => {
               justifyContent: 'space-between',
               paddingRight: '15px'
             }}>
-              {/* Трейлер слева */}
-              {movie.trailerUrl && (
+              {/* Трейлер слева - показываем либо трейлер, либо плейсхолдер */}
+              <div style={{ 
+                width: '45%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start'
+              }}>
+                <label style={{ 
+                  fontWeight: 'bold', 
+                  marginBottom: '5px', 
+                  fontSize: '14px' 
+                }}>Трейлер:</label>
                 <div style={{ 
-                  width: '45%',
+                  width: '100%',
+                  height: '200px',
+                  borderRadius: '4px', 
+                  overflow: 'hidden',
+                  backgroundColor: movie.trailerUrl ? '#000' : '#f0f0f0',
+                  border: movie.trailerUrl ? 'none' : '1px dashed var(--gray-color)'
+                }}>
+                  {movie.trailerUrl ? (
+                    renderVideo(movie.trailerUrl, 'compact-trailer')
+                  ) : (
+                    <div style={{
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      color: 'var(--primary-color)'
+                    }}
+                    onClick={() => handleEdit()} // При клике на плейсхолдер переходим к редактированию
+                    >
+                      <FontAwesomeIcon icon={faPlay} size="2x" style={{ marginBottom: '10px', opacity: 0.7 }} />
+                      <span style={{ fontSize: '14px', color: 'var(--dark-gray)' }}>Трейлер отсутствует</span>
+                      <button 
+                        className="btn" 
+                        style={{ 
+                          marginTop: '10px', 
+                          padding: '5px 10px', 
+                          fontSize: '12px', 
+                          backgroundColor: 'var(--primary-color)', 
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '3px'
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Предотвращаем переход к редактированию
+                          handleEdit(); // Открываем форму редактирования
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faEdit} /> Добавить трейлер
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Кадры справа в сетке 2×2 - всегда фиксированной ширины */}
+              {movie.images && movie.images.filter(media => isImageMedia(media)).length > 0 ? (
+                <div style={{ 
+                  width: '50%',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'flex-start'
-                }}>
-                  <label style={{ 
-                    fontWeight: 'bold', 
-                    marginBottom: '5px', 
-                    fontSize: '14px' 
-                  }}>Трейлер:</label>
-                  <div style={{ 
-                    width: '100%',
-                    height: '200px',
-                    borderRadius: '4px', 
-                    overflow: 'hidden'
-                  }}>
-                    {renderVideo(movie.trailerUrl, 'compact-trailer')}
-                  </div>
-                </div>
-              )}
-              
-              {/* Кадры справа в сетке 2×2 */}
-              {movie.images && movie.images.filter(media => isImageMedia(media)).length > 0 && (
-                <div style={{ 
-                  width: movie.trailerUrl ? '50%' : '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-end'
                 }}>
                   <label style={{ 
                     fontWeight: 'bold', 
@@ -526,6 +562,53 @@ const ViewMovie = ({ movieId }) => {
                     gap: '10px'
                   }}>
                     {renderMovieImagesGrid()}
+                  </div>
+                </div>
+              ) : (
+                <div style={{ 
+                  width: '50%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start'
+                }}>
+                  <label style={{ 
+                    fontWeight: 'bold', 
+                    marginBottom: '5px', 
+                    fontSize: '14px',
+                    alignSelf: 'flex-start'
+                  }}>Кадры из фильма:</label>
+                  <div style={{ 
+                    width: '100%',
+                    height: '200px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: '#f0f0f0',
+                    border: '1px dashed var(--gray-color)',
+                    borderRadius: '4px'
+                  }}>
+                    <div style={{
+                      textAlign: 'center',
+                      color: 'var(--dark-gray)'
+                    }}>
+                      <FontAwesomeIcon icon={faPlus} size="2x" style={{ marginBottom: '10px', opacity: 0.5 }} />
+                      <div>Нет загруженных кадров</div>
+                      <button 
+                        className="btn" 
+                        style={{ 
+                          marginTop: '10px', 
+                          padding: '5px 10px', 
+                          fontSize: '12px', 
+                          backgroundColor: 'var(--primary-color)', 
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '3px'
+                        }}
+                        onClick={handleEdit}
+                      >
+                        <FontAwesomeIcon icon={faEdit} /> Добавить кадры
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
