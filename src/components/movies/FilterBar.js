@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faTh, faList, faSort, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { faTh, faList, faSort } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import '../../styles/FilterBar.css';
 
@@ -12,10 +12,6 @@ const FilterBar = () => {
   
   const handleFilterChange = (filter) => {
     dispatch({ type: 'SET_FILTER', payload: filter });
-  };
-  
-  const handleSearchChange = (e) => {
-    dispatch({ type: 'SET_SEARCH', payload: e.target.value });
   };
   
   const handleViewModeChange = (viewMode) => {
@@ -37,11 +33,6 @@ const FilterBar = () => {
   // Обработчик клика по тегу для фильтрации
   const handleTagClick = (tagName) => {
     dispatch({ type: 'SET_SEARCH', payload: tagName });
-  };
-  
-  // Очистить поиск (и фильтрацию по тегам)
-  const clearSearch = () => {
-    dispatch({ type: 'SET_SEARCH', payload: '' });
   };
   
   return (
@@ -97,41 +88,22 @@ const FilterBar = () => {
         </div>
       )}
       
-      <div className="search-sort-view">
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Поиск по названию или тегам..."
-            value={state.search}
-            onChange={handleSearchChange}
-            className="search-input"
-          />
-          {state.search ? (
-            <button className="clear-search" onClick={clearSearch}>
-              <FontAwesomeIcon icon={faTimesCircle} />
-            </button>
-          ) : (
-            <FontAwesomeIcon icon={faSearch} className="search-icon" />
-          )}
-        </div>
-        
-        <div className="view-sort-controls">
-          <button className="sort-btn" onClick={handleSortClick}>
-            <FontAwesomeIcon icon={faSort} />
-          </button>
-          <button 
-            className={`view-btn ${state.viewMode === 'cards' ? 'active' : ''}`}
-            onClick={() => handleViewModeChange('cards')}
-          >
-            <FontAwesomeIcon icon={faTh} />
-          </button>
-          <button 
-            className={`view-btn ${state.viewMode === 'list' ? 'active' : ''}`}
-            onClick={() => handleViewModeChange('list')}
-          >
-            <FontAwesomeIcon icon={faList} />
-          </button>
-        </div>
+      <div className="view-sort-controls">
+        <button className="sort-btn" onClick={handleSortClick}>
+          <FontAwesomeIcon icon={faSort} />
+        </button>
+        <button 
+          className={`view-btn ${state.viewMode === 'cards' ? 'active' : ''}`}
+          onClick={() => handleViewModeChange('cards')}
+        >
+          <FontAwesomeIcon icon={faTh} />
+        </button>
+        <button 
+          className={`view-btn ${state.viewMode === 'list' ? 'active' : ''}`}
+          onClick={() => handleViewModeChange('list')}
+        >
+          <FontAwesomeIcon icon={faList} />
+        </button>
       </div>
     </div>
   );

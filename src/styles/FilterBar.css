@@ -78,50 +78,51 @@
   opacity: 0.8;
 }
 
-.search-sort-view {
+.view-sort-controls {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
+  gap: 5px;
 }
 
-.search-container {
-  flex-grow: 1;
-  max-width: 350px;
-  position: relative;
-}
-
-.search-input {
-  width: 100%;
-  padding: 8px 15px;
-  padding-right: 35px;
-  border-radius: 5px;
-  border: 1px solid var(--gray-color);
-  font-size: 14px;
-}
-
-.search-icon, .clear-search {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--dark-gray);
-}
-
-.clear-search {
-  background: none;
+.sort-btn, .view-btn {
+  background-color: var(--secondary-color);
+  color: white;
   border: none;
-  cursor: pointer;
-  font-size: 16px;
-  color: var(--secondary-color);
-  padding: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
-  transition: color 0.2s;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.clear-search:hover {
-  color: var(--danger-color);
+.sort-btn:hover, .view-btn:hover {
+  background-color: var(--primary-color);
+}
+
+.view-btn.active {
+  background-color: var(--primary-color);
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+  .filter-bar {
+    padding: 10px;
+  }
+  
+  .categories {
+    justify-content: center;
+  }
+  
+  .popular-tags {
+    justify-content: center;
+  }
+  
+  .view-sort-controls {
+    justify-content: center;
+    margin-top: 10px;
+  }
 }
