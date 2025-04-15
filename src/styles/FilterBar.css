@@ -43,6 +43,13 @@
   font-size: 12px;
 }
 
+/* Счетчик статусов */
+.status-count {
+  font-size: 11px;
+  opacity: 0.8;
+  margin-left: 3px;
+}
+
 /* Цвета для различных категорий */
 .category-all {
   background-color: var(--secondary-dark);
@@ -89,20 +96,30 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-/* Стили для популярных тегов в одной строке с категориями */
+/* Контейнер для тегов и кнопки "Без тегов" */
+.tags-container {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+/* Стили для популярных тегов - теперь без разделительной линии */
 .popular-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-left: 5px;
   align-items: center;
 }
 
+/* Явно переопределяем псевдоэлемент, чтобы удалить вертикальную черту */
 .popular-tags::before {
-  content: '|';
-  color: var(--dark-gray);
-  margin-right: 10px;
-  align-self: center;
+  content: '';
+  display: none;
+}
+
+/* Стиль для кнопки "Без тегов" */
+.no-tags-btn {
+  margin-left: 8px;
 }
 
 /* Стили ниже больше не используются, так как мы применяем инлайновые стили */
@@ -193,15 +210,20 @@
     width: 100%;
   }
   
-  .popular-tags {
+  .tags-container {
     margin-left: 0;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
   }
   
-  .popular-tags::before {
-    display: none;
+  .popular-tags {
+    width: 100%;
+    justify-content: flex-start;
   }
   
-  .view-sort-controls {
-    align-self: flex-end;
+  .no-tags-btn {
+    margin-left: 0;
+    margin-top: 8px;
   }
 }

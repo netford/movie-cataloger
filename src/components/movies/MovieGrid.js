@@ -15,13 +15,19 @@ const MovieGrid = () => {
       result = result.filter(movie => movie.status === state.filter);
     }
     
-    // Применяем поисковый запрос
+    // Применяем поисковый запрос или специальный фильтр "Без тегов"
     if (state.search) {
-      const searchLower = state.search.toLowerCase();
-      result = result.filter(movie => 
-        movie.title.toLowerCase().includes(searchLower) ||
-        movie.tags.some(tag => tag.toLowerCase().includes(searchLower))
-      );
+      if (state.search === '_NO_TAGS_') {
+        // Специальный случай для фильтрации фильмов без тегов
+        result = result.filter(movie => !movie.tags || movie.tags.length === 0);
+      } else {
+        // Обычная фильтрация по поисковому запросу
+        const searchLower = state.search.toLowerCase();
+        result = result.filter(movie => 
+          movie.title.toLowerCase().includes(searchLower) ||
+          movie.tags.some(tag => tag.toLowerCase().includes(searchLower))
+        );
+      }
     }
     
     // Применяем сортировку
