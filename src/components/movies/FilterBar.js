@@ -1,9 +1,6 @@
 import React, { useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faTh, 
-  faList, 
-  faSort, 
   faFilm, 
   faCheck, 
   faCalendarAlt, 
@@ -22,22 +19,6 @@ const FilterBar = () => {
   
   const handleFilterChange = (filter) => {
     dispatch({ type: 'SET_FILTER', payload: filter });
-  };
-  
-  const handleViewModeChange = (viewMode) => {
-    dispatch({ type: 'SET_VIEW_MODE', payload: viewMode });
-  };
-  
-  const handleSortClick = () => {
-    // Простое переключение направления сортировки
-    const newDirection = state.sortBy.direction === 'asc' ? 'desc' : 'asc';
-    dispatch({ 
-      type: 'SET_SORT', 
-      payload: { 
-        ...state.sortBy, 
-        direction: newDirection 
-      } 
-    });
   };
   
   // Обработчик клика по тегу для фильтрации
@@ -121,24 +102,6 @@ const FilterBar = () => {
               ))}
             </div>
           )}
-        </div>
-        
-        <div className="view-sort-controls">
-          <button className="sort-btn" onClick={handleSortClick}>
-            <FontAwesomeIcon icon={faSort} />
-          </button>
-          <button 
-            className={`view-btn ${state.viewMode === 'cards' ? 'active' : ''}`}
-            onClick={() => handleViewModeChange('cards')}
-          >
-            <FontAwesomeIcon icon={faTh} />
-          </button>
-          <button 
-            className={`view-btn ${state.viewMode === 'list' ? 'active' : ''}`}
-            onClick={() => handleViewModeChange('list')}
-          >
-            <FontAwesomeIcon icon={faList} />
-          </button>
         </div>
       </div>
     </div>

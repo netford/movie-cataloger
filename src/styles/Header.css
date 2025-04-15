@@ -72,11 +72,55 @@
 .header-buttons {
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
 .btn.active {
   background-color: var(--secondary-dark);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Разделитель между основными кнопками и контролами */
+.view-controls-divider {
+  height: 24px;
+  width: 1px;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 0 5px;
+}
+
+/* Группа кнопок управления отображением */
+.view-controls-group {
+  display: flex;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius);
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Новые стили для контрольных кнопок */
+.btn-view-control {
+  background-color: transparent;
+  color: white;
+  border: none;
+  padding: 6px 8px;
+  border-radius: 3px;
+  font-size: 14px;
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-view-control:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-view-control.active {
+  background-color: var(--primary-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Адаптивная версия */
@@ -107,6 +151,20 @@
   }
   
   .header-buttons .btn {
+    flex: 1;
+  }
+  
+  .view-controls-divider {
+    display: none;
+  }
+  
+  .view-controls-group {
+    margin-top: 8px;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .btn-view-control {
     flex: 1;
   }
 }
