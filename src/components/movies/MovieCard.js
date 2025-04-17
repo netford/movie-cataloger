@@ -53,6 +53,15 @@ const MovieCard = ({ movie }) => {
     return null;
   };
   
+  // Функция для определения цвета рейтинга
+  const getRatingColor = (rating) => {
+    if (rating >= 86) return '#FFD700'; // Золотистый - шедевр
+    if (rating >= 71) return '#1976D2'; // Синий - хороший фильм
+    if (rating >= 51) return '#7B1FA2'; // Фиолетовый - средний/неплохой
+    if (rating >= 31) return '#D32F2F'; // Тёмно-красный - слабый фильм
+    return '#9E9E9E';                   // Серый - не стоит тратить время
+  };
+  
   // Проверка наличия данных
   const hasRating = movie.status === 'watched' && movie.rating !== null && movie.rating !== undefined;
   const hasTags = movie.tags && movie.tags.length > 0;
@@ -78,7 +87,7 @@ const MovieCard = ({ movie }) => {
             position: 'absolute', 
             top: '0', 
             left: '0',
-            backgroundColor: 'rgba(39, 174, 96, 0.8)', 
+            backgroundColor: getRatingColor(movie.rating),
             color: 'white',
             fontWeight: 'bold',
             padding: '3px 8px',

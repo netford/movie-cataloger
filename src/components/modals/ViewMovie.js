@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faEdit, faTimes, faPlay, faFilm, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faTimes, faPlay, faFilm, faPlus, faTags } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import Modal from './Modal';
 import '../../styles/ViewMovie.css';
@@ -43,6 +43,15 @@ const ViewMovie = ({ movieId }) => {
       case 'cancelled': return 'Отменено';
       default: return '';
     }
+  };
+  
+  // Функция для определения цвета рейтинга
+  const getRatingColor = (rating) => {
+    if (rating >= 86) return '#FFD700'; // Золотистый - шедевр
+    if (rating >= 71) return '#1976D2'; // Синий - хороший фильм
+    if (rating >= 51) return '#7B1FA2'; // Фиолетовый - средний/неплохой
+    if (rating >= 31) return '#D32F2F'; // Тёмно-красный - слабый фильм
+    return '#9E9E9E';                   // Серый - не стоит тратить время
   };
   
   const formatDate = (dateString) => {
@@ -294,13 +303,13 @@ const ViewMovie = ({ movieId }) => {
                   </div>
                 )}
                 
-                {/* Рейтинг вверху слева - отображаем всегда при наличии рейтинга */}
+                {/* Рейтинг вверху слева - с цветовой градацией */}
                 {hasRating && movie.status === 'watched' && (
                   <div style={{ 
                     position: 'absolute', 
                     top: '0', 
                     left: '0',
-                    backgroundColor: 'rgba(39, 174, 96, 0.8)', // Полупрозрачный зеленый для соответствия статусу "просмотрено"
+                    backgroundColor: getRatingColor(movie.rating),
                     color: 'white',
                     fontWeight: 'bold',
                     padding: '3px 8px',
@@ -434,15 +443,18 @@ const ViewMovie = ({ movieId }) => {
                       {movie.tags.map((tag, index) => (
                         <div key={index} className="movie-tag" style={{ 
                           flex: '0 0 auto',
-                          backgroundColor: '#2176ff',
+                          backgroundColor: '#9b59b6',
                           color: 'white',
-                          padding: '3px 10px',
-                          borderRadius: '15px',
-                          fontSize: '12px',
-                          fontWeight: 'bold',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          fontWeight: 'normal',
                           margin: '2px',
-                          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                          boxShadow: '0 1px 1px rgba(0,0,0,0.1)',
+                          display: 'inline-flex',
+                          alignItems: 'center'
                         }}>
+                          <FontAwesomeIcon icon={faTags} size="xs" style={{ marginRight: '3px', fontSize: '8px' }} />
                           <span>{tag}</span>
                         </div>
                       ))}
