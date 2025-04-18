@@ -36,12 +36,21 @@ const MovieCard = ({ movie }) => {
   
   const formatDuration = () => {
     if (movie.isSeries && movie.episodes && movie.episodeDuration) {
-      // Рассчитываем общую продолжительность для сериала
+      // Рассчитываем общую продолжительность сериала
       const totalMinutes = movie.episodes * movie.episodeDuration;
-      const hours = Math.floor(totalMinutes / 60);
-      const minutes = totalMinutes % 60;
+      const totalHours = Math.floor(totalMinutes / 60);
+      const remainingMinutes = totalMinutes % 60;
       
-      return `Сезон ${movie.seasons}, серий ${movie.episodes}, ~${hours > 0 ? `${hours} ч. ` : ''}${minutes > 0 ? `${minutes} мин.` : ''}`;
+      // Форматируем общую продолжительность
+      const totalDuration = `~${totalHours} ${totalHours === 1 ? 'час' : 
+                            totalHours > 1 && totalHours < 5 ? 'часа' : 'часов'}${
+                            remainingMinutes > 0 ? ` ${remainingMinutes} мин.` : ''}`;
+      
+      // Для сериалов возвращаем объект с двумя строками
+      return {
+        seriesInfo: `Сезон ${movie.seasons}, Серий ${movie.episodes} (${totalDuration})`,
+        episodeInfo: `Продолжительность серии: ~${movie.episodeDuration} мин.`
+      };
     } else if (movie.duration) {
       // Обычный фильм
       const hours = Math.floor(movie.duration / 60);
@@ -69,6 +78,11 @@ const MovieCard = ({ movie }) => {
   const hasDuration = movie.duration || (movie.isSeries && movie.episodes && movie.episodeDuration);
   const hasTrailer = movie.trailerUrl && movie.trailerUrl.trim() !== '';
   const hasWatchLink = movie.watchLink && movie.watchLink.trim() !== ''; // Заготовка для будущего поля
+  
+  // Получаем форматированную продолжительность
+  const duration = formatDuration();
+  // Проверяем, является ли duration объектом (для сериалов) или строкой (для фильмов)
+  const isSeriesDuration = duration !== null && typeof duration === 'object';
   
   return (
     <div className="movie-card" onClick={handleCardClick}>
@@ -156,11 +170,24 @@ const MovieCard = ({ movie }) => {
           </div>
         )}
         
-        {/* Продолжительность - только если есть */}
+        {/* Продолжительность - разные форматы для фильмов и сериалов */}
         {hasDuration && (
-          <div className="movie-duration" style={{ fontSize: '13px', margin: '3px 0' }}>
-            Продолжительность: {formatDuration()}
-          </div>
+          <>
+            {isSeriesDuration ? (
+              <>
+                <div className="movie-duration" style={{ fontSize: '13px', margin: '3px 0' }}>
+                  {duration.seriesInfo}
+                </div>
+                <div className="movie-duration" style={{ fontSize: '13px', margin: '3px 0' }}>
+                  {duration.episodeInfo}
+                </div>
+              </>
+            ) : (
+              <div className="movie-duration" style={{ fontSize: '13px', margin: '3px 0' }}>
+                Продолжительность: {duration}
+              </div>
+            )}
+          </>
         )}
         
         {/* Трейлер - только если есть */}
