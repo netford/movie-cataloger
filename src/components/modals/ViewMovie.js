@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faEdit, faTimes, faPlay, faFilm, faPlus, faTags } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faTimes, faPlay, faFilm, faPlus, faTags, faLink, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import Modal from './Modal';
 import '../../styles/ViewMovie.css';
@@ -327,14 +327,15 @@ const ViewMovie = ({ movieId }) => {
                   top: '0',
                   right: '0', 
                   padding: '5px 15px',
-                  backgroundColor: movie.status === 'watched' ? 'rgba(39, 174, 96, 0.8)' : // Полупрозрачный зеленый для "просмотрено"
-                              movie.status === 'toWatch' ? 'rgba(52, 152, 219, 0.8)' : // Полупрозрачный синий для "запланировано"
-                              movie.status === 'watching' ? 'rgba(243, 156, 18, 0.8)' : // Полупрозрачный оранжевый для "смотрим"
-                              'rgba(127, 140, 141, 0.8)', // Полупрозрачный серый для "отменено"
+                  backgroundColor: movie.status === 'watched' ? 'rgba(39, 174, 96, 0.7)' : // Менее прозрачный зелёный
+                              movie.status === 'toWatch' ? 'rgba(52, 152, 219, 0.7)' : // Менее прозрачный синий
+                              movie.status === 'watching' ? 'rgba(243, 156, 18, 0.7)' : // Менее прозрачный оранжевый
+                              'rgba(127, 140, 141, 0.7)', // Менее прозрачный серый
                   color: 'white',
                   fontSize: '14px',
                   fontWeight: 'bold',
-                  zIndex: 10
+                  zIndex: 10,
+                  backdropFilter: 'blur(2px)'
                 }}>
                   {getStatusLabel(movie.status)}
                 </div>
@@ -387,6 +388,61 @@ const ViewMovie = ({ movieId }) => {
                     overflowY: 'auto'
                   }}>
                     {movie.notes}
+                  </div>
+                </div>
+              )}
+              
+              {/* Ссылка Смотреть/Скачать - перемещена в конец левой панели */}
+              {movie.watchLink && (
+                <div className="form-row" style={{ 
+                  margin: '20px 0 0',
+                  width: '100%'
+                }}>
+                  <div className="form-control" style={{ width: '100%' }}>
+                    <div style={{ 
+                      fontSize: '13px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      backgroundColor: 'rgba(245, 245, 245, 0.5)',
+                      padding: '10px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      border: '1px solid rgba(200, 200, 200, 0.5)',
+                      transition: 'all 0.2s ease-in-out'
+                    }}>
+                      <a 
+                        href={movie.watchLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{
+                          color: 'var(--primary-color)',
+                          textDecoration: 'none',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          width: '100%',
+                          justifyContent: 'center'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.parentElement.style.backgroundColor = 'rgba(235, 235, 235, 0.9)';
+                          e.currentTarget.parentElement.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+                          e.currentTarget.style.color = '#1565C0';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.parentElement.style.backgroundColor = 'rgba(245, 245, 245, 0.5)';
+                          e.currentTarget.parentElement.style.boxShadow = 'none';
+                          e.currentTarget.style.color = 'var(--primary-color)';
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faExternalLinkAlt} style={{ flexShrink: 0 }} />
+                        <span style={{
+                          fontWeight: 'bold',
+                          whiteSpace: 'nowrap'
+                        }}>
+                          Смотреть/Скачать
+                        </span>
+                      </a>
+                    </div>
                   </div>
                 </div>
               )}

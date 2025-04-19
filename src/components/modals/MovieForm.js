@@ -7,7 +7,8 @@ import {
   faChevronUp, 
   faChevronDown, 
   faPlay, 
-  faPlus 
+  faPlus,
+  faLink
 } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import Modal from './Modal';
@@ -46,6 +47,7 @@ const MovieForm = ({ movieId = null }) => {
         episodeDuration: null,
         duration: 120,
         trailerUrl: '', // Поле для URL трейлера
+        watchLink: '', // Поле для ссылки Смотреть/Скачать
         images: [],
         notes: ''
       };
@@ -391,6 +393,23 @@ const MovieForm = ({ movieId = null }) => {
   
   // Определяем, какой режим отображения полей использовать
   const isWatchedStatus = movie.status === 'watched';
+  
+  // Функция для изменения URL ссылки Смотреть/Скачать
+  const handleWatchLinkChange = () => {
+    // Запрашиваем ссылку, предзаполняя существующим URL
+    const watchLink = prompt("Введите ссылку где смотреть/скачать:", movie.watchLink || "");
+    if (watchLink === null) return; // Пользователь нажал "Отмена"
+    
+    // Проверяем, что URL корректный, если введен
+    try {
+      if (watchLink.trim()) {
+        new URL(watchLink);
+      }
+      setMovie(prev => ({ ...prev, watchLink: watchLink.trim() }));
+    } catch (e) {
+      alert("Пожалуйста, введите корректную ссылку");
+    }
+  };
   
   return (
     <Modal title={isEditMode ? 'Редактирование фильма' : 'Добавление фильма'}>
@@ -744,14 +763,75 @@ const MovieForm = ({ movieId = null }) => {
                 </div>
               </div>
               
-              {/* Теги в отдельной строке */}
-              <div className="form-row">
-                <div className="form-control">
+              {/* Теги в отдельной строке, поделенной с полем для ссылки */}
+              <div className="form-row" style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between',
+                gap: '15px'
+              }}>
+                {/* Теги (слева) */}
+                <div className="form-control" style={{ width: '48%' }}>
                   <label style={{ fontWeight: 'bold', fontSize: '14px' }}>Теги:</label>
                   <TagSelector 
                     selectedTags={movie.tags} 
                     onTagsChange={(newTags) => setMovie(prev => ({ ...prev, tags: newTags }))}
                   />
+                </div>
+                
+                {/* Поле для ссылки Смотреть/Скачать (справа) */}
+                <div className="form-control" style={{ width: '48%' }}>
+                  <label style={{ fontWeight: 'bold', fontSize: '14px' }}>Смотреть/Скачать:</label>
+                  <div style={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    border: '1px solid var(--gray-color)',
+                    borderRadius: 'var(--border-radius)',
+                    padding: '3px 8px',
+                    backgroundColor: 'white',
+                    cursor: 'pointer',
+                    minHeight: '34px'
+                  }} onClick={handleWatchLinkChange}>
+                    {movie.watchLink ? (
+                      <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center',
+                        width: '100%',
+                        overflow: 'hidden'
+                      }}>
+                        <span style={{ 
+                          fontSize: '13px',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          maxWidth: '85%'
+                        }}>
+                          {movie.watchLink}
+                        </span>
+                        <FontAwesomeIcon 
+                          icon={faLink} 
+                          style={{ 
+                            color: 'var(--primary-color)',
+                            marginLeft: '5px'
+                          }} 
+                        />
+                      </div>
+                    ) : (
+                      <div style={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        color: 'var(--gray-color)',
+                        width: '100%',
+                        fontSize: '13px'
+                      }}>
+                        <FontAwesomeIcon 
+                          icon={faLink} 
+                          style={{ marginRight: '8px' }} 
+                        />
+                        <span>Добавить ссылку</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               
