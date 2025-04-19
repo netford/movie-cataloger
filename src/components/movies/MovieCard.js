@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilm, faPlay, faDownload, faTags } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
@@ -7,6 +7,30 @@ import '../../styles/Tags.css';
 
 const MovieCard = ({ movie }) => {
   const { dispatch } = useMovies();
+  
+  // Определяем класс для названия фильма в зависимости от его длины и содержания
+  const titleClassName = useMemo(() => {
+    const baseClass = "movie-title";
+    const title = movie.title;
+    const length = title.length;
+    
+    // Более точный алгоритм определения длины названия
+    // Учитываем, что широкие символы (например, "Ш", "Щ") занимают больше места
+    const wideCharsCount = (title.match(/[МШЩЖФ]/g) || []).length;
+    const effectiveLength = length + wideCharsCount * 0.5;
+    
+    // Учитываем наличие пробелов для возможности переноса
+    const spacesCount = (title.match(/\s/g) || []).length;
+    const hasSpaces = spacesCount > 0;
+    
+    if (effectiveLength > 40 || (effectiveLength > 30 && !hasSpaces)) {
+      return `${baseClass} very-long-title`;
+    } else if (effectiveLength > 23 || (effectiveLength > 18 && !hasSpaces)) {
+      return `${baseClass} long-title`;
+    }
+    
+    return baseClass;
+  }, [movie.title]);
   
   const handleCardClick = () => {
     dispatch({ 
@@ -129,7 +153,7 @@ const MovieCard = ({ movie }) => {
       </div>
       
       <div className="movie-info" style={{ paddingBottom: '40px' }}>
-        <h3 className="movie-title">{movie.title}</h3>
+        <h3 className={titleClassName}>{movie.title}</h3>
         
         {/* Теги отображаем если они есть */}
         {hasTags && (
