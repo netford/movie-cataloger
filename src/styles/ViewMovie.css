@@ -130,7 +130,7 @@
 .movie-tag {
   background-color: var(--primary-color);
   color: white;
-  padding: 3px 8px;
+  padding: 3px 10px 3px 8px;
   border-radius: 15px;
   font-size: 12px;
 }

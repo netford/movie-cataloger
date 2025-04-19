@@ -108,7 +108,7 @@ const TagSelector = ({ selectedTags, onTagsChange }) => {
         {selectedTags.map((tag, index) => (
           <div key={index} className="movie-tag" style={{ 
             position: 'relative',
-            padding: '1px 20px 1px 4px' 
+            padding: '1px 20px 1px 6px' 
           }}>
             <FontAwesomeIcon icon={faTags} className="movie-tag-icon" />
             <span>{tag}</span>
@@ -119,7 +119,7 @@ const TagSelector = ({ selectedTags, onTagsChange }) => {
               title="Удалить тег"
               style={{
                 position: 'absolute',
-                right: '2px',
+                right: '4px',
                 background: 'none',
                 border: 'none',
                 color: 'white',

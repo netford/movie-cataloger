@@ -73,9 +73,9 @@ const FilterBar = () => {
     backgroundColor: 'var(--tag-color)',
     color: 'white',
     border: 'none',
-    borderRadius: '0',
-    padding: '1px 4px',
-    fontSize: '11px',
+    borderRadius: '4px',
+    padding: '2px 8px 4px 6px',
+    fontSize: '12px',
     cursor: 'pointer',
     opacity: 0.9,
     width: 'auto',
@@ -157,7 +157,7 @@ const FilterBar = () => {
                   style={state.search === tag.name ? tagActiveStyle : tagButtonStyle}
                   onClick={() => handleTagClick(tag.name)}
                 >
-                  <FontAwesomeIcon icon={faTag} style={{ fontSize: '10px', marginRight: '3px' }} />
+                  <FontAwesomeIcon icon={faTag} style={{ fontSize: '11px', marginRight: '3px' }} />
                   {tag.name}
                 </button>
               ))}
@@ -170,7 +170,7 @@ const FilterBar = () => {
             onClick={handleNoTagsClick}
             className="no-tags-btn"
           >
-            <FontAwesomeIcon icon={faTags} style={{ fontSize: '10px', marginRight: '3px' }} />
+            <FontAwesomeIcon icon={faTags} style={{ fontSize: '11px', marginRight: '3px' }} />
             Без тегов <span style={{ fontSize: '10px', marginLeft: '3px' }}>({noTagsCount})</span>
           </button>
         </div>
