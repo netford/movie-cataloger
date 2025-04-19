@@ -14,6 +14,7 @@ import { useMovies } from '../../context/MovieContext';
 import Modal from './Modal';
 import TagSelector from '../tags/TagSelector';
 import '../../styles/MovieForm.css';
+import '../../styles/Tags.css';
 
 const MovieForm = ({ movieId = null }) => {
   const { state, dispatch, addMovieToFirestore, updateMovieInFirestore } = useMovies();
@@ -785,7 +786,7 @@ const MovieForm = ({ movieId = null }) => {
                     display: 'flex',
                     alignItems: 'center',
                     border: '1px solid var(--gray-color)',
-                    borderRadius: 'var(--border-radius)',
+                    borderRadius: '0',
                     padding: '3px 8px',
                     backgroundColor: 'white',
                     cursor: 'pointer',
@@ -849,7 +850,7 @@ const MovieForm = ({ movieId = null }) => {
                       overflowY: 'auto',
                       backgroundColor: 'rgba(245, 245, 245, 0.3)',
                       padding: '10px',
-                      borderRadius: '5px'
+                      borderRadius: '0'
                     }}
                   ></textarea>
                 </div>

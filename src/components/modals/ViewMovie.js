@@ -1,9 +1,10 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faEdit, faTimes, faPlay, faFilm, faPlus, faTags, faLink, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faTimes, faPlay, faFilm, faPlus, faTags, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import Modal from './Modal';
 import '../../styles/ViewMovie.css';
+import '../../styles/Tags.css';
 
 const ViewMovie = ({ movieId }) => {
   const { state, dispatch, deleteMovieFromFirestore } = useMovies();
@@ -497,20 +498,8 @@ const ViewMovie = ({ movieId }) => {
                     }}>
                       {movie.isSeries && <span style={{ margin: '0 4px' }}></span>}
                       {movie.tags.map((tag, index) => (
-                        <div key={index} className="movie-tag" style={{ 
-                          flex: '0 0 auto',
-                          backgroundColor: '#9b59b6',
-                          color: 'white',
-                          padding: '2px 6px',
-                          borderRadius: '4px',
-                          fontSize: '11px',
-                          fontWeight: 'normal',
-                          margin: '2px',
-                          boxShadow: '0 1px 1px rgba(0,0,0,0.1)',
-                          display: 'inline-flex',
-                          alignItems: 'center'
-                        }}>
-                          <FontAwesomeIcon icon={faTags} size="xs" style={{ marginRight: '3px', fontSize: '8px' }} />
+                        <div key={index} className="movie-tag">
+                          <FontAwesomeIcon icon={faTags} size="xs" className="movie-tag-icon" />
                           <span>{tag}</span>
                         </div>
                       ))}
@@ -530,7 +519,7 @@ const ViewMovie = ({ movieId }) => {
                   overflowY: 'auto',
                   backgroundColor: 'rgba(245, 245, 245, 0.3)',
                   padding: '10px',
-                  borderRadius: '5px' 
+                  borderRadius: '0' 
                 }}>
                   {movie.description || 'Описание отсутствует'}
                 </div>
@@ -593,7 +582,7 @@ const ViewMovie = ({ movieId }) => {
                           backgroundColor: 'var(--primary-color)', 
                           color: 'white',
                           border: 'none',
-                          borderRadius: '3px'
+                          borderRadius: '0'
                         }}
                         onClick={(e) => {
                           e.stopPropagation(); // Предотвращаем переход к редактированию
@@ -670,7 +659,7 @@ const ViewMovie = ({ movieId }) => {
                           backgroundColor: 'var(--primary-color)', 
                           color: 'white',
                           border: 'none',
-                          borderRadius: '3px'
+                          borderRadius: '0'
                         }}
                         onClick={handleEdit}
                       >

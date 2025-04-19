@@ -70,14 +70,14 @@ const FilterBar = () => {
   const tagButtonStyle = {
     display: 'inline-flex',
     alignItems: 'center',
-    backgroundColor: '#9b59b6',
+    backgroundColor: 'var(--tag-color)',
     color: 'white',
     border: 'none',
-    borderRadius: '4px',
-    padding: '3px 10px',
-    fontSize: '13px',
+    borderRadius: '0',
+    padding: '1px 4px',
+    fontSize: '11px',
     cursor: 'pointer',
-    opacity: 0.8,
+    opacity: 0.9,
     width: 'auto',
     minWidth: 'fit-content',
     maxWidth: 'none'
@@ -85,9 +85,9 @@ const FilterBar = () => {
   
   const tagActiveStyle = {
     ...tagButtonStyle,
-    backgroundColor: '#8e44ad',
+    backgroundColor: 'var(--tag-color)',
     opacity: 1,
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.15)'
   };
   
   // Стиль для кнопки "Без тегов"
@@ -158,7 +158,7 @@ const FilterBar = () => {
                   onClick={() => handleTagClick(tag.name)}
                 >
                   <FontAwesomeIcon icon={faTag} style={{ fontSize: '10px', marginRight: '3px' }} />
-                  {tag.name} <span style={{ fontSize: '11px', marginLeft: '3px' }}>({tag.count})</span>
+                  {tag.name}
                 </button>
               ))}
             </div>
@@ -171,7 +171,7 @@ const FilterBar = () => {
             className="no-tags-btn"
           >
             <FontAwesomeIcon icon={faTags} style={{ fontSize: '10px', marginRight: '3px' }} />
-            Без тегов <span style={{ fontSize: '11px', marginLeft: '3px' }}>({noTagsCount})</span>
+            Без тегов <span style={{ fontSize: '10px', marginLeft: '3px' }}>({noTagsCount})</span>
           </button>
         </div>
       </div>

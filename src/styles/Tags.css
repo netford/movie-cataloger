@@ -1,0 +1,18 @@
+/* Общие стили для тегов во всём приложении */
+.movie-tag {
+  background-color: var(--tag-color) !important;
+  color: white !important;
+  padding: 1px 4px !important;
+  border-radius: 0 !important;
+  font-size: 11px;
+  font-weight: normal;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+  display: inline-flex;
+  align-items: center;
+  margin: 2px 3px 2px 0;
+}
+
+.movie-tag-icon {
+  margin-right: 3px;
+  font-size: 8px;
+} 

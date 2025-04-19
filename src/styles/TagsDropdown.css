@@ -13,7 +13,7 @@
     width: 350px;
     max-height: 80vh;
     background-color: white;
-    border-radius: var(--border-radius);
+    border-radius: 0;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     z-index: 1000;
     overflow: hidden;
@@ -83,7 +83,7 @@
     flex: 1;
     padding: 6px 10px;
     border: 1px solid var(--gray-color);
-    border-radius: var(--border-radius);
+    border-radius: 0;
     font-size: 14px;
   }
   
@@ -192,7 +192,7 @@
     flex: 1;
     padding: 4px 8px;
     border: 1px solid var(--primary-color);
-    border-radius: var(--border-radius);
+    border-radius: 0;
     font-size: 14px;
     margin-right: 10px;
   }

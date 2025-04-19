@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisV, faFilm, faPlay, faDownload, faTags } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import '../../styles/MovieCard.css';
+import '../../styles/Tags.css';
 
 const MovieCard = ({ movie }) => {
   const { dispatch } = useMovies();
@@ -137,21 +138,10 @@ const MovieCard = ({ movie }) => {
         
         {/* Теги отображаем если они есть */}
         {hasTags && (
-          <div className="movie-tags" style={{ marginBottom: '8px' }}>
+          <div className="movie-tags" style={{ marginBottom: '7px', marginTop: '4px' }}>
             {movie.tags.slice(0, 3).map((tag, index) => (
-              <span key={index} className="movie-tag" style={{ 
-                display: 'inline-flex',
-                alignItems: 'center',
-                backgroundColor: '#9b59b6', /* более точный оттенок фиолетового как в заголовке */
-                color: 'white',
-                padding: '2px 6px',
-                borderRadius: '4px',
-                fontSize: '11px',
-                fontWeight: 'normal',
-                margin: '2px 4px 2px 0',
-                boxShadow: '0 1px 1px rgba(0,0,0,0.1)'
-              }}>
-                <FontAwesomeIcon icon={faTags} size="xs" style={{ marginRight: '3px', fontSize: '8px' }} />
+              <span key={index} className="movie-tag">
+                <FontAwesomeIcon icon={faTags} size="xs" className="movie-tag-icon" />
                 {tag}
               </span>
             ))}

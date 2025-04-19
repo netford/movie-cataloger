@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTimes, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTimes, faChevronDown, faTags } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import '../../styles/TagSelector.css';
+import '../../styles/Tags.css';
 
 const TagSelector = ({ selectedTags, onTagsChange }) => {
   const { state, addTagToFirestore } = useMovies();
@@ -105,13 +106,29 @@ const TagSelector = ({ selectedTags, onTagsChange }) => {
         </button>
         
         {selectedTags.map((tag, index) => (
-          <div key={index} className="tag">
+          <div key={index} className="movie-tag" style={{ 
+            position: 'relative',
+            padding: '1px 20px 1px 4px' 
+          }}>
+            <FontAwesomeIcon icon={faTags} className="movie-tag-icon" />
             <span>{tag}</span>
             <button
               type="button"
               className="tag-remove"
               onClick={() => handleRemoveTag(tag)}
               title="Удалить тег"
+              style={{
+                position: 'absolute',
+                right: '2px',
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: '10px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
             >
               <FontAwesomeIcon icon={faTimes} />
             </button>
