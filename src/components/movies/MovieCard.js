@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisV, faFilm, faPlay, faDownload, faTags } from '@fortawesome/free-solid-svg-icons';
+import { faFilm, faPlay, faDownload, faTags } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import '../../styles/MovieCard.css';
 import '../../styles/Tags.css';
@@ -13,11 +13,6 @@ const MovieCard = ({ movie }) => {
       type: 'OPEN_MODAL', 
       payload: { type: 'view', movieId: movie.id } 
     });
-  };
-  
-  const handleMenuClick = (e) => {
-    e.stopPropagation();
-    // В будущем здесь можно реализовать выпадающее меню
   };
   
   const handleLinkClick = (e, url) => {
@@ -133,7 +128,7 @@ const MovieCard = ({ movie }) => {
         </div>
       </div>
       
-      <div className="movie-info">
+      <div className="movie-info" style={{ paddingBottom: '40px' }}>
         <h3 className="movie-title">{movie.title}</h3>
         
         {/* Теги отображаем если они есть */}
@@ -180,9 +175,20 @@ const MovieCard = ({ movie }) => {
           </>
         )}
         
-        {/* Трейлер - только если есть */}
-        {hasTrailer && (
-          <div className="movie-trailer" style={{ fontSize: '13px', margin: '3px 0' }}>
+        {/* Трейлер и Скачать/Смотреть в одну строку */}
+        <div className="movie-links" style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between',
+          width: 'calc(100% - 20px)',
+          fontSize: '13px', 
+          margin: '3px 0',
+          marginTop: 'auto',
+          position: 'absolute',
+          bottom: '10px',
+          left: '10px',
+          right: '10px'
+        }}>
+          {hasTrailer && (
             <a 
               href={movie.trailerUrl} 
               onClick={(e) => handleLinkClick(e, movie.trailerUrl)}
@@ -191,36 +197,27 @@ const MovieCard = ({ movie }) => {
               <FontAwesomeIcon icon={faPlay} size="sm" />
               Трейлер
             </a>
-          </div>
-        )}
-        
-        {/* Заготовка для будущей ссылки Скачать/Смотреть */}
-        {hasWatchLink && (
-          <div className="movie-watch-link" style={{ fontSize: '13px', margin: '3px 0' }}>
+          )}
+          
+          {hasWatchLink && (
             <a 
               href={movie.watchLink}
               onClick={(e) => handleLinkClick(e, movie.watchLink)}
-              style={{ color: 'var(--primary-color)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '5px' }}
+              style={{ 
+                color: 'var(--primary-color)', 
+                textDecoration: 'none', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '5px', 
+                marginLeft: 'auto',
+                marginRight: '5px'
+              }}
             >
               <FontAwesomeIcon icon={faDownload} size="sm" />
               Скачать/Смотреть
             </a>
-          </div>
-        )}
-        
-        {/* Кнопка с меню перемещена в правый нижний угол */}
-        <button 
-          className="card-menu-btn" 
-          onClick={handleMenuClick}
-          style={{
-            position: 'absolute',
-            bottom: '10px',
-            right: '10px',
-            top: 'auto'
-          }}
-        >
-          <FontAwesomeIcon icon={faEllipsisV} />
-        </button>
+          )}
+        </div>
       </div>
     </div>
   );
