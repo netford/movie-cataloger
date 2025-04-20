@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisV, faFilm, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faFilm, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import '../../styles/MovieList.css';
 
@@ -85,9 +85,15 @@ const MovieList = () => {
     });
   };
   
-  const handleMenuClick = (e, movieId) => {
-    e.stopPropagation();
-    // В будущем здесь можно реализовать выпадающее меню
+  // Функция для определения цвета рейтинга на основе его значения
+  const getRatingColor = (rating) => {
+    if (!rating) return '';
+    
+    if (rating >= 86) return '#FFD700'; // Золотистый - шедевр
+    if (rating >= 71) return '#1976D2'; // Синий - хороший фильм
+    if (rating >= 51) return '#7B1FA2'; // Фиолетовый - средний/неплохой
+    if (rating >= 31) return '#D32F2F'; // Тёмно-красный - слабый фильм
+    return '#9E9E9E';                   // Серый - не стоит тратить время
   };
   
   const getStatusLabel = (status) => {
@@ -135,7 +141,6 @@ const MovieList = () => {
               <th>Рейтинг</th>
               <th>Дата просмотра</th>
               <th>Дата добавления</th>
-              <th>Действия</th>
             </tr>
           </thead>
           <tbody>
@@ -163,21 +168,23 @@ const MovieList = () => {
                 </td>
                 <td>
                   {movie.status === 'watched' ? (
-                    <div className="rating-badge">{movie.rating}/100</div>
+                    <div style={{ 
+                      backgroundColor: getRatingColor(movie.rating),
+                      color: 'white',
+                      padding: '3px 8px',
+                      borderRadius: '10px',
+                      fontSize: '14px',
+                      display: 'inline-block',
+                      fontWeight: 'bold'
+                    }}>
+                      {movie.rating}
+                    </div>
                   ) : (
                     '—'
                   )}
                 </td>
                 <td>{formatDate(movie.dateWatched)}</td>
                 <td>{formatDate(movie.dateAdded)}</td>
-                <td>
-                  <button 
-                    className="list-menu-btn"
-                    onClick={(e) => handleMenuClick(e, movie.id)}
-                  >
-                    <FontAwesomeIcon icon={faEllipsisV} />
-                  </button>
-                </td>
               </tr>
             ))}
           </tbody>
