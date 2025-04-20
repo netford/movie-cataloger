@@ -11,19 +11,28 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useMovies } from '../../context/MovieContext';
 import TagsDropdown from '../tags/TagsDropdown';
+import SortDropdown from '../sorting/SortDropdown';
 import '../../styles/Header.css';
 
 const Header = () => {
   const { state, dispatch } = useMovies();
   const [tagsDropdownOpen, setTagsDropdownOpen] = useState(false);
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState(null);
+  const [sortDropdownPosition, setSortDropdownPosition] = useState(null);
   const tagsButtonRef = useRef(null);
+  const sortButtonRef = useRef(null);
   
   const handleAddClick = () => {
     dispatch({ type: 'OPEN_MODAL', payload: { type: 'add' } });
   };
   
   const handleTagsClick = () => {
+    // Закрываем другие дропдауны если они открыты
+    if (sortDropdownOpen) {
+      setSortDropdownOpen(false);
+    }
+    
     if (tagsButtonRef.current) {
       const buttonRect = tagsButtonRef.current.getBoundingClientRect();
       setDropdownPosition({
@@ -34,8 +43,28 @@ const Header = () => {
     setTagsDropdownOpen(prevState => !prevState);
   };
   
+  const handleSortClick = () => {
+    // Закрываем другие дропдауны если они открыты
+    if (tagsDropdownOpen) {
+      setTagsDropdownOpen(false);
+    }
+    
+    if (sortButtonRef.current) {
+      const buttonRect = sortButtonRef.current.getBoundingClientRect();
+      setSortDropdownPosition({
+        top: buttonRect.bottom + window.scrollY,
+        left: buttonRect.left + window.scrollX,
+      });
+    }
+    setSortDropdownOpen(prevState => !prevState);
+  };
+  
   const closeTagsDropdown = () => {
     setTagsDropdownOpen(false);
+  };
+  
+  const closeSortDropdown = () => {
+    setSortDropdownOpen(false);
   };
 
   // Функции для поиска
@@ -47,21 +76,31 @@ const Header = () => {
     dispatch({ type: 'SET_SEARCH', payload: '' });
   };
 
-  // Функции для управления видом и сортировкой
+  // Функции для управления видом
   const handleViewModeChange = (viewMode) => {
     dispatch({ type: 'SET_VIEW_MODE', payload: viewMode });
   };
   
-  const handleSortClick = () => {
-    // Простое переключение направления сортировки
-    const newDirection = state.sortBy.direction === 'asc' ? 'desc' : 'asc';
-    dispatch({ 
-      type: 'SET_SORT', 
-      payload: { 
-        ...state.sortBy, 
-        direction: newDirection 
-      } 
-    });
+  // Получение текущей метки сортировки для отображения в title
+  const getSortLabel = () => {
+    // Создаем объект с метками направления сортировки
+    const directionLabels = {
+      asc: 'по возрастанию',
+      desc: 'по убыванию'
+    };
+    
+    // Создаем объект с метками полей сортировки
+    const fieldLabels = {
+      title: 'названию',
+      dateAdded: 'дате добавления',
+      rating: 'рейтингу',
+      dateWatched: 'дате просмотра'
+    };
+    
+    const fieldLabel = fieldLabels[state.sortBy.field] || state.sortBy.field;
+    const directionLabel = directionLabels[state.sortBy.direction] || state.sortBy.direction;
+    
+    return `Сортировка по ${fieldLabel} (${directionLabel})`;
   };
   
   return (
@@ -80,11 +119,17 @@ const Header = () => {
               className="header-search-input"
             />
             {state.search ? (
-              <button className="header-clear-search" onClick={clearSearch}>
+              <button 
+                className="header-clear-search" 
+                onClick={clearSearch}
+              >
                 <FontAwesomeIcon icon={faTimesCircle} />
               </button>
             ) : (
-              <FontAwesomeIcon icon={faSearch} className="header-search-icon" />
+              <FontAwesomeIcon 
+                icon={faSearch} 
+                className="header-search-icon" 
+              />
             )}
           </div>
           
@@ -111,9 +156,10 @@ const Header = () => {
             {/* Кнопки вида и сортировки в контейнере */}
             <div className="view-controls-group">
               <button 
-                className="btn-view-control" 
+                ref={sortButtonRef}
+                className={`btn-view-control ${sortDropdownOpen ? 'active' : ''}`} 
                 onClick={handleSortClick}
-                title="Изменить порядок сортировки (по возрастанию/убыванию)"
+                title={getSortLabel()}
               >
                 <FontAwesomeIcon icon={faSort} />
               </button>
@@ -140,6 +186,13 @@ const Header = () => {
         isOpen={tagsDropdownOpen} 
         onClose={closeTagsDropdown} 
         position={dropdownPosition}
+        title="Выпадающий список тегов"
+      />
+      
+      <SortDropdown
+        isOpen={sortDropdownOpen}
+        onClose={closeSortDropdown}
+        position={sortDropdownPosition}
       />
     </header>
   );

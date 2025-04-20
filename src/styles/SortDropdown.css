@@ -1,0 +1,96 @@
+.sort-dropdown {
+  position: absolute;
+  z-index: 1000;
+  background-color: #fff;
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  min-width: 280px;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.sort-dropdown-header {
+  padding: 10px 15px;
+  background-color: var(--secondary-dark);
+  color: white;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sort-dropdown-options {
+  max-height: none;
+  overflow-y: visible;
+  background-color: #fff;
+}
+
+.sort-option {
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: var(--text-color);
+  background-color: #fff;
+}
+
+.sort-option:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.sort-option.active {
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+  font-weight: bold;
+}
+
+.sort-note {
+  display: block;
+  font-size: 0.8em;
+  color: var(--secondary-color);
+  margin-top: 3px;
+  font-style: italic;
+}
+
+.sort-option:hover .sort-note {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.sort-option.active .sort-note {
+  color: var(--secondary-color);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Адаптивная версия */
+@media (max-width: 768px) {
+  .sort-dropdown {
+    position: fixed;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 300px;
+    max-height: none;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    background-color: #fff;
+  }
+  
+  .sort-dropdown-options {
+    max-height: none;
+    background-color: #fff;
+  }
+  
+  .sort-option {
+    padding: 12px 15px;
+    background-color: #fff;
+  }
+} 

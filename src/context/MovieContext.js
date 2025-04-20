@@ -75,10 +75,10 @@ export const MovieProvider = ({ children }) => {
   const initialState = {
     movies: [],
     tags: [],
-    filter: 'all', // all, watched, toWatch, cancelled
+    filter: 'watched', // all, watched, toWatch, cancelled
     search: '',
     viewMode: 'cards', // cards, list
-    sortBy: { field: 'dateAdded', direction: 'desc' },
+    sortBy: { field: 'dateWatched', direction: 'desc' },
     modal: null,
     isLoading: true,
     error: null
@@ -122,12 +122,38 @@ export const MovieProvider = ({ children }) => {
     if (viewMode) {
       dispatch({ type: 'SET_VIEW_MODE', payload: viewMode });
     }
+    
+    // Загружаем сохраненные настройки сортировки и фильтрации из localStorage
+    const savedSortBy = localStorage.getItem('sortBy');
+    const savedFilter = localStorage.getItem('filter');
+    
+    if (savedSortBy) {
+      try {
+        const sortBy = JSON.parse(savedSortBy);
+        dispatch({ type: 'SET_SORT', payload: sortBy });
+      } catch (e) {
+        console.error('Ошибка при разборе сохраненных настроек сортировки:', e);
+      }
+    }
+    
+    if (savedFilter) {
+      dispatch({ type: 'SET_FILTER', payload: savedFilter });
+    }
   }, []);
   
   // Сохраняем настройки интерфейса в localStorage
   useEffect(() => {
     localStorage.setItem('viewMode', state.viewMode);
   }, [state.viewMode]);
+  
+  // Сохраняем настройки сортировки и фильтрации в localStorage
+  useEffect(() => {
+    localStorage.setItem('sortBy', JSON.stringify(state.sortBy));
+  }, [state.sortBy]);
+  
+  useEffect(() => {
+    localStorage.setItem('filter', state.filter);
+  }, [state.filter]);
   
   // Методы для работы с Firestore - ФИЛЬМЫ
   const addMovieToFirestore = async (movieData) => {

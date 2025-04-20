@@ -22,6 +22,14 @@ const MovieList = () => {
       if (state.search === '_NO_TAGS_') {
         // Специальный случай для фильтрации фильмов без тегов
         result = result.filter(movie => !movie.tags || movie.tags.length === 0);
+      } else if (state.search === '_HAS_RATING_') {
+        // Специальный случай для фильтрации фильмов с рейтингом (просмотренные или отмененные)
+        result = result.filter(movie => 
+          (movie.status === 'watched' || movie.status === 'cancelled') && 
+          movie.rating !== undefined && 
+          movie.rating !== null && 
+          movie.rating > 0
+        );
       } else {
         // Обычная фильтрация по поисковому запросу
         const searchLower = state.search.toLowerCase();
